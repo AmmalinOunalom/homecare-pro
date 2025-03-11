@@ -5,7 +5,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
-    "dev": "nodemon index.ts"
+    "dev": "nodemon index.ts",
+    "build": "tsc",                                    
+    "postinstall": "npm run build",                     
+    "lint": "eslint . --ext .ts",               
+    "predev": "npm run build"  
   },
   "keywords": [],
   "author": "",
