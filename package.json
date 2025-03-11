@@ -6,10 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
     "dev": "nodemon index.ts",
-    "build": "tsc",                                    
-    "postinstall": "npm run build",                     
-    "lint": "eslint . --ext .ts",               
-    "predev": "npm run build"  
+    "build": "tsc",
+    "postinstall": "npm run build",
+    "lint": "eslint . --ext .ts",
+    "predev": "npm run build"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
     "@types/ejs": "^3.1.5",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",

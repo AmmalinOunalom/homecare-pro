@@ -1,4 +1,5 @@
 import express from "express";
+import cors from 'cors'; 
 import dotenv from "dotenv";
 import user_router from "./src/routes/user.route";
 import { setupSwagger } from './src/config/swagger'; // Import Swagger setup
@@ -8,6 +9,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());  // This will allow all origins by default
 
 // Setup Swagger
 setupSwagger(app);
