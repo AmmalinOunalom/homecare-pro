@@ -22,7 +22,7 @@ const options = {
             },
         ],
     },
-    apis: ["./src/routes/user.route.ts"], // Specify only route files to optimize documentation generation
+    apis: ["./src/routes/*.ts"], // Specify only route files to optimize documentation generation
 };
 const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
 const setupSwagger = (app) => {

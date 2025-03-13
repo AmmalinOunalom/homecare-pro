@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const user_controller_1 = require("../controllers/user.controller");
 const router = express_1.default.Router();
-//NOTE Read All user
+// NOTE - Read All users
 /**
  * @swagger
  * /users/read_user:
@@ -21,8 +21,8 @@ const router = express_1.default.Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/read_user", user_controller_1.show_all_user);
-//NOTE - SIGN_UP USER
+router.get("/read_user", user_controller_1.show_all_users);
+// NOTE - SIGN_UP USER
 /**
  * @swagger
  * /users/sign_up_user:
@@ -83,5 +83,78 @@ router.get("/read_user", user_controller_1.show_all_user);
  *       500:
  *         description: Internal server error
  */
-router.post("/sign_up_user", user_controller_1.create_user);
+router.post("/sign_up_user", user_controller_1.create_users);
+/**
+ * @swagger
+ * /users/rename_user/{id}:
+ *   put:
+ *     summary: Rename a user
+ *     description: Update a user's username, first name, and last name.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newUsername:
+ *                 type: string
+ *                 example: "new_user123"
+ *               newFirstname:
+ *                 type: string
+ *                 example: "John"
+ *               newLastname:
+ *                 type: string
+ *                 example: "Doe"
+ *               profileFilename:
+ *                 type: string
+ *                 example: "profile.jpg"
+ *     responses:
+ *       200:
+ *         description: User renamed successfully
+ *       400:
+ *         description: Invalid request data
+ *       404:
+ *         description: User not found
+ */
+router.put("/rename_user/:id", user_controller_1.rename_user);
+/**
+ * @swagger
+ * /users/forgot_password:
+ *   post:
+ *     summary: Reset user password
+ *     description: Allows a user to reset their password using their email.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *               newPassword:
+ *                 type: string
+ *                 example: "newpassword123"
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *       400:
+ *         description: Invalid request data
+ *       404:
+ *         description: Email not found
+ */
+router.post("/forgot_password", user_controller_1.forgot_password);
 exports.default = router;
