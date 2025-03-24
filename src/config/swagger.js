@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setupSwagger = void 0;
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const PORT = process.env.PORT || 5000; // Use environment variable or default to 5000
+const DOMAIN = process.env.URL; // Use HTTPS for production
+const PORT = process.env.PORT || 5000; // Default to 5000 for local development
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -17,16 +18,16 @@ const options = {
         },
         servers: [
             {
-                url: `http://localhost:${PORT}`, // Dynamically set port
-                description: 'Local Development Server',
-            },
+                url: `${DOMAIN}`, // Base URL for production, no path included
+                description: 'Production Server', // Description for production
+            }
         ],
     },
-    apis: ["./src/routes/*.ts"], // Specify only route files to optimize documentation generation
+    apis: ["./src/routes/*.ts"], // Specify the paths to your route files
 };
 const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
 const setupSwagger = (app) => {
     app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
-    console.log(`Swagger Docs available at http://localhost:${PORT}/api-docs`);
+    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // Correct the URL here
 };
 exports.setupSwagger = setupSwagger;

@@ -17,7 +17,12 @@ const swagger_1 = require("./src/config/swagger"); // Import Swagger setup
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)()); // This will allow all origins by default
+// app.use(cors()); // This will allow all origins by default
+app.use((0, cors_1.default)({
+    origin: ['https://homecare-pro.onrender.com'], // ✅ อนุญาตเฉพาะโดเมนของคุณ
+    methods: 'GET, POST, PUT, DELETE, OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization'
+}));
 // Setup Swagger
 (0, swagger_1.setupSwagger)(app);
 app.use("/users", user_route_1.default);
@@ -27,5 +32,6 @@ app.use("/emp_car", emp_car_route_1.default);
 app.use("/comments", comments_route_1.default);
 app.use("/address_users_details", address_users_details_route_1.default);
 app.use("/service_order", service_order_route_1.default);
-const port = process.env.PORT || 3306;
+//const port = process.env.PORT || 3306;
+const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running at http://localhost:${port}`));
