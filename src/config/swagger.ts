@@ -17,11 +17,7 @@ const options: Options = {
             {
                 url: `${DOMAIN}`, // Base URL for production, no path included
                 description: 'Production Server', // Description for production
-            },
-            {
-                url: `http://localhost:${PORT}`, // For local development, no path included
-                description: 'Local Development Server',
-            },
+            }
         ],
     },
     apis: ["./src/routes/*.ts"], // Specify the paths to your route files
