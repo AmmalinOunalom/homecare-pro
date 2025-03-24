@@ -2,6 +2,7 @@ import swaggerJSDoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 
+const url = process.env.URL || 'homecare-pro.onrender.com'
 const PORT = process.env.PORT || 5000; // Use environment variable or default to 5000
 
 const options: Options = {
@@ -14,7 +15,7 @@ const options: Options = {
         },
         servers: [
             {
-                url: `http://localhost:${PORT}`, // Dynamically set port
+                url:url+PORT , // Dynamically set port
                 description: 'Local Development Server',
             },
         ],
