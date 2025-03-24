@@ -80,7 +80,7 @@ const swaggerOptions: swaggerJsDoc.Options = {
     },
     servers: [
       {
-        url: process.env.BASE_URL || 'http://localhost:5000', // Use the environment variable
+        url: process.env.URL || 'http://localhost:5000', // Use the environment variable
       },
     ],
   },

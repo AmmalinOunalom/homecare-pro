@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-//import { swaggerUi, specs } from "./swaggerConfig";
 const user_route_1 = __importDefault(require("./src/routes/user.route")); // corrected import user
 const employees_route_1 = __importDefault(require("./src/routes/employees.route")); // Corrected import employees
 const categories_route_1 = __importDefault(require("./src/routes/categories.route")); // Corrected import categories
@@ -21,7 +20,6 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)()); // This will allow all origins by default
 // Setup Swagger
 (0, swagger_1.setupSwagger)(app);
-//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/users", user_route_1.default);
 app.use("/employees", employees_route_1.default);
 app.use("/categories", categories_route_1.default);

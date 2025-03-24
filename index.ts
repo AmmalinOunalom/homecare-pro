@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-//import { swaggerUi, specs } from "./swaggerConfig";
 import user_router from "./src/routes/user.route"; // corrected import user
 import employee_router from "./src/routes/employees.route"; // Corrected import employees
 import categories_router from "./src/routes/categories.route"; // Corrected import categories
@@ -23,7 +22,6 @@ app.use(cors()); // This will allow all origins by default
 
 // Setup Swagger
 setupSwagger(app);
-//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use("/users", user_router);
 app.use("/employees", employee_router);
