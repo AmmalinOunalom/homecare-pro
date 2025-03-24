@@ -30,16 +30,51 @@
 //     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // Correct the URL here
 // };
 
+// import swaggerJSDoc, { Options } from "swagger-jsdoc";
+// import swaggerUi from "swagger-ui-express";
+// import { Express } from "express";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+// console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่า URL
+
+
+// const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่าจาก .env
+
+// const options: Options = {
+//     definition: {
+//         openapi: "3.0.0",
+//         info: {
+//             title: "HomeCare API",
+//             version: "1.0.0",
+//             description: "API Documentation for HomeCare Node.js & TypeScript Project",
+//         },
+//         servers: [
+//             {
+//                 url: DOMAIN, // ✅ ใช้ URL จาก .env (ไม่มีซ้ำซ้อน)
+//                 description: "Production Server",
+//             }
+//         ],
+//     },
+//     apis: ["./src/routes/*.ts"],
+// };
+
+// const swaggerSpec = swaggerJSDoc(options);
+
+// export const setupSwagger = (app: Express) => {
+//     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+//     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+// };
+
 import swaggerJSDoc, { Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
 import dotenv from "dotenv";
 
-dotenv.config();
-console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่า URL
+dotenv.config(); // โหลดค่าจากไฟล์ .env
 
-
-const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่าจาก .env
+// ดึงค่า URL จากไฟล์ .env หรือใช้ URL ค่า default
+const DOMAIN = process.env.URL || "http://localhost:5000"; // ใช้ค่าจาก .env หากไม่มีจะใช้ localhost
 
 const options: Options = {
     definition: {
@@ -51,7 +86,7 @@ const options: Options = {
         },
         servers: [
             {
-                url: DOMAIN, // ✅ ใช้ URL จาก .env (ไม่มีซ้ำซ้อน)
+                url: DOMAIN, // ใช้ URL จาก .env โดยไม่ใส่ path อื่นๆ
                 description: "Production Server",
             }
         ],
@@ -63,6 +98,5 @@ const swaggerSpec = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express) => {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // แสดง URL ที่ถูกต้อง
 };
-
