@@ -30,38 +30,39 @@
 //     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // Correct the URL here
 // };
 
-import swaggerJSDoc, { Options } from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import { Express } from 'express';
+import swaggerJSDoc, { Options } from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import { Express } from "express";
+import dotenv from "dotenv";
 
-const DOMAIN = process.env.URL || 'https://homecare-pro.onrender.com'; // ✅ ตั้งค่าเริ่มต้นให้ถูกต้อง
-const PORT = process.env.PORT || 5000; // ✅ ใช้พอร์ต 5000 สำหรับ local
+dotenv.config();
+console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่า URL
+
+
+const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่าจาก .env
 
 const options: Options = {
     definition: {
-        openapi: '3.0.0',
+        openapi: "3.0.0",
         info: {
-            title: 'HomeCare API',
-            version: '1.0.0',
-            description: 'API Documentation for HomeCare Node.js & TypeScript Project',
+            title: "HomeCare API",
+            version: "1.0.0",
+            description: "API Documentation for HomeCare Node.js & TypeScript Project",
         },
         servers: [
             {
-                url: DOMAIN, // ✅ ใช้ URL ที่ถูกต้อง
-                description: 'Production Server',
-            },
-            {
-                url: `http://localhost:${PORT}`, // ✅ ใช้ URL สำหรับ local test
-                description: 'Local Development Server',
+                url: DOMAIN, // ✅ ใช้ URL จาก .env (ไม่มีซ้ำซ้อน)
+                description: "Production Server",
             }
         ],
     },
-    apis: ["./src/routes/*.ts"], // ✅ อ่าน API จากโฟลเดอร์ routes
+    apis: ["./src/routes/*.ts"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express) => {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ ใช้ URL ที่ถูกต้อง
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
 };
+
