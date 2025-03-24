@@ -35,8 +35,8 @@ const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่า URL
-const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่าจาก .env
+console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่าที่โหลดมา
+const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่า .env ถ้าไม่มีใช้ localhost
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -47,7 +47,7 @@ const options = {
         },
         servers: [
             {
-                url: DOMAIN, // ✅ ใช้ URL จาก .env (ไม่มีซ้ำซ้อน)
+                url: DOMAIN, // ✅ ใช้ค่า URL จาก .env
                 description: "Production Server",
             }
         ],
@@ -60,3 +60,26 @@ const setupSwagger = (app) => {
     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
 };
 exports.setupSwagger = setupSwagger;
+// import swaggerJsDoc from 'swagger-jsdoc';
+// import swaggerUi from 'swagger-ui-express';
+// import { Express } from 'express';
+// const swaggerOptions: swaggerJsDoc.Options = {
+//   definition: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'My API',
+//       version: '1.0.0',
+//       description: 'API documentation',
+//     },
+//     servers: [
+//       {
+//         url: process.env.URL || 'http://localhost:5000', // Use the environment variable
+//       },
+//     ],
+//   },
+//   apis: ['./src/routes/*.ts'], // Adjust as needed
+// };
+// const swaggerSpec = swaggerJsDoc(swaggerOptions);
+// export function setupSwagger(app: Express) {
+//   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// }
