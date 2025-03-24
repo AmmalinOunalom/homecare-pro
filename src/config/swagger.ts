@@ -41,7 +41,7 @@ console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่
 const DOMAIN = process.env.URL || "http://localhost:5000";
 
 // ตรวจสอบให้แน่ใจว่า DOMAIN ไม่มี "/" ท้ายสุด
-const BASE_URL = DOMAIN.replace(/\/$/, ""); 
+const URL = DOMAIN.replace(/\/$/, ""); 
 
 const options: Options = {
     definition: {
@@ -53,7 +53,7 @@ const options: Options = {
         },
         servers: [
             {
-                url: `${BASE_URL}`, // ✅ ใช้ URL ที่ถูกต้อง
+                url: `${URL}`, // ✅ ใช้ URL ที่ถูกต้อง
                 description: "Production Server",
             }
         ],
