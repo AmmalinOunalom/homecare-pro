@@ -53,7 +53,7 @@ const options: Options = {
         },
         servers: [
             {
-              url: 'http://localhost:5000',
+              url: DOMAIN,
               description: 'Local development server',
             },
             {
