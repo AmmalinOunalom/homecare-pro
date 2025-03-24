@@ -2,8 +2,9 @@ import swaggerJSDoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 
-const url = process.env.URL || 'homecare-pro.onrender.com'
-const PORT = process.env.PORT || 5000; // Use environment variable or default to 5000
+const DOMAIN = process.env.URL || 'https://homecare-pro.onrender.com'; // Use HTTPS for production
+
+const PORT = process.env.PORT || 5000; // Default to 5000 for local development
 
 const options: Options = {
     definition: {
@@ -15,17 +16,21 @@ const options: Options = {
         },
         servers: [
             {
-                url:url , // Dynamically set port
+                url: `${DOMAIN}`, // Dynamically set the URL based on the environment
+                description: 'Production Server', // Description for production
+            },
+            {
+                url: `http://localhost:${PORT}`, // For local development
                 description: 'Local Development Server',
             },
         ],
     },
-    apis: ["./src/routes/*.ts"], // Specify only route files to optimize documentation generation
+    apis: ["./src/routes/*.ts"], // Specify the paths to your route files
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express) => {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log(`Swagger Docs available at http://localhost:${PORT}/api-docs`);
+    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // Correct the URL here
 };
