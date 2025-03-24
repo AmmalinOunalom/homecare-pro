@@ -2,7 +2,7 @@ import swaggerJSDoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 
-const DOMAIN = process.env.URL || 'https://homecare-pro.onrender.com'; // Use HTTPS for production
+const DOMAIN = process.env.URL; // Use HTTPS for production
 const PORT = process.env.PORT || 5000; // Default to 5000 for local development
 
 const options: Options = {
