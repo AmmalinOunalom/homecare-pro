@@ -36,7 +36,9 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่าที่โหลดมา
-const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่า .env ถ้าไม่มีใช้ localhost
+const DOMAIN = process.env.URL || "http://localhost:5000";
+// ตรวจสอบให้แน่ใจว่า DOMAIN ไม่มี "/" ท้ายสุด
+const BASE_URL = DOMAIN.replace(/\/$/, "");
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -47,7 +49,7 @@ const options = {
         },
         servers: [
             {
-                url: DOMAIN, // ✅ ใช้ค่า URL จาก .env
+                url: `${BASE_URL}`, // ✅ ใช้ URL ที่ถูกต้อง
                 description: "Production Server",
             }
         ],
