@@ -31,32 +31,60 @@ exports.setupSwagger = void 0;
 //     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 //     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // Correct the URL here
 // };
+// import swaggerJSDoc, { Options } from "swagger-jsdoc";
+// import swaggerUi from "swagger-ui-express";
+// import { Express } from "express";
+// import dotenv from "dotenv";
+// dotenv.config();
+// console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่า URL
+// const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่าจาก .env
+// const options: Options = {
+//     definition: {
+//         openapi: "3.0.0",
+//         info: {
+//             title: "HomeCare API",
+//             version: "1.0.0",
+//             description: "API Documentation for HomeCare Node.js & TypeScript Project",
+//         },
+//         servers: [
+//             {
+//                 url: DOMAIN, // ✅ ใช้ URL จาก .env (ไม่มีซ้ำซ้อน)
+//                 description: "Production Server",
+//             }
+//         ],
+//     },
+//     apis: ["./src/routes/*.ts"],
+// };
+// const swaggerSpec = swaggerJSDoc(options);
+// export const setupSwagger = (app: Express) => {
+//     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+//     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+// };
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่า URL
-const DOMAIN = process.env.URL || "http://localhost:5000"; // ✅ ใช้ค่าจาก .env
+dotenv_1.default.config(); // ✅ Load variables from .env
+const DOMAIN = process.env.URL || 'http://localhost:5000'; // Default to local dev if URL is missing
 const options = {
     definition: {
-        openapi: "3.0.0",
+        openapi: '3.0.0',
         info: {
-            title: "HomeCare API",
-            version: "1.0.0",
-            description: "API Documentation for HomeCare Node.js & TypeScript Project",
+            title: 'HomeCare API',
+            version: '1.0.0',
+            description: 'API Documentation for HomeCare Node.js & TypeScript Project',
         },
         servers: [
             {
-                url: DOMAIN, // ✅ ใช้ URL จาก .env (ไม่มีซ้ำซ้อน)
-                description: "Production Server",
+                url: 'http://localhost:5000',
+                description: 'Production Server',
             }
         ],
     },
-    apis: ["./src/routes/*.ts"],
+    apis: ['./src/routes/*.ts'], // Path to route files
 };
 const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
 const setupSwagger = (app) => {
-    app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+    app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
+    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // This should now be correct
 };
 exports.setupSwagger = setupSwagger;

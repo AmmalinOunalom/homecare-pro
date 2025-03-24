@@ -85,7 +85,7 @@ const options: Options = {
         },
         servers: [
             {
-                url: DOMAIN, // Use only the domain (without /api-docs or any extra path)
+                url: 'http://localhost:5000', 
                 description: 'Production Server',
             }
         ],
