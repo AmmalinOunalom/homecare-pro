@@ -15,7 +15,7 @@ const options: Options = {
         },
         servers: [
             {
-                url:url+PORT , // Dynamically set port
+                url:url , // Dynamically set port
                 description: 'Local Development Server',
             },
         ],
