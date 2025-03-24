@@ -84,7 +84,7 @@ const swaggerOptions: swaggerJsDoc.Options = {
       },
     ],
   },
-  apis: ['./routes/*.ts'], // Adjust as needed
+  apis: ['./src/routes/*.ts'], // Adjust as needed
 };
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
