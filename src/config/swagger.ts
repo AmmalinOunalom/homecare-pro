@@ -2,7 +2,7 @@ import swaggerJSDoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 
-const DOMAIN = process.env.URL || 'https://homecare-pro.onrender.com'; // Use HTTPS for production
+const DOMAIN = process.env.URL; // Use HTTPS for production
 const PORT = process.env.PORT || 5000; // Default to 5000 for local development
 
 const options: Options = {
@@ -12,13 +12,13 @@ const options: Options = {
             title: 'HomeCare API',
             version: '1.0.0',
             description: 'API Documentation for HomeCare Node.js & TypeScript Project',
-        }
-        // servers: [
-        //     {
-        //         url: `${DOMAIN}`, // Base URL for production, no path included
-        //         description: 'Production Server', // Description for production
-        //     }
-        // ],
+        },
+        servers: [
+            {
+                url: `${DOMAIN}`, // Base URL for production, no path included
+                description: 'Production Server', // Description for production
+            }
+        ],
     },
     apis: ["./src/routes/*.ts"], // Specify the paths to your route files
 };
