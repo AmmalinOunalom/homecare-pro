@@ -53,10 +53,14 @@ const options: Options = {
         },
         servers: [
             {
-                url: `${URL}`, // ✅ ใช้ URL ที่ถูกต้อง
-                description: "Production Server",
-            }
-        ],
+              url: 'http://localhost:5000',
+              description: 'Local development server',
+            },
+            {
+              url: 'https://homecare-pro.onrender.com',
+              description: 'Production server',
+            },
+          ],
     },
     apis: ["./src/routes/*.ts"],
 };
