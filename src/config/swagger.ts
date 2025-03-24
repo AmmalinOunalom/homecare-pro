@@ -66,37 +66,30 @@
 //     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
 // };
 
-import swaggerJSDoc, { Options } from 'swagger-jsdoc';
+import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
-import dotenv from 'dotenv';
 
-dotenv.config(); // ✅ Load variables from .env
-
-const DOMAIN = process.env.URL || 'http://localhost:5000'; // Default to local dev if URL is missing
-
-const options: Options = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'HomeCare API',
-            version: '1.0.0',
-            description: 'API Documentation for HomeCare Node.js & TypeScript Project',
-        },
-        servers: [
-            {
-                url: 'http://localhost:5000', 
-                description: 'Production Server',
-            }
-        ],
+const swaggerOptions: swaggerJsDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'My API',
+      version: '1.0.0',
+      description: 'API documentation',
     },
-    apis: ['./src/routes/*.ts'], // Path to route files
+    servers: [
+      {
+        url: process.env.BASE_URL || 'http://localhost:5000', // Use the environment variable
+      },
+    ],
+  },
+  apis: ['./routes/*.ts'], // Adjust as needed
 };
 
-const swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJsDoc(swaggerOptions);
 
-export const setupSwagger = (app: Express) => {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // This should now be correct
-};
+export function setupSwagger(app: Express) {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 

@@ -6,7 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupSwagger = void 0;
+exports.setupSwagger = setupSwagger;
 // const DOMAIN = process.env.URL; // Use HTTPS for production
 // const PORT = process.env.PORT || 5000; // Default to 5000 for local development
 // const options: Options = {
@@ -62,29 +62,23 @@ exports.setupSwagger = void 0;
 // };
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config(); // ✅ Load variables from .env
-const DOMAIN = process.env.URL || 'http://localhost:5000'; // Default to local dev if URL is missing
-const options = {
+const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'HomeCare API',
+            title: 'My API',
             version: '1.0.0',
-            description: 'API Documentation for HomeCare Node.js & TypeScript Project',
+            description: 'API documentation',
         },
         servers: [
             {
-                url: 'http://localhost:5000',
-                description: 'Production Server',
-            }
+                url: process.env.BASE_URL || 'http://localhost:5000', // Use the environment variable
+            },
         ],
     },
-    apis: ['./src/routes/*.ts'], // Path to route files
+    apis: ['./routes/*.ts'], // Adjust as needed
 };
-const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
-const setupSwagger = (app) => {
+const swaggerSpec = (0, swagger_jsdoc_1.default)(swaggerOptions);
+function setupSwagger(app) {
     app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // This should now be correct
-};
-exports.setupSwagger = setupSwagger;
+}
