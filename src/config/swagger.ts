@@ -66,37 +66,37 @@
 //     console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
 // };
 
-import swaggerJSDoc, { Options } from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
-import { Express } from "express";
-import dotenv from "dotenv";
+import swaggerJSDoc, { Options } from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { Express } from 'express';
+import dotenv from 'dotenv';
 
-dotenv.config(); // โหลดค่าจากไฟล์ .env
+dotenv.config(); // ✅ Load variables from .env
 
-// ดึงค่า URL จากไฟล์ .env หรือใช้ URL ค่า default
-const DOMAIN = process.env.URL || "http://localhost:5000"; // ใช้ค่าจาก .env หากไม่มีจะใช้ localhost
+const DOMAIN = process.env.URL || 'http://localhost:5000'; // Default to local dev if URL is missing
 
 const options: Options = {
     definition: {
-        openapi: "3.0.0",
+        openapi: '3.0.0',
         info: {
-            title: "HomeCare API",
-            version: "1.0.0",
-            description: "API Documentation for HomeCare Node.js & TypeScript Project",
+            title: 'HomeCare API',
+            version: '1.0.0',
+            description: 'API Documentation for HomeCare Node.js & TypeScript Project',
         },
         servers: [
             {
-                url: DOMAIN, // ใช้ URL จาก .env โดยไม่ใส่ path อื่นๆ
-                description: "Production Server",
+                url: DOMAIN, // Use only the domain (without /api-docs or any extra path)
+                description: 'Production Server',
             }
         ],
     },
-    apis: ["./src/routes/*.ts"],
+    apis: ['./src/routes/*.ts'], // Path to route files
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express) => {
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // แสดง URL ที่ถูกต้อง
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // This should now be correct
 };
+

@@ -21,10 +21,10 @@ app.use(express.json());
 // app.use(cors()); // This will allow all origins by default
 
 app.use(cors({
-    origin: ['https://homecare-pro.onrender.com'], // ✅ อนุญาตเฉพาะโดเมนของคุณ
+    origin: ['https://homecare-pro.onrender.com'], // ✅ Allow your front-end domain
     methods: 'GET, POST, PUT, DELETE, OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization'
-  }));
+    allowedHeaders: 'Content-Type, Authorization',
+}));
 // Setup Swagger
 setupSwagger(app);
 
