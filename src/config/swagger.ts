@@ -38,10 +38,7 @@ import dotenv from "dotenv";
 dotenv.config();
 console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่าที่โหลดมา
 
-const DOMAIN = process.env.URL || "http://localhost:5000";
-
-// ตรวจสอบให้แน่ใจว่า DOMAIN ไม่มี "/" ท้ายสุด
-const URL = DOMAIN.replace(/\/$/, ""); 
+//const DOMAIN = process.env.URL;
 
 const options: Options = {
     definition: {
@@ -52,10 +49,6 @@ const options: Options = {
             description: "API Documentation for HomeCare Node.js & TypeScript Project",
         },
         servers: [
-            {
-              url: DOMAIN,
-              description: 'Local development server',
-            },
             {
               url: 'https://homecare-pro.onrender.com',
               description: 'Production server',
@@ -69,7 +62,7 @@ const swaggerSpec = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express) => {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+    //console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
 };
 
 // import swaggerJsDoc from 'swagger-jsdoc';
