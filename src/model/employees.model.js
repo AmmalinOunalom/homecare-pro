@@ -26,6 +26,7 @@ var Status;
     Status["Inactive"] = "inactive";
 })(Status || (Status = {}));
 class employees_model {
+    // Create employee
     static create_employees(employee) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
@@ -58,10 +59,33 @@ class employees_model {
             }
         });
     }
+    // Save file path after upload
+    static saveFilePath(id, filePath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `
+        UPDATE employees
+        SET avatar = ?
+        WHERE id = ?
+      `;
+                const values = [filePath, id];
+                console.log("Executing query:", query, "with values:", values); // Add logging here
+                const [result] = yield base_database_1.default.execute(query, values);
+                console.log("Query result:", result); // Log the result of the query
+                return result;
+            }
+            catch (error) {
+                console.error("Error saving file path:", error);
+                throw new Error("Failed to save file path");
+            }
+        });
+    }
+    // Show all employees
     static show_all_employees() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const [result] = yield base_database_1.default.execute("SELECT * FROM employees");
+                const query = "SELECT * FROM employees";
+                const [result] = yield base_database_1.default.execute(query);
                 return result;
             }
             catch (error) {
@@ -70,10 +94,51 @@ class employees_model {
             }
         });
     }
+    //show employee by ID
+    static show_employee_by_id(Id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `SELECT * FROM employees WHERE id = ?;`;
+                const [rows] = yield base_database_1.default.execute(query, [Id]); // Execute the query
+                if (rows.length > 0) {
+                    return rows[0]; // Return the first row if found
+                }
+                else {
+                    return null; // Return null if no employee is found
+                }
+            }
+            catch (error) {
+                console.error("Error fetching employee details:", error);
+                throw new Error("Failed to fetch employee details.");
+            }
+        });
+    }
+    //show image employees by ID
+    static show_image_employee_by_id(Id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `SELECT avatar FROM employees WHERE id = ?;`;
+                const [rows] = yield base_database_1.default.execute(query, [Id]); // Execute the query
+                if (rows.length > 0) {
+                    return { avatar: rows[0].avatar }; // Ensure we return an object with an avatar property
+                }
+                else {
+                    return { message: "Image not found" }; // Return an object with a message when no image is found
+                }
+            }
+            catch (error) {
+                console.error("Error fetching employee details:", error);
+                throw new Error("Failed to fetch employee details.");
+            }
+        });
+    }
+    // Update employee details
     static update_employees(id, employee) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const fields = Object.keys(employee).map((key) => `${key} = ?`).join(", ");
+                const fields = Object.keys(employee)
+                    .map((key) => `${key} = ?`)
+                    .join(", ");
                 const values = [...Object.values(employee), id];
                 const query = `UPDATE employees SET ${fields} WHERE id = ?`;
                 const [result] = yield base_database_1.default.execute(query, values);
@@ -85,6 +150,7 @@ class employees_model {
             }
         });
     }
+    // Soft delete employee (set status to Inactive)
     static delete_employees(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

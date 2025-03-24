@@ -5,13 +5,13 @@ export interface Categories {
     id: number;
     cat_name: string;
     status: string;
-    create_at: Date;
-    update_at: Date;
+    created_at: Date;
+    updated_at: Date;
 }
 
 export class categories_model {
     // Create Category
-    static async create_category(category: Omit<Categories, "id" | "create_at" | "update_at">) {
+    static async create_category(category: Omit<Categories, "id" | "created_at" | "updated_at">) {
         try {
             const query = `INSERT INTO categories (cat_name, status) VALUES (?, ?)`;
             const values = [category.cat_name, category.status];
@@ -36,9 +36,9 @@ export class categories_model {
     }
 
     // Update Category
-    static async update_category(id: number, category: Omit<Categories, "id" | "create_at" | "update_at">) {
+    static async update_category(id: number, category: Omit<Categories, "id" | "created_at" | "updated_at">) {
         try {
-            const query = 'UPDATE categories SET cat_name = ?, status = ?, update_at = NOW() WHERE id = ?';
+            const query = 'UPDATE categories SET cat_name = ?, status = ?, updated_at = NOW() WHERE id = ?';
             const values = [category.cat_name, category.status, id];
             const [result] = await db.execute(query, values);
             return result;  // Return the result to indicate update status

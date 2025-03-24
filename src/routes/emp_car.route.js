@@ -1,8 +1,11 @@
-import express from "express";
-import { create_emp_car, show_all_emp_cars, update_emp_car, delete_emp_car } from "../controllers/emp_car.controller";
-
-const router = express.Router();
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const emp_car_controller_1 = require("../controllers/emp_car.controller");
+const router = express_1.default.Router();
 // NOTE - Show All EmpCars
 /**
  * @swagger
@@ -18,8 +21,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error.
  */
-router.get("/read_emp_car", show_all_emp_cars);
-
+router.get("/read_emp_car", emp_car_controller_1.show_all_emp_cars);
 // NOTE - Create EmpCar
 /**
  * @swagger
@@ -66,8 +68,7 @@ router.get("/read_emp_car", show_all_emp_cars);
  *       500:
  *         description: Internal server error.
  */
-router.post("/create_emp_car", create_emp_car);
-
+router.post("/create_emp_car", emp_car_controller_1.create_emp_car);
 // NOTE - Update EmpCar
 /**
  * @swagger
@@ -113,8 +114,7 @@ router.post("/create_emp_car", create_emp_car);
  *       500:
  *         description: Internal server error.
  */
-router.put("/update_emp_car/:id", update_emp_car);
-
+router.put("/update_emp_car/:id", emp_car_controller_1.update_emp_car);
 // NOTE - Delete EmpCar
 /**
  * @swagger
@@ -141,6 +141,5 @@ router.put("/update_emp_car/:id", update_emp_car);
  *       500:
  *         description: Internal server error.
  */
-router.delete("/delete_emp_car/:id", delete_emp_car);
-
-export default router;
+router.delete("/delete_emp_car/:id", emp_car_controller_1.delete_emp_car);
+exports.default = router;

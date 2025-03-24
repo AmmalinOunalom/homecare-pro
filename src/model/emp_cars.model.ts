@@ -15,7 +15,7 @@ export class emp_car_model {
     // Create EmpCar
     static async create_emp_car(empCar: Omit<EmpCar, "id" | "created_at" | "updated_at">) {
         try {
-            const query = `INSERT INTO emp_car (emp_id, car_brand, model, license_plate) VALUES (?, ?, ?, ?)`;
+            const query = `INSERT INTO emp_cars (emp_id, car_brand, model, license_plate) VALUES (?, ?, ?, ?)`;
             const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate];
             const [result] = await db.execute(query, values);
             return result;  // Returning the result of the insertion
@@ -28,7 +28,7 @@ export class emp_car_model {
     // Show All EmpCars
     static async show_all_emp_cars() {
         try {
-            const query = 'SELECT * FROM emp_car';
+            const query = 'SELECT * FROM emp_cars';
             const [rows] = await db.execute(query);
             return rows;  // Returning the fetched emp_cars
         } catch (error) {
@@ -37,13 +37,22 @@ export class emp_car_model {
         }
     }
 
-    // Update EmpCar
     static async update_emp_car(id: number, empCar: Omit<EmpCar, "id" | "created_at" | "updated_at">) {
         try {
-            const query = 'UPDATE emp_car SET emp_id = ?, car_brand = ?, model = ?, license_plate = ?, updated_at = NOW() WHERE id = ?';
+            // Check if emp_id exists
+            const empCheckQuery = "SELECT id FROM employees WHERE id = ?";
+            const [empResult] = await db.execute(empCheckQuery, [empCar.emp_id]);
+    
+            if (!Array.isArray(empResult) || empResult.length === 0) {
+                throw new Error("Invalid emp_id: Employee does not exist");
+            }
+    
+            // Proceed with the update if emp_id exists
+            const query = `UPDATE emp_cars SET emp_id = ?, car_brand = ?, model = ?, license_plate = ?, updated_at = NOW() WHERE id = ?`;
             const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate, id];
             const [result] = await db.execute(query, values);
-            return result;  // Return the result to indicate update status
+            
+            return result;
         } catch (error) {
             console.error("Error updating emp_car:", error);
             throw new Error("Failed to update emp_car");
@@ -53,7 +62,7 @@ export class emp_car_model {
     // Delete EmpCar
     static async delete_emp_car(id: number) {
         try {
-            const query = 'DELETE FROM emp_car WHERE id = ?';
+            const query = 'DELETE FROM emp_cars WHERE id = ?';
             const [result] = await db.execute(query, [id]);
             return result;  // Return the result of the deletion
         } catch (error) {

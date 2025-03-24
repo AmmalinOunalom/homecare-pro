@@ -6,7 +6,7 @@ const router = express.Router();
 // NOTE - Show All Categories
 /**
  * @swagger
- * /categories:
+ * /categories/read_categories:
  *   get:
  *     summary: Get all categories
  *     description: Retrieve a list of all categories.
@@ -18,12 +18,12 @@ const router = express.Router();
  *       500:
  *         description: Internal server error.
  */
-router.get("/", show_all_categories);
+router.get("/read_categories", show_all_categories);
 
 // NOTE - Create Category
 /**
  * @swagger
- * /categories:
+ * /categories/create_categories:
  *   post:
  *     summary: Create a new category
  *     description: Adds a new category to the database.
@@ -54,12 +54,12 @@ router.get("/", show_all_categories);
  *       500:
  *         description: Internal server error.
  */
-router.post("/", create_categories);
+router.post("/create_categories", create_categories);
 
 // NOTE - Update Category
 /**
  * @swagger
- * /categories:
+ * /categories/update_categories:
  *   put:
  *     summary: Update a category
  *     description: Updates a category's name and status by ID.
@@ -85,7 +85,7 @@ router.post("/", create_categories);
  *               status:
  *                 type: string
  *                 enum: [ACTIVE, INACTIVE]
- *                 example: INACTIVE
+ *                 example: ACTIVE
  *     responses:
  *       200:
  *         description: Category updated successfully.
@@ -96,12 +96,12 @@ router.post("/", create_categories);
  *       500:
  *         description: Internal server error.
  */
-router.put("/", update_categories);
+router.put("/update_categories", update_categories);
 
 // NOTE - Delete Category
 /**
  * @swagger
- * /categories/{id}:
+ * /categories/delete_categories/{id}:
  *   delete:
  *     summary: Delete a category
  *     description: Removes a category from the database by ID.
@@ -124,6 +124,6 @@ router.put("/", update_categories);
  *       500:
  *         description: Internal server error.
  */
-router.delete("/:id", delete_categories);
+router.delete("/delete_categories/:id", delete_categories);
 
 export default router;

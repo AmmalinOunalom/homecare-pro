@@ -1,12 +1,13 @@
 import express from "express";
-import { create_employees, show_all_employees, update_employees, delete_employees } from "../controllers/employees.controller";
+import upload from '../config/images.config'; // Import multer configuration
+import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_all_employees, update_employees, delete_employees } from "../controllers/employees.controller";
 
 const router = express.Router();
 
 // NOTE - Show All Employees
 /**
  * @swagger
- * /employees:
+ * /employees/read_employees:
  *   get:
  *     summary: Get all employees
  *     description: Retrieve a list of all employees.
@@ -18,12 +19,38 @@ const router = express.Router();
  *       500:
  *         description: Internal server error.
  */
-router.get("/", show_all_employees);
+router.get("/read_employees", show_all_employees);
+
+// NOTE - Get Employee by ID
+/**
+ * @swagger
+ * /employees/{id}:
+ *   get:
+ *     summary: Get employee by ID
+ *     description: Retrieve details of a specific employee by their ID.
+ *     tags:
+ *       - Employees
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Employee ID.
+ *     responses:
+ *       200:
+ *         description: Employee details retrieved successfully.
+ *       404:
+ *         description: Employee not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get("/employees/:id", show_employee_by_id);
 
 // NOTE - Create Employee
 /**
  * @swagger
- * /employees:
+ * /employees/create_employees:
  *   post:
  *     summary: Create a new employee
  *     description: Registers a new employee in the system.
@@ -96,12 +123,75 @@ router.get("/", show_all_employees);
  *       500:
  *         description: Internal server error.
  */
-router.post("/", create_employees);
+router.post("/create_employees", create_employees);
+
+//NOTE - update profile employee
+
+/**
+ * @swagger
+ * /upload:
+ *   post:
+ *     summary: Upload an image
+ *     description: Endpoint for uploading an image.
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: image
+ *         type: file
+ *         description: The image file to upload
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 filePath:
+ *                   type: string
+ *       400:
+ *         description: No file uploaded
+ *       500:
+ *         description: Error uploading file
+ */
+router.post('/upload', upload.single('image'), uploadImage);
+
+// NOTE - Show Employee Image by ID
+/**
+ * @swagger
+ * /employees/image/{id}:
+ *   get:
+ *     summary: Get employee image by ID
+ *     description: Retrieve the avatar image of a specific employee by their ID.
+ *     tags:
+ *       - Employees
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Employee ID.
+ *     responses:
+ *       200:
+ *         description: Employee image retrieved successfully.
+ *       404:
+ *         description: Image not found for this employee.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get("/employees/image/:id", show_image_employee_by_id); // Route with the new path
+
+
 
 // NOTE - Update Employee
 /**
  * @swagger
- * /employees:
+ * /employees/update_employees:
  *   put:
  *     summary: Update an employee
  *     description: Updates an employee's details by ID.
@@ -181,12 +271,12 @@ router.post("/", create_employees);
  *       500:
  *         description: Internal server error.
  */
-router.put("/", update_employees);
+router.put("/update_employees", update_employees);
 
 // NOTE - Delete Employee (Soft Delete)
 /**
  * @swagger
- * /employees/{id}:
+ * /employees/delete_employees/{id}:
  *   delete:
  *     summary: Soft delete an employee
  *     description: Marks an employee as inactive instead of permanently deleting them.
@@ -209,6 +299,6 @@ router.put("/", update_employees);
  *       500:
  *         description: Internal server error.
  */
-router.delete("/:id", delete_employees);
+router.delete("/delete_employees/:id", delete_employees);
 
 export default router;

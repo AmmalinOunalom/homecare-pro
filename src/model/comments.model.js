@@ -12,66 +12,73 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.categories_model = void 0;
+exports.comments_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
-class categories_model {
-    // Create Category
-    static create_category(category) {
+var Status;
+(function (Status) {
+    Status["Active"] = "active";
+    Status["Inactive"] = "inactive";
+})(Status || (Status = {}));
+class comments_model {
+    // Create Comment
+    static create_comment(comment) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `INSERT INTO categories (cat_name, status) VALUES (?, ?)`;
-                const values = [category.cat_name, category.status];
+                const query = `INSERT INTO comments (users_id, employees_id, message, rating, status) VALUES (?, ?, ?, ?, ?)`;
+                // Ensure status is always valid
+                const statusValue = comment.status || Status.Active;
+                const values = [comment.user_id, comment.employees_id, comment.message, comment.rating, statusValue];
                 const [result] = yield base_database_1.default.execute(query, values);
-                return result; // Returning the result of the insertion
+                return result;
             }
             catch (error) {
-                console.error("Error inserting category:", error);
-                throw new Error("Failed to create category");
+                console.error("Error inserting comment:", error);
+                throw new Error("Failed to create comment");
             }
         });
     }
-    // Show All Categories
-    static show_all_category() {
+    // Show All Comments
+    static show_all_comments() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'SELECT * FROM categories';
+                const query = 'SELECT * FROM comments';
                 const [rows] = yield base_database_1.default.execute(query);
-                return rows; // Returning the fetched categories
+                return rows; // Returning the fetched comments
             }
             catch (error) {
-                console.error("Error fetching categories:", error);
-                throw new Error("Failed to fetch categories");
+                console.error("Error fetching comments:", error);
+                throw new Error("Failed to fetch comments");
             }
         });
     }
-    // Update Category
-    static update_category(id, category) {
+    // Update Comment
+    static update_comment(id, comment) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'UPDATE categories SET cat_name = ?, status = ?, updated_at = NOW() WHERE id = ?';
-                const values = [category.cat_name, category.status, id];
+                const query = 'UPDATE comments SET users_id = ?, employees_id = ?, message = ?, rating = ?, status = ?, updated_at = NOW() WHERE id = ?';
+                const values = [comment.user_id, comment.employees_id, comment.message, comment.rating, comment.status, id];
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result; // Return the result to indicate update status
             }
             catch (error) {
-                console.error("Error updating category:", error);
-                throw new Error("Failed to update category");
+                console.error("Error updating comment:", error);
+                throw new Error("Failed to update comment");
             }
         });
     }
-    // Delete Category
-    static delete_category(id) {
+    // Delete Comment
+    static delete_comment(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'DELETE FROM categories WHERE id = ?';
+                const query = 'DELETE FROM comments WHERE id = ?';
                 const [result] = yield base_database_1.default.execute(query, [id]);
                 return result; // Return the result of the deletion
             }
             catch (error) {
-                console.error("Error deleting category:", error);
-                throw new Error("Failed to delete category");
+                console.error("Error deleting comment:", error);
+                throw new Error("Failed to delete comment");
             }
         });
     }
 }
-exports.categories_model = categories_model;
+exports.comments_model = comments_model;

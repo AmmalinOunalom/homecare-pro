@@ -12,66 +12,72 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.categories_model = void 0;
+exports.emp_car_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
-class categories_model {
-    // Create Category
-    static create_category(category) {
+class emp_car_model {
+    // Create EmpCar
+    static create_emp_car(empCar) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `INSERT INTO categories (cat_name, status) VALUES (?, ?)`;
-                const values = [category.cat_name, category.status];
+                const query = `INSERT INTO emp_cars (emp_id, car_brand, model, license_plate) VALUES (?, ?, ?, ?)`;
+                const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate];
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result; // Returning the result of the insertion
             }
             catch (error) {
-                console.error("Error inserting category:", error);
-                throw new Error("Failed to create category");
+                console.error("Error inserting emp_car:", error);
+                throw new Error("Failed to create emp_car");
             }
         });
     }
-    // Show All Categories
-    static show_all_category() {
+    // Show All EmpCars
+    static show_all_emp_cars() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'SELECT * FROM categories';
+                const query = 'SELECT * FROM emp_cars';
                 const [rows] = yield base_database_1.default.execute(query);
-                return rows; // Returning the fetched categories
+                return rows; // Returning the fetched emp_cars
             }
             catch (error) {
-                console.error("Error fetching categories:", error);
-                throw new Error("Failed to fetch categories");
+                console.error("Error fetching emp_cars:", error);
+                throw new Error("Failed to fetch emp_cars");
             }
         });
     }
-    // Update Category
-    static update_category(id, category) {
+    static update_emp_car(id, empCar) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'UPDATE categories SET cat_name = ?, status = ?, updated_at = NOW() WHERE id = ?';
-                const values = [category.cat_name, category.status, id];
+                // Check if emp_id exists
+                const empCheckQuery = "SELECT id FROM employees WHERE id = ?";
+                const [empResult] = yield base_database_1.default.execute(empCheckQuery, [empCar.emp_id]);
+                if (!Array.isArray(empResult) || empResult.length === 0) {
+                    throw new Error("Invalid emp_id: Employee does not exist");
+                }
+                // Proceed with the update if emp_id exists
+                const query = `UPDATE emp_cars SET emp_id = ?, car_brand = ?, model = ?, license_plate = ?, updated_at = NOW() WHERE id = ?`;
+                const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate, id];
                 const [result] = yield base_database_1.default.execute(query, values);
-                return result; // Return the result to indicate update status
+                return result;
             }
             catch (error) {
-                console.error("Error updating category:", error);
-                throw new Error("Failed to update category");
+                console.error("Error updating emp_car:", error);
+                throw new Error("Failed to update emp_car");
             }
         });
     }
-    // Delete Category
-    static delete_category(id) {
+    // Delete EmpCar
+    static delete_emp_car(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'DELETE FROM categories WHERE id = ?';
+                const query = 'DELETE FROM emp_cars WHERE id = ?';
                 const [result] = yield base_database_1.default.execute(query, [id]);
                 return result; // Return the result of the deletion
             }
             catch (error) {
-                console.error("Error deleting category:", error);
-                throw new Error("Failed to delete category");
+                console.error("Error deleting emp_car:", error);
+                throw new Error("Failed to delete emp_car");
             }
         });
     }
 }
-exports.categories_model = categories_model;
+exports.emp_car_model = emp_car_model;
