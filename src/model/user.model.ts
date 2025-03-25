@@ -1,4 +1,6 @@
 import db from "../config/base.database";
+import bcrypt from 'bcrypt';
+
 
 // Enums for Gender and Status
 enum Gender {
@@ -53,6 +55,42 @@ export class user_model {
       throw new Error("Failed to create user");
     }
   }
+  
+  // Sign in user function
+  // Sign in user function
+// Sign in user function
+static async sign_in(email: string, password: string) {
+  try {
+    // Query to find the user by email
+    const query = 'SELECT id, username, email, password FROM users WHERE email = ?';
+    const [rows]: any = await db.execute(query, [email]);
+
+    // If user is not found, return null
+    if (rows.length === 0) return null;
+
+    const user = rows[0];
+
+    // Check if password is valid
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    // Return user data if password is valid, else return null
+    return isPasswordValid ? {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      tel: user.tel,
+      avatar: user.avatar,
+      address: user.address,
+      gender: user.gender,
+      status: user.status
+    } : null;
+  } catch (error) {
+    console.error("Error during sign in:", error);
+    return null;
+  }
+}
 
   // Show all users
   static async show_all() {

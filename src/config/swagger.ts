@@ -62,7 +62,7 @@ const swaggerSpec = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express) => {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-    //console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+    //console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // 
 };
 
 // import swaggerJsDoc from 'swagger-jsdoc';

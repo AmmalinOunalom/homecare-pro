@@ -84,6 +84,83 @@ router.get("/read_user", user_controller_1.show_all_users);
  *         description: Internal server error
  */
 router.post("/sign_up_user", user_controller_1.create_users);
+// Add Sign-In route
+/**
+ * @swagger
+ * /users/sign_in:
+ *   post:
+ *     summary: Sign in a user
+ *     description: Authenticates a user based on email and password.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "securePass123"
+ *     responses:
+ *       200:
+ *         description: Sign-in successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Sign-in successful"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     username:
+ *                       type: string
+ *                       example: johndoe
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *                     first_name:
+ *                       type: string
+ *                       example: John
+ *                     last_name:
+ *                       type: string
+ *                       example: Doe
+ *                     tel:
+ *                       type: string
+ *                       example: "1234567890"
+ *                     avatar:
+ *                       type: string
+ *                       example: "avatar.jpg"
+ *                     address:
+ *                       type: string
+ *                       example: "123 Main St"
+ *                     gender:
+ *                       type: string
+ *                       example: "MALE"
+ *                     status:
+ *                       type: string
+ *                       example: "ACTIVE"
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/sign_in", user_controller_1.sign_in);
 /**
  * @swagger
  * /users/rename_user/{id}:

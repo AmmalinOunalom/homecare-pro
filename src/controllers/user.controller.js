@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgot_password = exports.rename_user = exports.show_all_users = exports.create_users = void 0;
+exports.forgot_password = exports.rename_user = exports.show_all_users = exports.sign_in = exports.create_users = void 0;
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 // create user
@@ -31,6 +31,34 @@ const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.create_users = create_users;
+// Sign in user
+const sign_in = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body;
+        // Call the model's sign_in function
+        const user = yield user_model_1.user_model.sign_in(email, password);
+        if (user) {
+            // If user is found and password is correct
+            res.status(200).send({
+                message: "Sign-in successful",
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email
+                },
+            });
+        }
+        else {
+            // If credentials are invalid
+            res.status(401).send("Invalid email or password");
+        }
+    }
+    catch (error) {
+        console.error("Error during sign in:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+exports.sign_in = sign_in;
 // show all users
 const show_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

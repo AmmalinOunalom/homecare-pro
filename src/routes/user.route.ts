@@ -1,5 +1,5 @@
 import express from "express";
-import { create_users, show_all_users, forgot_password, rename_user } from "../controllers/user.controller";
+import { create_users, show_all_users, forgot_password, rename_user, sign_in } from "../controllers/user.controller";
 
 const router = express.Router();
 
@@ -83,6 +83,86 @@ router.get("/read_user", show_all_users);
  */
 router.post("/sign_up_user", create_users);
 
+// Add Sign-In route
+/**
+ * @swagger
+ * /users/sign_in:
+ *   post:
+ *     summary: Sign in a user
+ *     description: Authenticates a user based on email and password.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "securePass123"
+ *     responses:
+ *       200:
+ *         description: Sign-in successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Sign-in successful"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     username:
+ *                       type: string
+ *                       example: johndoe
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *                     first_name:
+ *                       type: string
+ *                       example: John
+ *                     last_name:
+ *                       type: string
+ *                       example: Doe
+ *                     tel:
+ *                       type: string
+ *                       example: "1234567890"
+ *                     avatar:
+ *                       type: string
+ *                       example: "avatar.jpg"
+ *                     address:
+ *                       type: string
+ *                       example: "123 Main St"
+ *                     gender:
+ *                       type: string
+ *                       example: "MALE"
+ *                     status:
+ *                       type: string
+ *                       example: "ACTIVE"
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/sign_in", sign_in);
+
+
+
 /**
  * @swagger
  * /users/rename_user/{id}:
@@ -155,6 +235,7 @@ router.put("/rename_user/:id", rename_user);
  *         description: Invalid request data
  *       404:
  *         description: Email not found
- */ 
+ */
 router.post("/forgot_password", forgot_password);
+
 export default router;

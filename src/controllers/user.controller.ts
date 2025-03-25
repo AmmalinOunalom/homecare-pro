@@ -23,7 +23,33 @@ export const create_users = async (req: Request, res: Response) => {
     res.status(500).send("Internal Server Error");
   }
 };
+// Sign in user
+export const sign_in = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
 
+    // Call the model's sign_in function
+    const user = await user_model.sign_in(email, password);
+
+    if (user) {
+      // If user is found and password is correct
+      res.status(200).send({
+        message: "Sign-in successful",
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email
+        },
+      });
+    } else {
+      // If credentials are invalid
+      res.status(401).send("Invalid email or password");
+    }
+  } catch (error) {
+    console.error("Error during sign in:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 // show all users
 export const show_all_users = async (req: Request, res: Response) => {
   try {

@@ -36,9 +36,7 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 console.log("Loaded URL from .env:", process.env.URL); // ✅ เช็คค่าที่โหลดมา
-const DOMAIN = process.env.URL || "http://localhost:5000";
-// ตรวจสอบให้แน่ใจว่า DOMAIN ไม่มี "/" ท้ายสุด
-const BASE_URL = DOMAIN.replace(/\/$/, "");
+//const DOMAIN = process.env.URL;
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -49,9 +47,9 @@ const options = {
         },
         servers: [
             {
-                url: `${BASE_URL}`, // ✅ ใช้ URL ที่ถูกต้อง
-                description: "Production Server",
-            }
+                url: 'https://homecare-pro.onrender.com',
+                description: 'Production server',
+            },
         ],
     },
     apis: ["./src/routes/*.ts"],
@@ -59,7 +57,7 @@ const options = {
 const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
 const setupSwagger = (app) => {
     app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
-    console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // ✅ แสดง URL ที่ถูกต้อง
+    //console.log(`Swagger Docs available at ${DOMAIN}/api-docs`); // 
 };
 exports.setupSwagger = setupSwagger;
 // import swaggerJsDoc from 'swagger-jsdoc';
