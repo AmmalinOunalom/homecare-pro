@@ -21,6 +21,41 @@ export const create_employees = async (req: Request, res: Response) => {
     res.status(500).send(error);
   }
 };
+// Sign in employee
+export const sign_in_employee = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Call the model's sign_in_employee function
+    const employee = await employees_model.sign_in_employee(email, password);
+
+    if (employee) {
+      // If employee is found and password is correct
+      res.status(200).send({
+        message: "Sign-in successful",
+        employee: {
+          id: employee.id,
+          first_name: employee.first_name,
+          last_name: employee.last_name,
+          email: employee.email,
+        },
+      });
+    } else {
+      // If credentials are invalid
+      res.status(401).send({
+        message: "Invalid email or password",
+      });
+    }
+  } catch (error) {
+    // Log error with more context
+    console.error("Error during employee sign in process:", error);
+
+    // Respond with internal server error
+    res.status(500).send({
+      message: "Internal Server Error, please try again later",
+    });
+  }
+};
 
 /**
  *  UPDATE PROFILE EMPLOYEE

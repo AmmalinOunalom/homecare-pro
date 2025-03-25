@@ -1,5 +1,5 @@
 import express from "express";
-import { create_users, show_all_users, forgot_password, rename_user, sign_in } from "../controllers/user.controller";
+import { create_users, show_all_users, forgot_password, rename_user, sign_in_user } from "../controllers/user.controller";
 
 const router = express.Router();
 
@@ -159,7 +159,7 @@ router.post("/sign_up_user", create_users);
  *       500:
  *         description: Internal server error
  */
-router.post("/sign_in", sign_in);
+router.post("/sign_in", sign_in_user);
 
 
 

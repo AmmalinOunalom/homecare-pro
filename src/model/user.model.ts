@@ -55,9 +55,7 @@ export class user_model {
       throw new Error("Failed to create user");
     }
   }
-  
-  // Sign in user function
-  // Sign in user function
+
 // Sign in user function
 static async sign_in(email: string, password: string) {
   try {

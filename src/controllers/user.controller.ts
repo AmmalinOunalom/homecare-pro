@@ -24,7 +24,7 @@ export const create_users = async (req: Request, res: Response) => {
   }
 };
 // Sign in user
-export const sign_in = async (req: Request, res: Response) => {
+export const sign_in_user = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 

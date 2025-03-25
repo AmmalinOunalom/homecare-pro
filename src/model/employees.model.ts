@@ -1,5 +1,5 @@
 import db from "../config/base.database";
-
+import bcrypt from 'bcrypt';
 
 enum Gender {
   Male = "male",
@@ -62,6 +62,34 @@ export class employees_model {
       throw new Error("Failed to create employee");
     }
   }
+
+  // Sign in employee function
+static async sign_in_employee(email: string, password: string) {
+  try {
+    // Query to find the employee by email, including the password
+    const query = 'SELECT id, first_name, last_name, email, password FROM employees WHERE email = ?';
+    const [rows]: any = await db.execute(query, [email]);
+
+    // If employee is not found, return null
+    if (rows.length === 0) return null;
+
+    const employee = rows[0];
+
+    // Check if password is valid
+    const isPasswordValid = await bcrypt.compare(password, employee.password);
+
+    // Return employee data if password is valid, else return null
+    return isPasswordValid ? {
+      id: employee.id,
+      email: employee.email,
+      first_name: employee.first_name,
+      last_name: employee.last_name
+    } : null;
+  } catch (error) {
+    console.error("Error during employee sign in:", error);
+    return null;
+  }
+}
 
   // Save file path after upload
   static async saveFilePath(id: number, filePath: string) {

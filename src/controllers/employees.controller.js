@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.create_employees = void 0;
+exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
 const fs_1 = __importDefault(require("fs"));
 const employees_model_1 = require("../model/employees.model");
@@ -34,6 +34,41 @@ const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.create_employees = create_employees;
+// Sign in employee
+const sign_in_employee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body;
+        // Call the model's sign_in_employee function
+        const employee = yield employees_model_1.employees_model.sign_in_employee(email, password);
+        if (employee) {
+            // If employee is found and password is correct
+            res.status(200).send({
+                message: "Sign-in successful",
+                employee: {
+                    id: employee.id,
+                    first_name: employee.first_name,
+                    last_name: employee.last_name,
+                    email: employee.email,
+                },
+            });
+        }
+        else {
+            // If credentials are invalid
+            res.status(401).send({
+                message: "Invalid email or password",
+            });
+        }
+    }
+    catch (error) {
+        // Log error with more context
+        console.error("Error during employee sign in process:", error);
+        // Respond with internal server error
+        res.status(500).send({
+            message: "Internal Server Error, please try again later",
+        });
+    }
+});
+exports.sign_in_employee = sign_in_employee;
 /**
  *  UPDATE PROFILE EMPLOYEE
  */

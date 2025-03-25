@@ -125,6 +125,62 @@ router.get("/employees/:id", employees_controller_1.show_employee_by_id);
  *         description: Internal server error.
  */
 router.post("/create_employees", employees_controller_1.create_employees);
+// NOTE - Employee Sign-In
+/**
+ * @swagger
+ * /employees/sign_in:
+ *   post:
+ *     summary: Sign in employee
+ *     description: Employee sign-in by email and password.
+ *     tags:
+ *       - Employees
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "securePass123"
+ *     responses:
+ *       200:
+ *         description: Sign-in successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Sign-in successful"
+ *                 employee:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     username:
+ *                       type: string
+ *                       example: johndoe
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *       401:
+ *         description: Invalid email or password.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/sign_in", employees_controller_1.sign_in_employee);
 //NOTE - update profile employee
 /**
  * @swagger

@@ -53,8 +53,6 @@ class user_model {
         });
     }
     // Sign in user function
-    // Sign in user function
-    // Sign in user function
     static sign_in(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

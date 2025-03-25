@@ -160,7 +160,7 @@ router.post("/sign_up_user", user_controller_1.create_users);
  *       500:
  *         description: Internal server error
  */
-router.post("/sign_in", user_controller_1.sign_in);
+router.post("/sign_in", user_controller_1.sign_in_user);
 /**
  * @swagger
  * /users/rename_user/{id}:

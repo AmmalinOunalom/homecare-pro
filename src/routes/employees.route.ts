@@ -1,6 +1,6 @@
 import express from "express";
 import upload from '../config/images.config'; // Import multer configuration
-import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_all_employees, update_employees, delete_employees } from "../controllers/employees.controller";
+import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee } from "../controllers/employees.controller";
 
 const router = express.Router();
 
@@ -124,6 +124,64 @@ router.get("/employees/:id", show_employee_by_id);
  *         description: Internal server error.
  */
 router.post("/create_employees", create_employees);
+
+// NOTE - Employee Sign-In
+/**
+ * @swagger
+ * /employees/sign_in:
+ *   post:
+ *     summary: Sign in employee
+ *     description: Employee sign-in by email and password.
+ *     tags:
+ *       - Employees
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "securePass123"
+ *     responses:
+ *       200:
+ *         description: Sign-in successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Sign-in successful"
+ *                 employee:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     username:
+ *                       type: string
+ *                       example: johndoe
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *       401:
+ *         description: Invalid email or password.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/sign_in", sign_in_employee); 
+
 
 //NOTE - update profile employee
 

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.employees_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 var Gender;
 (function (Gender) {
     Gender["Male"] = "male";
@@ -56,6 +57,33 @@ class employees_model {
             catch (error) {
                 console.error("Error inserting employee:", error);
                 throw new Error("Failed to create employee");
+            }
+        });
+    }
+    // Sign in employee function
+    static sign_in_employee(email, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Query to find the employee by email, including the password
+                const query = 'SELECT id, first_name, last_name, email, password FROM employees WHERE email = ?';
+                const [rows] = yield base_database_1.default.execute(query, [email]);
+                // If employee is not found, return null
+                if (rows.length === 0)
+                    return null;
+                const employee = rows[0];
+                // Check if password is valid
+                const isPasswordValid = yield bcrypt_1.default.compare(password, employee.password);
+                // Return employee data if password is valid, else return null
+                return isPasswordValid ? {
+                    id: employee.id,
+                    email: employee.email,
+                    first_name: employee.first_name,
+                    last_name: employee.last_name
+                } : null;
+            }
+            catch (error) {
+                console.error("Error during employee sign in:", error);
+                return null;
             }
         });
     }
