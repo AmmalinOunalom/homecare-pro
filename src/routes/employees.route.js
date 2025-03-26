@@ -47,7 +47,7 @@ router.get("/read_employees", employees_controller_1.show_all_employees);
  *       500:
  *         description: Internal server error.
  */
-router.get("/employees/:id", employees_controller_1.show_employee_by_id);
+router.get("/:id", employees_controller_1.show_employee_by_id);
 // NOTE - Create Employee
 /**
  * @swagger
@@ -219,7 +219,7 @@ router.post("/sign_in", employees_controller_1.sign_in_employee);
  *       500:
  *         description: Error uploading file or associating image with employee
  */
-router.post('/upload', (0, images_config_1.default)('local').single('image'), employees_controller_1.uploadImage);
+router.post('/upload', images_config_1.default.single('image'), employees_controller_1.uploadImage);
 // NOTE - Show Employee Image by ID
 /**
  * @swagger

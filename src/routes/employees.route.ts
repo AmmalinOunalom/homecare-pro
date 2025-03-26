@@ -221,7 +221,7 @@ router.post("/sign_in", sign_in_employee);
  *       500:
  *         description: Error uploading file or associating image with employee
  */
-router.post('/upload', upload('local').single('image'), uploadImage);
+router.post('/upload', upload.single('image'), uploadImage);
 
 
 // NOTE - Show Employee Image by ID

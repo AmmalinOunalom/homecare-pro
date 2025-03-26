@@ -1,4 +1,8 @@
 import { Request, Response } from "express";
+import path from "path"; // To handle file paths
+//import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 import { emp_car_model } from "../model/emp_cars.model";
 
 /**
@@ -40,6 +44,53 @@ export const update_emp_car = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).send("Failed to update empCar");
+  }
+};
+
+export const upload_car_image = async (req: Request, res: Response): Promise<void> => {
+  try {
+    console.log("Received upload request:", req.body);
+
+    if (!req.file) {
+      console.log("No file uploaded");
+      res.status(400).json({ message: "No file uploaded" });
+      return;
+    }
+
+    console.log("File uploaded:", req.file);
+
+    const empCarId = parseInt(req.body.empCarId, 10);
+    if (isNaN(empCarId)) {
+      console.log("Invalid empCarId");
+      res.status(400).json({ message: "Invalid empCarId" });
+      return;
+    }
+
+    // Upload file to Cloudinary under a "cars" folder
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "cars",
+    });
+
+    if (!result.secure_url) {
+      res.status(500).json({ message: "Cloudinary upload failed" });
+      return;
+    }
+
+    console.log("Cloudinary URL:", result.secure_url);
+
+    // Use employees_model to save the car image URL in the database
+    await emp_car_model.update_employee_car_image(empCarId, result.secure_url);
+
+    // Delete the local file after upload to Cloudinary
+    fs.unlinkSync(req.file.path);
+
+    res.status(200).json({
+      message: "Car image uploaded and updated successfully",
+      fileUrl: result.secure_url,
+    });
+  } catch (error) {
+    console.error("Error uploading car image:", error);
+    res.status(500).json({ message: "Error uploading car image", error });
   }
 };
 

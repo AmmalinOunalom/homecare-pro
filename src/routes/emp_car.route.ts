@@ -1,6 +1,6 @@
 import express from "express";
-import upload from '../config/images.config'; // Import multer configuration
 import { create_emp_car, show_all_emp_cars, update_emp_car, delete_emp_car, upload_car_image  } from "../controllers/emp_car.controller";
+import upload from "../config/images.config";
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.get("/read_emp_car", show_all_emp_cars);
 // NOTE - Upload Car Image
 /**
  * @swagger
- * /emp_car/uploadCarImage:
+ * /emp_car/upload_car_image:
  *   post:
  *     summary: Upload an employee's car image
  *     description: Uploads a car image and updates the database with the image URL.
@@ -54,7 +54,7 @@ router.get("/read_emp_car", show_all_emp_cars);
  *       500:
  *         description: Internal server error.
  */
-router.post("/upload_car_image", upload('cloudinary').single("car_image"), upload_car_image);
+router.post("/upload_car_image", upload.single("car_image"), upload_car_image);
 
 // NOTE - Create EmpCar
 /**

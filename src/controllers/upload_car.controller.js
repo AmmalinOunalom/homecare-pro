@@ -1,5 +1,4 @@
 "use strict";
-// import { Request, Response } from "express";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,18 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadImage = void 0;
+exports.upload_car_image = void 0;
 const cloudinary_config_1 = __importDefault(require("../config/cloudinary.config")); // นำเข้า Cloudinary Configuration
 const multer_1 = __importDefault(require("multer"));
 const streamifier_1 = __importDefault(require("streamifier")); // นำเข้า streamifier เพื่อแปลง buffer เป็น stream
 // ตั้งค่า multer สำหรับการจัดการการอัปโหลดไฟล์ภาพ
 const storage = multer_1.default.memoryStorage(); // เก็บไฟล์ภาพในหน่วยความจำ (ไม่เก็บใน server)
-const upload = (0, multer_1.default)({ storage }).single('image'); // รับไฟล์ภาพเดียว
+const upload_car = (0, multer_1.default)({ storage }).single('car_image'); // รับไฟล์ภาพเดียว
 // ฟังก์ชันจัดการการอัปโหลดภาพ
-const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const upload_car_image = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // ใช้ multer จัดการการอัปโหลดไฟล์
-        upload(req, res, (err) => __awaiter(void 0, void 0, void 0, function* () {
+        upload_car(req, res, (err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err) {
                 return res.status(400).send('Error uploading file');
             }
@@ -60,4 +59,4 @@ const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).send('Internal Server Error');
     }
 });
-exports.uploadImage = uploadImage;
+exports.upload_car_image = upload_car_image;

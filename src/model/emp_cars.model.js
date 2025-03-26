@@ -65,29 +65,29 @@ class emp_car_model {
             }
         });
     }
-    static update_emp_car_image(id, cloudinaryUrl) {
+    static update_employee_car_image(id, cloudinaryUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Check if employee exists before updating
+                // Check if the employee's car exists before updating
                 const checkQuery = "SELECT id FROM emp_cars WHERE id = ?";
                 const [rows] = yield base_database_1.default.execute(checkQuery, [id]);
                 if (rows.length === 0) {
-                    console.log("emp_cars not found with ID:", id);
-                    return { success: false, message: "emp_cars not found" };
+                    console.log("car_image car not found with ID:", id);
+                    return { success: false, message: "car_image car not found" };
                 }
-                const query = `UPDATE emp_cars SET  car_image = ? WHERE id = ?`;
+                const query = `UPDATE emp_cars SET car_image = ? WHERE id = ?`;
                 const values = [cloudinaryUrl, id];
                 const [updateResult] = yield base_database_1.default.execute(query, values);
                 const affectedRows = updateResult.affectedRows;
                 if (affectedRows === 0) {
-                    return { success: false, message: "Failed to update car_image" };
+                    return { success: false, message: "Failed to update car avatar" };
                 }
-                console.log("car_image updated successfully for ID:", id);
-                return { success: true, message: "car_image updated successfully" };
+                console.log("Employee car avatar updated successfully for ID:", id);
+                return { success: true, message: "Car avatar updated successfully" };
             }
             catch (error) {
-                console.error("Error updating car_image:", error);
-                throw new Error("Failed to update car_image");
+                console.error("Error updating employee car avatar:", error);
+                throw new Error("Failed to update employee car avatar");
             }
         });
     }
