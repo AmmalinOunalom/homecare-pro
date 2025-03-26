@@ -50,7 +50,7 @@ router.get("/:id", show_employee_by_id);
 // NOTE - Get Employee by ID=5 && cat_name = Moving
 /**
  * @swagger
- * /read_emp_car_employees/5:
+ * /employees/read_emp_car_employees/5:
  *   get:
  *     summary: Get Employee Details for empId = 5 and cat_name = 'Moving'
  *     description: Fetches employee details where empId is 5 and category name is 'Moving'.
