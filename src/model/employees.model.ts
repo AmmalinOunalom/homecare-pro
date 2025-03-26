@@ -64,55 +64,34 @@ export class employees_model {
   }
 
   // Sign in employee function
-static async sign_in_employee(email: string, password: string) {
-  try {
-    // Query to find the employee by email, including the password
-    const query = 'SELECT id, first_name, last_name, email, password FROM employees WHERE email = ?';
-    const [rows]: any = await db.execute(query, [email]);
+  static async sign_in_employee(email: string, password: string) {
+    try {
+      // Query to find the employee by email, including the password
+      const query = 'SELECT id, first_name, last_name, email, password FROM employees WHERE email = ?';
+      const [rows]: any = await db.execute(query, [email]);
 
-    // If employee is not found, return null
-    if (rows.length === 0) return null;
+      // If employee is not found, return null
+      if (rows.length === 0) return null;
 
-    const employee = rows[0];
+      const employee = rows[0];
 
-    // Check if password is valid
-    const isPasswordValid = await bcrypt.compare(password, employee.password);
+      // Check if password is valid
+      const isPasswordValid = await bcrypt.compare(password, employee.password);
 
-    // Return employee data if password is valid, else return null
-    return isPasswordValid ? {
-      id: employee.id,
-      email: employee.email,
-      first_name: employee.first_name,
-      last_name: employee.last_name
-    } : null;
-  } catch (error) {
-    console.error("Error during employee sign in:", error);
-    return null;
+      // Return employee data if password is valid, else return null
+      return isPasswordValid ? {
+        id: employee.id,
+        email: employee.email,
+        first_name: employee.first_name,
+        last_name: employee.last_name
+      } : null;
+    } catch (error) {
+      console.error("Error during employee sign in:", error);
+      return null;
+    }
   }
-}
 
   // // Save file path after upload
-  // static async saveFilePath(id: number, filePath: string) {
-  //   try {
-  //     const query = `
-  //       UPDATE employees
-  //       SET avatar = ?
-  //       WHERE id = ?
-  //     `;
-  //     const values = [filePath, id];
-  
-  //     console.log("Executing query:", query, "with values:", values); // Add logging here
-  
-  //     const [result] = await db.execute(query, values);
-  //     console.log("Query result:", result); // Log the result of the query
-  
-  //     return result;
-  //   } catch (error) {
-  //     console.error("Error saving file path:", error);
-  //     throw new Error("Failed to save file path");
-  //   }
-  // }
-
   // ปรับเปลี่ยนฟังก์ชันให้รับ URL จาก Cloudinary
   static async update_employee_avatar(id: number, cloudinaryUrl: string) {
     try {
@@ -136,7 +115,13 @@ static async sign_in_employee(email: string, password: string) {
   // Show all employees
   static async show_all_employees() {
     try {
-      const query = "SELECT * FROM employees";
+      const query = `
+      SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
+             e.address, e.gender, e.cv, e.avatar, 
+             e.cat_id, c.cat_name, e.price, e.status, e.created_at, e.updated_at
+      FROM employees e
+      JOIN categories c ON e.cat_id = c.id
+  `;
       const [result] = await db.execute(query);
       return result;
     } catch (error) {
@@ -149,38 +134,38 @@ static async sign_in_employee(email: string, password: string) {
 
   static async show_employee_by_id(Id: number) {
     try {
-        const query = `SELECT * FROM employees WHERE id = ?;`;
+      const query = `SELECT * FROM employees WHERE id = ?;`;
 
-        const [rows]: any[] = await db.execute(query, [Id]); // Execute the query
+      const [rows]: any[] = await db.execute(query, [Id]); // Execute the query
 
-        if (rows.length > 0) {
-            return rows[0]; // Return the first row if found
-        } else {
-            return null; // Return null if no employee is found
-        }
+      if (rows.length > 0) {
+        return rows[0]; // Return the first row if found
+      } else {
+        return null; // Return null if no employee is found
+      }
     } catch (error) {
-        console.error("Error fetching employee details:", error);
-        throw new Error("Failed to fetch employee details.");
+      console.error("Error fetching employee details:", error);
+      throw new Error("Failed to fetch employee details.");
     }
-}
+  }
 
-//show image employees by ID
-static async show_image_employee_by_id(Id: number) {
-  try {
+  //show image employees by ID
+  static async show_image_employee_by_id(Id: number) {
+    try {
       const query = `SELECT avatar FROM employees WHERE id = ?;`;
 
       const [rows]: any[] = await db.execute(query, [Id]); // Execute the query
 
       if (rows.length > 0) {
-          return { avatar: rows[0].avatar }; // Ensure we return an object with an avatar property
+        return { avatar: rows[0].avatar }; // Ensure we return an object with an avatar property
       } else {
-          return { message: "Image not found" }; // Return an object with a message when no image is found
+        return { message: "Image not found" }; // Return an object with a message when no image is found
       }
-  } catch (error) {
+    } catch (error) {
       console.error("Error fetching employee details:", error);
       throw new Error("Failed to fetch employee details.");
+    }
   }
-}
 
 
   // Update employee details
