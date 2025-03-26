@@ -59,6 +59,37 @@ export class emp_car_model {
         }
     }
 
+  static async update_emp_car_image(id: number, cloudinaryUrl: string) {
+    try {
+      // Check if employee exists before updating
+      const checkQuery = "SELECT id FROM emp_cars WHERE id = ?";
+      const [rows]: any[] = await db.execute(checkQuery, [id]);
+
+      if (rows.length === 0) {
+        console.log("emp_cars not found with ID:", id);
+        return { success: false, message: "emp_cars not found" };
+      }
+
+      const query = `UPDATE emp_cars SET  car_image = ? WHERE id = ?`;
+      const values = [cloudinaryUrl, id];
+
+      const [updateResult]: any[] = await db.execute(query, values);
+      const affectedRows = updateResult.affectedRows;
+
+      if (affectedRows === 0) {
+        return { success: false, message: "Failed to update car_image" };
+      }
+
+      console.log("car_image updated successfully for ID:", id);
+      return { success: true, message: "car_image updated successfully" };
+    } catch (error) {
+      console.error("Error updating car_image:", error);
+      throw new Error("Failed to update car_image");
+    }
+  }
+
+    
+
     // Delete EmpCar
     static async delete_emp_car(id: number) {
         try {

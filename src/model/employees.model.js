@@ -26,16 +26,39 @@ var Status;
     Status["Active"] = "active";
     Status["Inactive"] = "inactive";
 })(Status || (Status = {}));
+var City;
+(function (City) {
+    City["VIENTIANE"] = "VIENTIANE";
+    City["XAYTHANY"] = "XAYTHANY";
+    City["SAYSETTHA"] = "SAYSETTHA";
+    City["SANAKHONE"] = "SANAKHONE";
+    City["NAKHAM"] = "NAKHAM";
+    City["CHOMCHAO"] = "CHOMCHAO";
+    City["KONGLEK"] = "KONGLEK";
+    City["THAHEUA"] = "THAHEUA";
+    City["BOLIKHAMXAY"] = "BOLIKHAMXAY";
+    City["CHANTHABULY"] = "CHANTHABULY";
+    City["SIKHOTTABONG"] = "SIKHOTTABONG";
+    City["XAYSETHA"] = "XAYSETHA";
+    City["SISATTANAK"] = "SISATTANAK";
+    City["NAXAITHONG"] = "NAXAITHONG";
+    City["XAYTANY"] = "XAYTANY";
+    City["HADXAIFONG"] = "HADXAIFONG";
+})(City || (City = {}));
 class employees_model {
     // Create employee
     static create_employees(employee) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             try {
+                // Ensure that city is provided
+                if (!employee.city) {
+                    throw new Error("City is required");
+                }
                 const query = `
         INSERT INTO employees 
-        (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status, city) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
                 const values = [
                     employee.first_name,
@@ -43,13 +66,14 @@ class employees_model {
                     employee.email,
                     employee.tel,
                     employee.password,
-                    employee.address || "", // Default empty string
+                    employee.address || "",
                     employee.gender,
-                    employee.cv || "", // Default empty string
+                    employee.cv || "",
                     employee.avatar || "",
-                    (_a = employee.cat_id) !== null && _a !== void 0 ? _a : 0, // Default to 0
-                    (_b = employee.price) !== null && _b !== void 0 ? _b : 0.00, // Default to 0.00
+                    (_a = employee.cat_id) !== null && _a !== void 0 ? _a : 0,
+                    (_b = employee.price) !== null && _b !== void 0 ? _b : 0.00,
                     employee.status || Status.Active,
+                    employee.city,
                 ];
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result;
@@ -64,16 +88,12 @@ class employees_model {
     static sign_in_employee(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Query to find the employee by email, including the password
                 const query = 'SELECT id, first_name, last_name, email, password FROM employees WHERE email = ?';
                 const [rows] = yield base_database_1.default.execute(query, [email]);
-                // If employee is not found, return null
                 if (rows.length === 0)
                     return null;
                 const employee = rows[0];
-                // Check if password is valid
                 const isPasswordValid = yield bcrypt_1.default.compare(password, employee.password);
-                // Return employee data if password is valid, else return null
                 return isPasswordValid ? {
                     id: employee.id,
                     email: employee.email,
@@ -87,38 +107,26 @@ class employees_model {
             }
         });
     }
-    // // Save file path after upload
-    // static async saveFilePath(id: number, filePath: string) {
-    //   try {
-    //     const query = `
-    //       UPDATE employees
-    //       SET avatar = ?
-    //       WHERE id = ?
-    //     `;
-    //     const values = [filePath, id];
-    //     console.log("Executing query:", query, "with values:", values); // Add logging here
-    //     const [result] = await db.execute(query, values);
-    //     console.log("Query result:", result); // Log the result of the query
-    //     return result;
-    //   } catch (error) {
-    //     console.error("Error saving file path:", error);
-    //     throw new Error("Failed to save file path");
-    //   }
-    // }
-    // ปรับเปลี่ยนฟังก์ชันให้รับ URL จาก Cloudinary
+    // Update employee avatar
     static update_employee_avatar(id, cloudinaryUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `
-        UPDATE employees
-        SET avatar = ?
-        WHERE id = ?
-      `;
+                // Check if employee exists before updating
+                const checkQuery = "SELECT id FROM employees WHERE id = ?";
+                const [rows] = yield base_database_1.default.execute(checkQuery, [id]);
+                if (rows.length === 0) {
+                    console.log("Employee not found with ID:", id);
+                    return { success: false, message: "Employee not found" };
+                }
+                const query = `UPDATE employees SET avatar = ? WHERE id = ?`;
                 const values = [cloudinaryUrl, id];
-                console.log("Executing query:", query, "with values:", values);
-                const [result] = yield base_database_1.default.execute(query, values);
-                console.log("Query result:", result);
-                return result;
+                const [updateResult] = yield base_database_1.default.execute(query, values);
+                const affectedRows = updateResult.affectedRows;
+                if (affectedRows === 0) {
+                    return { success: false, message: "Failed to update avatar" };
+                }
+                console.log("Employee avatar updated successfully for ID:", id);
+                return { success: true, message: "Avatar updated successfully" };
             }
             catch (error) {
                 console.error("Error updating employee avatar:", error);
@@ -130,7 +138,13 @@ class employees_model {
     static show_all_employees() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = "SELECT * FROM employees";
+                const query = `
+        SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
+               e.address, e.gender, e.cv, e.avatar, 
+               e.cat_id, c.cat_name, e.price, e.status, e.city, e.created_at, e.updated_at
+        FROM employees e
+        JOIN categories c ON e.cat_id = c.id
+      `;
                 const [result] = yield base_database_1.default.execute(query);
                 return result;
             }
@@ -140,17 +154,17 @@ class employees_model {
             }
         });
     }
-    //show employee by ID
+    // Show employee by ID
     static show_employee_by_id(Id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `SELECT * FROM employees WHERE id = ?;`;
-                const [rows] = yield base_database_1.default.execute(query, [Id]); // Execute the query
+                const [rows] = yield base_database_1.default.execute(query, [Id]);
                 if (rows.length > 0) {
-                    return rows[0]; // Return the first row if found
+                    return rows[0];
                 }
                 else {
-                    return null; // Return null if no employee is found
+                    return null;
                 }
             }
             catch (error) {
@@ -159,17 +173,17 @@ class employees_model {
             }
         });
     }
-    //show image employees by ID
+    // Show image of employee by ID
     static show_image_employee_by_id(Id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `SELECT avatar FROM employees WHERE id = ?;`;
-                const [rows] = yield base_database_1.default.execute(query, [Id]); // Execute the query
+                const [rows] = yield base_database_1.default.execute(query, [Id]);
                 if (rows.length > 0) {
-                    return { avatar: rows[0].avatar }; // Ensure we return an object with an avatar property
+                    return { avatar: rows[0].avatar };
                 }
                 else {
-                    return { message: "Image not found" }; // Return an object with a message when no image is found
+                    return { message: "Image not found" };
                 }
             }
             catch (error) {
@@ -182,6 +196,13 @@ class employees_model {
     static update_employees(id, employee) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                // Check if employee exists before updating
+                const checkQuery = "SELECT id FROM employees WHERE id = ?";
+                const [rows] = yield base_database_1.default.execute(checkQuery, [id]);
+                if (rows.length === 0) {
+                    console.log("Employee not found with ID:", id);
+                    return { success: false, message: "Employee not found" };
+                }
                 const fields = Object.keys(employee)
                     .map((key) => `${key} = ?`)
                     .join(", ");
@@ -200,6 +221,13 @@ class employees_model {
     static delete_employees(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                // Check if employee exists before deleting
+                const checkQuery = "SELECT id FROM employees WHERE id = ?";
+                const [rows] = yield base_database_1.default.execute(checkQuery, [id]);
+                if (rows.length === 0) {
+                    console.log("Employee not found with ID:", id);
+                    return { success: false, message: "Employee not found" };
+                }
                 const query = `UPDATE employees SET status = ? WHERE id = ?`;
                 const [result] = yield base_database_1.default.execute(query, [Status.Inactive, id]);
                 return result;

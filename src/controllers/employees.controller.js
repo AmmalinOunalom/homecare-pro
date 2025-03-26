@@ -14,8 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
-//import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
-const cloudinary_1 = require("cloudinary");
+const cloudinary_1 = require("cloudinary"); // Cloudinary import for image upload
 const fs_1 = __importDefault(require("fs"));
 const employees_model_1 = require("../model/employees.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -24,7 +23,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
  */
 const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { password } = req.body;
+        const { password, } = req.body;
         // Hash the password before saving
         const saltRounds = 10;
         req.body.password = yield bcrypt_1.default.hash(password, saltRounds);
@@ -32,11 +31,13 @@ const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(200).send("Employee created successfully");
     }
     catch (error) {
-        res.status(500).send(error);
+        res.status(500).send({ message: "Error creating employee", error });
     }
 });
 exports.create_employees = create_employees;
-// Sign in employee
+/**
+ * Sign in employee
+ */
 const sign_in_employee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
@@ -62,9 +63,7 @@ const sign_in_employee = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     catch (error) {
-        // Log error with more context
         console.error("Error during employee sign in process:", error);
-        // Respond with internal server error
         res.status(500).send({
             message: "Internal Server Error, please try again later",
         });
@@ -72,7 +71,7 @@ const sign_in_employee = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.sign_in_employee = sign_in_employee;
 /**
- *  UPDATE PROFILE EMPLOYEE
+ *  UPDATE PROFILE EMPLOYEE (Avatar Upload)
  */
 const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -89,7 +88,7 @@ const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(400).json({ message: "Invalid employeeId" });
             return;
         }
-        // อัปโหลดไฟล์ไปยัง Cloudinary
+        // Upload file to Cloudinary
         const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
             folder: "employees",
         });
@@ -98,9 +97,9 @@ const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         console.log("Cloudinary URL:", result.secure_url);
-        // ใช้ employees_model ในการบันทึกข้อมูลลงฐานข้อมูล
+        // Use employees_model to save the avatar URL in the database
         yield employees_model_1.employees_model.update_employee_avatar(employeeId, result.secure_url);
-        // ลบไฟล์ที่อัปโหลดในเครื่อง
+        // Delete the local file after upload to Cloudinary
         fs_1.default.unlinkSync(req.file.path);
         res.status(200).json({
             message: "File uploaded and avatar updated successfully",
@@ -122,7 +121,7 @@ const show_all_employees = (req, res) => __awaiter(void 0, void 0, void 0, funct
         res.status(200).send(employees);
     }
     catch (error) {
-        res.status(500).send("Internal Server Error");
+        res.status(500).send({ message: "Error retrieving employees", error });
     }
 });
 exports.show_all_employees = show_all_employees;
@@ -132,24 +131,24 @@ exports.show_all_employees = show_all_employees;
 const show_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        console.log("Received userId:", id); // Log to ensure the request is reaching the controller
+        console.log("Received employeeId:", id); // Log to ensure the request is reaching the controller
         const employeeDetails = yield employees_model_1.employees_model.show_employee_by_id(Number(id));
         console.log("Employee Details:", employeeDetails); // Log the result returned by the model
         if (employeeDetails) {
             res.status(200).send(employeeDetails);
         }
         else {
-            res.status(404).send("Employee details not found for this user");
+            res.status(404).send({ message: "Employee details not found for this ID" });
         }
     }
     catch (error) {
-        console.error("Error fetching employee details by userId:", error);
-        res.status(500).send("Failed to fetch employee details");
+        console.error("Error fetching employee details by employeeId:", error);
+        res.status(500).send({ message: "Failed to fetch employee details" });
     }
 });
 exports.show_employee_by_id = show_employee_by_id;
 /**
- * Get image employee by ID
+ * Get image of employee by ID
  */
 const show_image_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -166,17 +165,17 @@ const show_image_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0
                 res.sendFile(imagePath); // Send the image if it exists
             }
             else {
-                res.status(404).send("Image not found for this employee");
+                res.status(404).send({ message: "Image not found for this employee" });
             }
         }
         else {
             // If no image found or an error occurred
-            res.status(404).send(employeeImage.message || "Employee image not found");
+            res.status(404).send("Employee image not found");
         }
     }
     catch (error) {
         console.error("Error fetching employee image by employeeId:", error);
-        res.status(500).send("Failed to fetch employee image");
+        res.status(500).send({ message: "Failed to fetch employee image" });
     }
 });
 exports.show_image_employee_by_id = show_image_employee_by_id;
@@ -187,10 +186,10 @@ const update_employees = (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const { id } = req.params;
         const updatedEmployee = yield employees_model_1.employees_model.update_employees(Number(id), req.body);
-        res.status(200).send("Employee updated successfully");
+        res.status(200).send({ message: "Employee updated successfully" });
     }
     catch (error) {
-        res.status(500).send("Failed to update employee");
+        res.status(500).send({ message: "Failed to update employee", error });
     }
 });
 exports.update_employees = update_employees;
@@ -201,10 +200,10 @@ const delete_employees = (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const { id } = req.params;
         yield employees_model_1.employees_model.delete_employees(Number(id));
-        res.status(200).send("Employee deleted successfully");
+        res.status(200).send({ message: "Employee deleted successfully" });
     }
     catch (error) {
-        res.status(500).send("Failed to delete employee");
+        res.status(500).send({ message: "Failed to delete employee", error });
     }
 });
 exports.delete_employees = delete_employees;
