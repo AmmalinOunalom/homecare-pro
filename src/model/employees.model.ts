@@ -147,11 +147,11 @@ export class employees_model {
   static async show_all_employees() {
     try {
       const query = `
-        SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
-               e.address, e.gender, e.cv, e.avatar, 
-               e.cat_id, c.cat_name, e.price, e.status, e.city, e.created_at, e.updated_at
-        FROM employees e
-        JOIN categories c ON e.cat_id = c.id
+SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
+       e.address, e.gender, e.cv, e.avatar, 
+       e.cat_id, c.cat_name, e.price, e.status, e.city, e.created_at, e.updated_at
+FROM employees e
+JOIN categories c ON e.cat_id = c.id
       `;
       const [result] = await db.execute(query);
       return result;
@@ -165,11 +165,11 @@ export class employees_model {
   static async show_employee_by_id(Id: number) {
     try {
       const query = `SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
-       e.address, e.gender, e.cv, e.avatar, 
+       e.address, e.city, e.gender, e.cv, e.avatar, 
        e.cat_id, c.cat_name, e.price, e.status, e.created_at, e.updated_at
 FROM employees e
 JOIN categories c ON e.cat_id = c.id
-WHERE e.id = ?;`;
+WHERE e.id =?`;
 
       const [rows]: any[] = await db.execute(query, [Id]);
 
