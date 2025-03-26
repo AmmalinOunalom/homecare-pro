@@ -187,21 +187,26 @@ router.post("/sign_in", sign_in_employee);
 
 /**
  * @swagger
- * /upload:
+ * /employees/upload:
  *   post:
- *     summary: Upload an image
- *     description: Endpoint for uploading an image.
+ *     summary: Upload an image for an employee
+ *     description: Endpoint for uploading an image and associating it with an employee.
  *     consumes:
  *       - multipart/form-data
  *     parameters:
  *       - in: formData
+ *         name: employeeId
+ *         type: integer
+ *         description: The ID of the employee to associate with the uploaded image
+ *         required: true
+ *       - in: formData
  *         name: image
  *         type: file
- *         description: The image file to upload
+ *         description: The image file to upload for the employee
  *         required: true
  *     responses:
  *       200:
- *         description: Image uploaded successfully
+ *         description: Image uploaded and associated with the employee successfully
  *         content:
  *           application/json:
  *             schema:
@@ -209,12 +214,12 @@ router.post("/sign_in", sign_in_employee);
  *               properties:
  *                 message:
  *                   type: string
- *                 filePath:
+ *                 imageUrl:
  *                   type: string
  *       400:
- *         description: No file uploaded
+ *         description: No file uploaded or missing employeeId
  *       500:
- *         description: Error uploading file
+ *         description: Error uploading file or associating image with employee
  */
 router.post('/upload', upload.single('image'), uploadImage);
 
