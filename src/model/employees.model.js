@@ -139,11 +139,11 @@ class employees_model {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-        SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
-               e.address, e.gender, e.cv, e.avatar, 
-               e.cat_id, c.cat_name, e.price, e.status, e.city, e.created_at, e.updated_at
-        FROM employees e
-        JOIN categories c ON e.cat_id = c.id
+SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
+       e.address, e.gender, e.cv, e.avatar, 
+       e.cat_id, c.cat_name, e.price, e.status, e.city, e.created_at, e.updated_at
+FROM employees e
+JOIN categories c ON e.cat_id = c.id
       `;
                 const [result] = yield base_database_1.default.execute(query);
                 return result;
@@ -159,11 +159,11 @@ class employees_model {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `SELECT e.id, e.first_name, e.last_name, e.email, e.tel, 
-       e.address, e.gender, e.cv, e.avatar, 
+       e.address, e.city, e.gender, e.cv, e.avatar, 
        e.cat_id, c.cat_name, e.price, e.status, e.created_at, e.updated_at
 FROM employees e
 JOIN categories c ON e.cat_id = c.id
-WHERE e.id = ?;`;
+WHERE e.id =?`;
                 const [rows] = yield base_database_1.default.execute(query, [Id]);
                 if (rows.length > 0) {
                     return rows[0];

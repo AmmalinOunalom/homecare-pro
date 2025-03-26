@@ -73,6 +73,7 @@ router.get("/:id", show_employee_by_id);
  *               - cv
  *               - cat_id
  *               - price
+ *               - city
  *             properties:
  *               first_name:
  *                 type: string
@@ -96,7 +97,7 @@ router.get("/:id", show_employee_by_id);
  *                 example: "123 Main St, City, Country"
  *               gender:
  *                 type: string
- *                 enum: [male, female, other]  # Enum for gender field
+ *                 enum: [male, female, other]
  *                 example: male
  *               cv:
  *                 type: string
@@ -113,8 +114,12 @@ router.get("/:id", show_employee_by_id);
  *                 example: 100.00
  *               status:
  *                 type: string
- *                 enum: [active, inactive]  # Enum for status field
+ *                 enum: [active, inactive]
  *                 example: active
+ *               city:
+ *                 type: string
+ *                 enum: ['CHANTHABULY','SIKHOTTABONG','XAYSETHA','SISATTANAK','NAXAITHONG','XAYTANY','HADXAIFONG']  # Example cities
+ *                 example: CHANTHABULY, SIKHOTTABONG, XAYSETHA, SISATTANAK, NAXAITHONG, XAYTANY, HADXAIFONG  # You can change these city names based on your actual enum values
  *     responses:
  *       201:
  *         description: Employee created successfully.
