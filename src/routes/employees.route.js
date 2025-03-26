@@ -97,7 +97,7 @@ router.get("/employees/:id", employees_controller_1.show_employee_by_id);
  *                 example: "123 Main St, City, Country"
  *               gender:
  *                 type: string
- *                 enum: [male, female, other]
+ *                 enum: [male, female, other]  # Enum for gender field
  *                 example: male
  *               cv:
  *                 type: string
@@ -114,7 +114,7 @@ router.get("/employees/:id", employees_controller_1.show_employee_by_id);
  *                 example: 100.00
  *               status:
  *                 type: string
- *                 enum: [active, inactive]
+ *                 enum: [active, inactive]  # Enum for status field
  *                 example: active
  *     responses:
  *       201:
@@ -219,7 +219,7 @@ router.post("/sign_in", employees_controller_1.sign_in_employee);
  *       500:
  *         description: Error uploading file or associating image with employee
  */
-router.post('/upload', images_config_1.default.single('image'), employees_controller_1.uploadImage);
+router.post('/upload', (0, images_config_1.default)('local').single('image'), employees_controller_1.uploadImage);
 // NOTE - Show Employee Image by ID
 /**
  * @swagger

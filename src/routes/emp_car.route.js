@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const images_config_1 = __importDefault(require("../config/images.config")); // Import multer configuration
 const emp_car_controller_1 = require("../controllers/emp_car.controller");
 const router = express_1.default.Router();
 // NOTE - Show All EmpCars
@@ -22,6 +23,40 @@ const router = express_1.default.Router();
  *         description: Internal server error.
  */
 router.get("/read_emp_car", emp_car_controller_1.show_all_emp_cars);
+// NOTE - Upload Car Image
+/**
+ * @swagger
+ * /emp_car/uploadCarImage:
+ *   post:
+ *     summary: Upload an employee's car image
+ *     description: Uploads a car image and updates the database with the image URL.
+ *     tags:
+ *       - EmpCars
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - emp_id
+ *               - car_image
+ *             properties:
+ *               emp_id:
+ *                 type: integer
+ *                 example: 1
+ *               car_image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: File uploaded and car image updated successfully.
+ *       400:
+ *         description: No file uploaded or invalid data.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/upload_car_image", (0, images_config_1.default)('cloudinary').single("car_image"), emp_car_controller_1.upload_car_image);
 // NOTE - Create EmpCar
 /**
  * @swagger

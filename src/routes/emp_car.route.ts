@@ -1,5 +1,6 @@
 import express from "express";
-import { create_emp_car, show_all_emp_cars, update_emp_car, delete_emp_car } from "../controllers/emp_car.controller";
+import upload from '../config/images.config'; // Import multer configuration
+import { create_emp_car, show_all_emp_cars, update_emp_car, delete_emp_car, upload_car_image  } from "../controllers/emp_car.controller";
 
 const router = express.Router();
 
@@ -19,6 +20,41 @@ const router = express.Router();
  *         description: Internal server error.
  */
 router.get("/read_emp_car", show_all_emp_cars);
+
+// NOTE - Upload Car Image
+/**
+ * @swagger
+ * /emp_car/uploadCarImage:
+ *   post:
+ *     summary: Upload an employee's car image
+ *     description: Uploads a car image and updates the database with the image URL.
+ *     tags:
+ *       - EmpCars
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - emp_id
+ *               - car_image
+ *             properties:
+ *               emp_id:
+ *                 type: integer
+ *                 example: 1
+ *               car_image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: File uploaded and car image updated successfully.
+ *       400:
+ *         description: No file uploaded or invalid data.
+ *       500:
+ *         description: Internal server error.
+ */
+router.post("/upload_car_image", upload('cloudinary').single("car_image"), upload_car_image);
 
 // NOTE - Create EmpCar
 /**

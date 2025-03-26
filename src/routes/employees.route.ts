@@ -45,7 +45,7 @@ router.get("/read_employees", show_all_employees);
  *       500:
  *         description: Internal server error.
  */
-router.get("/employees/:id", show_employee_by_id);
+router.get("/:id", show_employee_by_id);
 
 // NOTE - Create Employee
 /**
@@ -96,7 +96,7 @@ router.get("/employees/:id", show_employee_by_id);
  *                 example: "123 Main St, City, Country"
  *               gender:
  *                 type: string
- *                 enum: [male, female, other]
+ *                 enum: [male, female, other]  # Enum for gender field
  *                 example: male
  *               cv:
  *                 type: string
@@ -113,7 +113,7 @@ router.get("/employees/:id", show_employee_by_id);
  *                 example: 100.00
  *               status:
  *                 type: string
- *                 enum: [active, inactive]
+ *                 enum: [active, inactive]  # Enum for status field
  *                 example: active
  *     responses:
  *       201:
@@ -221,7 +221,7 @@ router.post("/sign_in", sign_in_employee);
  *       500:
  *         description: Error uploading file or associating image with employee
  */
-router.post('/upload', upload.single('image'), uploadImage);
+router.post('/upload', upload('local').single('image'), uploadImage);
 
 
 // NOTE - Show Employee Image by ID
