@@ -184,34 +184,40 @@ router.post("/sign_in", employees_controller_1.sign_in_employee);
 //NOTE - update profile employee
 /**
  * @swagger
- * /upload:
+ * /employees/upload:
  *   post:
- *     summary: Upload an image
- *     description: Endpoint for uploading an image.
+ *     summary: Upload an image for an employee
+ *     description: Endpoint for uploading an image and associating it with an employee.
  *     consumes:
- *       - multipart/form-data
+ *       - multipart/form-data  # Specifies the request uses form data for file upload
  *     parameters:
+ *       - in: formData
+ *         name: employeeId
+ *         type: integer
+ *         description: The ID of the employee to associate with the uploaded image
+ *         required: true
  *       - in: formData
  *         name: image
  *         type: file
- *         description: The image file to upload
+ *         description: The image file to upload for the employee. You can select an image file from your device.
  *         required: true
+ *         format: binary
  *     responses:
  *       200:
- *         description: Image uploaded successfully
+ *         description: Image uploaded and associated with the employee successfully
  *         content:
- *           application/json:
+ *           application/json:  # The response is still JSON
  *             schema:
  *               type: object
  *               properties:
  *                 message:
  *                   type: string
- *                 filePath:
+ *                 imageUrl:
  *                   type: string
  *       400:
- *         description: No file uploaded
+ *         description: No file uploaded or missing employeeId
  *       500:
- *         description: Error uploading file
+ *         description: Error uploading file or associating image with employee
  */
 router.post('/upload', images_config_1.default.single('image'), employees_controller_1.uploadImage);
 // NOTE - Show Employee Image by ID

@@ -184,7 +184,6 @@ router.post("/sign_in", sign_in_employee);
 
 
 //NOTE - update profile employee
-
 /**
  * @swagger
  * /employees/upload:
@@ -192,7 +191,7 @@ router.post("/sign_in", sign_in_employee);
  *     summary: Upload an image for an employee
  *     description: Endpoint for uploading an image and associating it with an employee.
  *     consumes:
- *       - multipart/form-data
+ *       - multipart/form-data  # Specifies the request uses form data for file upload
  *     parameters:
  *       - in: formData
  *         name: employeeId
@@ -202,13 +201,14 @@ router.post("/sign_in", sign_in_employee);
  *       - in: formData
  *         name: image
  *         type: file
- *         description: The image file to upload for the employee
+ *         description: The image file to upload for the employee. You can select an image file from your device.
  *         required: true
+ *         format: binary
  *     responses:
  *       200:
  *         description: Image uploaded and associated with the employee successfully
  *         content:
- *           application/json:
+ *           application/json:  # The response is still JSON
  *             schema:
  *               type: object
  *               properties:
