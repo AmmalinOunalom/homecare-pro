@@ -50,6 +50,30 @@ class address_users_details_model {
             }
         });
     }
+    //UPLOAD HOUSE IMAGE
+    static update_house_image(addressId, cloudinaryUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Update the house image for the specific addressId
+                const query = `
+            UPDATE address_users_detail 
+            SET house_image = ? 
+            WHERE id = ?;
+          `;
+                const [result] = yield base_database_1.default.execute(query, [cloudinaryUrl, addressId]);
+                // Check if any rows were affected
+                if (result.affectedRows === 0) {
+                    return { success: false, message: "House image not found or update failed" };
+                }
+                return { success: true, message: "House image updated successfully" };
+            }
+            catch (error) {
+                console.error("Error updating house image:", error);
+                return { success: false, message: "Failed to update house image" };
+            }
+        });
+    }
+    //SELECT USER BY ID
     static show_by_user_id(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

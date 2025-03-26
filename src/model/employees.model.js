@@ -178,6 +178,32 @@ WHERE e.id =?`;
             }
         });
     }
+    // Show employee by ID=5 && cat_name = Moving
+    static show_more_employee_by_id(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `
+        SELECT e.id, e.first_name, car_brand, model, license_plate, car_image, 
+               c.id AS cat_id, c.cat_name, ec.emp_id
+        FROM employees e
+        JOIN categories c ON e.cat_id = c.id  
+        LEFT JOIN emp_cars ec ON e.id = ec.emp_id
+        WHERE c.id = 5 AND c.cat_name = 'Moving';
+      `;
+                const [rows] = yield base_database_1.default.execute(query);
+                if (rows.length > 0) {
+                    return rows; // ✅ Return all employees, not just the first one
+                }
+                else {
+                    return null;
+                }
+            }
+            catch (error) {
+                console.error("Error fetching employee details:", error);
+                throw new Error("Failed to fe tch employee details.");
+            }
+        });
+    }
     // Show image of employee by ID
     static show_image_employee_by_id(Id) {
         return __awaiter(this, void 0, void 0, function* () {

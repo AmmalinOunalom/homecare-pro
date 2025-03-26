@@ -137,7 +137,28 @@ export const show_employee_by_id = async (req: Request, res: Response) => {
     if (employeeDetails) {
       res.status(200).send(employeeDetails);
     } else {
-      res.status(404).send("Employee details not found for this user");
+      res.status(404).send("Employee details not found for this userz");
+    }
+  } catch (error) {
+    console.error("Error fetching employee details by userId:", error);
+    res.status(500).send("Failed to fetch employee details");
+  }
+};
+
+//READ EMPLOYEE ID=5
+
+export const show_more_employee_by_id = async (req: Request, res: Response) => {
+  try {
+    const { empId } = req.params;
+    console.log("Received userId:", empId); // Log to ensure the request is reaching the controller
+
+    const employeeDetails = await employees_model.show_more_employee_by_id(Number(empId));
+    console.log("Employee Details:", employeeDetails); // Log the result returned by the model
+
+    if (employeeDetails) {
+      res.status(200).send(employeeDetails);
+    } else {
+      res.status(404).send("Employee details not found for this employee");
     }
   } catch (error) {
     console.error("Error fetching employee details by userId:", error);

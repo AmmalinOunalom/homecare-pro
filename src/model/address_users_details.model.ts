@@ -38,7 +38,7 @@ export class address_users_details_model {
                 (users_id, gender_owner, address_name, house_image, google_link_map)
                 VALUES (?, ?, ?, ?, ?)
             `;
-            
+
             // Execute the query with the sanitized values
             const [result]: any = await db.execute(query, values);
 
@@ -49,6 +49,34 @@ export class address_users_details_model {
             throw new Error("Failed to create address_users_detail");
         }
     }
+
+    
+    //UPLOAD HOUSE IMAGE
+
+    static async update_house_image(addressId: number, cloudinaryUrl: string) {
+        try {
+          // Update the house image for the specific addressId
+          const query = `
+            UPDATE address_users_detail 
+            SET house_image = ? 
+            WHERE id = ?;
+          `;
+    
+          const [result]: any[] = await db.execute(query, [cloudinaryUrl, addressId]);
+    
+          // Check if any rows were affected
+          if (result.affectedRows === 0) {
+            return { success: false, message: "House image not found or update failed" };
+          }
+    
+          return { success: true, message: "House image updated successfully" };
+        } catch (error) {
+          console.error("Error updating house image:", error);
+          return { success: false, message: "Failed to update house image" };
+        }
+      }
+
+    //SELECT USER BY ID
 
     static async show_by_user_id(userId: number) {
         try {

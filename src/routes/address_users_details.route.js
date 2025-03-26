@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const address_users_details_controller_1 = require("../controllers/address_users_details.controller");
+const images_config_1 = __importDefault(require("../config/images.config"));
 const router = express_1.default.Router();
 // NOTE - Create Address User
 /**
@@ -25,7 +26,6 @@ const router = express_1.default.Router();
  *               - users_id
  *               - gender_owner
  *               - address_name
- *               - house_image
  *               - google_link_map
  *             properties:
  *               users_id:
@@ -44,7 +44,6 @@ const router = express_1.default.Router();
  *               house_image:
  *                 type: string
  *                 description: Image file name of the house
- *                 format: binary
  *                 example: "house_image.jpg"
  *               google_link_map:
  *                 type: string
@@ -53,39 +52,50 @@ const router = express_1.default.Router();
  *     responses:
  *       201:
  *         description: Address user detail created successfully and users table updated.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Address user detail created successfully and users table updated."
- *                 address_users_detail_id:
- *                   type: integer
- *                   example: 10
  *       400:
  *         description: Missing required fields.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "All fields are required."
  *       500:
  *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Internal server error"
  */
 router.post("/create", address_users_details_controller_1.create_address_user_details);
+// NOTE - Upload House Image
+/**
+ * @swagger
+ * /address_users_details/upload:
+ *   post:
+ *     summary: Upload a house image for an address user
+ *     description: Upload an image file and associate it with a user's address.
+ *     tags:
+ *       - Address Users
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - users_id
+ *               - image
+ *             properties:
+ *               users_id:
+ *                 type: integer
+ *                 description: The ID of the user whose house image is being uploaded
+ *                 example: 1
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file of the house
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *       400:
+ *         description: No file uploaded or missing user ID
+ *       500:
+ *         description: Error uploading file
+ */
+router.post('/upload_house_image', images_config_1.default.single('house_image'), address_users_details_controller_1.upload_house_image);
 // NOTE - Show Address User By ID
 /**
  * @swagger
@@ -153,7 +163,6 @@ router.get("/", address_users_details_controller_1.show_all_address_users_detail
  *               - users_id
  *               - gender_owner
  *               - address_name
- *               - house_image
  *               - google_link_map
  *             properties:
  *               users_id:
@@ -168,7 +177,6 @@ router.get("/", address_users_details_controller_1.show_all_address_users_detail
  *                 example: "456 Elm Street"
  *               house_image:
  *                 type: string
- *                 format: binary
  *                 example: "new_house_image.jpg"
  *               google_link_map:
  *                 type: string

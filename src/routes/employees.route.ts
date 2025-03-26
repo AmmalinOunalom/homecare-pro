@@ -1,6 +1,6 @@
 import express from "express";
 import upload from '../config/images.config'; // Import multer configuration
-import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee } from "../controllers/employees.controller";
+import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_more_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee } from "../controllers/employees.controller";
 
 const router = express.Router();
 
@@ -47,6 +47,47 @@ router.get("/read_employees", show_all_employees);
  */
 router.get("/:id", show_employee_by_id);
 
+// NOTE - Get Employee by ID=5 && cat_name = Moving
+/**
+ * @swagger
+ * /read_emp_car_employees:
+ *   get:
+ *     summary: Get Employee Details for empId = 5
+ *     description: Fetches employee details where empId is fixed to 5.
+ *     tags:
+ *       - Employees
+ *     parameters:
+ *       - in: query
+ *         name: empId
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         example: 5
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved employee details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 empId:
+ *                   type: integer
+ *                   example: 5
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 position:
+ *                   type: string
+ *                   example: "Technician"
+ *       400:
+ *         description: Invalid request
+ *       404:
+ *         description: Employee details not found
+ *       500:
+ *         description: Server error
+*/
+router.get("/read_emp_car_employees/5", show_more_employee_by_id);
 // NOTE - Create Employee
 /**
  * @swagger
@@ -185,7 +226,7 @@ router.post("/create_employees", create_employees);
  *       500:
  *         description: Internal server error.
  */
-router.post("/sign_in", sign_in_employee); 
+router.post("/sign_in", sign_in_employee);
 
 
 //NOTE - update profile employee

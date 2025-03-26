@@ -48,6 +48,47 @@ router.get("/read_employees", employees_controller_1.show_all_employees);
  *         description: Internal server error.
  */
 router.get("/:id", employees_controller_1.show_employee_by_id);
+// NOTE - Get Employee by ID=5 && cat_name = Moving
+/**
+ * @swagger
+ * /read_emp_car_employees:
+ *   get:
+ *     summary: Get Employee Details for empId = 5
+ *     description: Fetches employee details where empId is fixed to 5.
+ *     tags:
+ *       - Employees
+ *     parameters:
+ *       - in: query
+ *         name: empId
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         example: 5
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved employee details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 empId:
+ *                   type: integer
+ *                   example: 5
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 position:
+ *                   type: string
+ *                   example: "Technician"
+ *       400:
+ *         description: Invalid request
+ *       404:
+ *         description: Employee details not found
+ *       500:
+ *         description: Server error
+*/
+router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employee_by_id);
 // NOTE - Create Employee
 /**
  * @swagger
@@ -120,7 +161,7 @@ router.get("/:id", employees_controller_1.show_employee_by_id);
  *               city:
  *                 type: string
  *                 enum: ['CHANTHABULY','SIKHOTTABONG','XAYSETHA','SISATTANAK','NAXAITHONG','XAYTANY','HADXAIFONG']  # Example cities
- *                 example: "New York"  # You can change these city names based on your actual enum values
+ *                 example: CHANTHABULY, SIKHOTTABONG, XAYSETHA, SISATTANAK, NAXAITHONG, XAYTANY, HADXAIFONG  # You can change these city names based on your actual enum values
  *     responses:
  *       201:
  *         description: Employee created successfully.

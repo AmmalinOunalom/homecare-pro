@@ -1,5 +1,13 @@
 import express from "express";
-import { create_address_user_details, show_by_user_id , show_all_address_users_details, update_address_user_details, delete_address_user_details } from "../controllers/address_users_details.controller";
+import { 
+    create_address_user_details, 
+    show_by_user_id, 
+    show_all_address_users_details, 
+    update_address_user_details, 
+    delete_address_user_details, 
+    upload_house_image 
+} from "../controllers/address_users_details.controller";
+import upload from "../config/images.config";
 
 const router = express.Router();
 
@@ -22,7 +30,6 @@ const router = express.Router();
  *               - users_id
  *               - gender_owner
  *               - address_name
- *               - house_image
  *               - google_link_map
  *             properties:
  *               users_id:
@@ -41,7 +48,6 @@ const router = express.Router();
  *               house_image:
  *                 type: string
  *                 description: Image file name of the house
- *                 format: binary
  *                 example: "house_image.jpg"
  *               google_link_map:
  *                 type: string
@@ -50,39 +56,51 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Address user detail created successfully and users table updated.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Address user detail created successfully and users table updated."
- *                 address_users_detail_id:
- *                   type: integer
- *                   example: 10
  *       400:
  *         description: Missing required fields.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "All fields are required."
  *       500:
  *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Internal server error"
  */
 router.post("/create", create_address_user_details);
+
+// NOTE - Upload House Image
+/**
+ * @swagger
+ * /address_users_details/upload:
+ *   post:
+ *     summary: Upload a house image for an address user
+ *     description: Upload an image file and associate it with a user's address.
+ *     tags:
+ *       - Address Users
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - users_id
+ *               - image
+ *             properties:
+ *               users_id:
+ *                 type: integer
+ *                 description: The ID of the user whose house image is being uploaded
+ *                 example: 1
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file of the house
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *       400:
+ *         description: No file uploaded or missing user ID
+ *       500:
+ *         description: Error uploading file
+ */
+router.post('/upload_house_image', upload.single('house_image'), upload_house_image);
 
 // NOTE - Show Address User By ID
 /**
@@ -153,7 +171,6 @@ router.get("/", show_all_address_users_details);
  *               - users_id
  *               - gender_owner
  *               - address_name
- *               - house_image
  *               - google_link_map
  *             properties:
  *               users_id:
@@ -168,7 +185,6 @@ router.get("/", show_all_address_users_details);
  *                 example: "456 Elm Street"
  *               house_image:
  *                 type: string
- *                 format: binary
  *                 example: "new_house_image.jpg"
  *               google_link_map:
  *                 type: string

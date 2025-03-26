@@ -12,7 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.show_by_user_id = exports.create_address_user_details = void 0;
+exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.show_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
+//import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
+const cloudinary_1 = require("cloudinary");
+const fs_1 = __importDefault(require("fs"));
 const address_users_details_model_1 = require("../model/address_users_details.model");
 const base_database_1 = __importDefault(require("../config/base.database"));
 /**
@@ -66,6 +69,49 @@ const create_address_user_details = (req, res) => __awaiter(void 0, void 0, void
     }
 });
 exports.create_address_user_details = create_address_user_details;
+// UPLOAD HOUSE IMAGE
+const upload_house_image = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("Received upload request:", req.body);
+        if (!req.file) {
+            console.log("No file uploaded");
+            res.status(400).json({ message: "No file uploaded" });
+            return;
+        }
+        console.log("File uploaded:", req.file);
+        // Ensure addressId is a valid number and log it for debugging
+        const addressId = parseInt(req.body.addressId, 10);
+        if (isNaN(addressId)) {
+            console.log("Invalid addressId:", req.body.addressId); // Log the original value
+            res.status(400).json({ message: "Invalid addressId" });
+            return;
+        }
+        console.log("Parsed addressId:", addressId); // Log parsed value for debugging
+        // Upload file to Cloudinary under a "house" folder
+        const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+            folder: "house_image",
+        });
+        if (!result.secure_url) {
+            res.status(500).json({ message: "Cloudinary upload failed" });
+            return;
+        }
+        console.log("Cloudinary URL:", result.secure_url);
+        // Use employees_model to save the house image URL in the database
+        yield address_users_details_model_1.address_users_details_model.update_house_image(addressId, result.secure_url);
+        // Delete the local file after upload to Cloudinary
+        fs_1.default.unlinkSync(req.file.path);
+        res.status(200).json({
+            message: "House image uploaded and updated successfully",
+            fileUrl: result.secure_url,
+        });
+    }
+    catch (error) {
+        console.error("Error uploading house image:", error);
+        res.status(500).json({ message: "Error uploading house image", error });
+    }
+});
+exports.upload_house_image = upload_house_image;
+//SELECT USER BY ID
 const show_by_user_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;

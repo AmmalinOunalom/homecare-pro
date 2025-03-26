@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
+exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
@@ -139,7 +139,7 @@ const show_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0, func
             res.status(200).send(employeeDetails);
         }
         else {
-            res.status(404).send("Employee details not found for this user");
+            res.status(404).send("Employee details not found for this userz");
         }
     }
     catch (error) {
@@ -148,6 +148,26 @@ const show_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.show_employee_by_id = show_employee_by_id;
+//READ EMPLOYEE ID=5
+const show_more_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { empId } = req.params;
+        console.log("Received userId:", empId); // Log to ensure the request is reaching the controller
+        const employeeDetails = yield employees_model_1.employees_model.show_more_employee_by_id(Number(empId));
+        console.log("Employee Details:", employeeDetails); // Log the result returned by the model
+        if (employeeDetails) {
+            res.status(200).send(employeeDetails);
+        }
+        else {
+            res.status(404).send("Employee details not found for this employee");
+        }
+    }
+    catch (error) {
+        console.error("Error fetching employee details by userId:", error);
+        res.status(500).send("Failed to fetch employee details");
+    }
+});
+exports.show_more_employee_by_id = show_more_employee_by_id;
 /**
  * Get image employee by ID
  */
