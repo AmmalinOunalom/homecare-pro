@@ -91,28 +91,48 @@ static async sign_in_employee(email: string, password: string) {
   }
 }
 
-  // Save file path after upload
-  static async saveFilePath(id: number, filePath: string) {
+  // // Save file path after upload
+  // static async saveFilePath(id: number, filePath: string) {
+  //   try {
+  //     const query = `
+  //       UPDATE employees
+  //       SET avatar = ?
+  //       WHERE id = ?
+  //     `;
+  //     const values = [filePath, id];
+  
+  //     console.log("Executing query:", query, "with values:", values); // Add logging here
+  
+  //     const [result] = await db.execute(query, values);
+  //     console.log("Query result:", result); // Log the result of the query
+  
+  //     return result;
+  //   } catch (error) {
+  //     console.error("Error saving file path:", error);
+  //     throw new Error("Failed to save file path");
+  //   }
+  // }
+
+  // ปรับเปลี่ยนฟังก์ชันให้รับ URL จาก Cloudinary
+  static async update_employee_avatar(id: number, cloudinaryUrl: string) {
     try {
       const query = `
         UPDATE employees
         SET avatar = ?
         WHERE id = ?
       `;
-      const values = [filePath, id];
-  
-      console.log("Executing query:", query, "with values:", values); // Add logging here
-  
+      const values = [cloudinaryUrl, id];
+
+      console.log("Executing query:", query, "with values:", values);
       const [result] = await db.execute(query, values);
-      console.log("Query result:", result); // Log the result of the query
-  
+      console.log("Query result:", result);
+
       return result;
     } catch (error) {
-      console.error("Error saving file path:", error);
-      throw new Error("Failed to save file path");
+      console.error("Error updating employee avatar:", error);
+      throw new Error("Failed to update employee avatar");
     }
   }
-
   // Show all employees
   static async show_all_employees() {
     try {
@@ -192,3 +212,4 @@ static async show_image_employee_by_id(Id: number) {
     }
   }
 }
+

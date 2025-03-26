@@ -6,12 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const cloudinary_config_1 = __importDefault(require("./cloudinary.config"));
+const multer_storage_cloudinary_1 = require("multer-storage-cloudinary");
 // Define the absolute path for the 'uploads' directory
 const uploadDir = path_1.default.join(__dirname, '..', 'uploads');
 // Ensure the 'uploads' directory exists, if not, create it
 if (!fs_1.default.existsSync(uploadDir)) {
     fs_1.default.mkdirSync(uploadDir, { recursive: true });
 }
+const storage1 = new multer_storage_cloudinary_1.CloudinaryStorage({
+    cloudinary: cloudinary_config_1.default,
+    params: {
+        public_id: (req, file) => file.originalname,
+    },
+});
 // Configure storage
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {

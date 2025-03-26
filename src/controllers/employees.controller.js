@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
+//import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
+const cloudinary_1 = require("cloudinary");
 const fs_1 = __importDefault(require("fs"));
 const employees_model_1 = require("../model/employees.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -74,39 +76,39 @@ exports.sign_in_employee = sign_in_employee;
  */
 const uploadImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Log the incoming request
-        console.log('Received upload request:', req.body);
+        console.log("Received upload request:", req.body);
         if (!req.file) {
-            console.log('No file uploaded');
+            console.log("No file uploaded");
             res.status(400).json({ message: "No file uploaded" });
             return;
         }
-        // Log the file details
-        console.log('File uploaded:', req.file);
-        // Extract the file name from the full file path
-        const fileName = path_1.default.basename(req.file.path); // Only extract the file name, not full path
-        // Ensure employeeId is provided and is a valid number
+        console.log("File uploaded:", req.file);
         const employeeId = parseInt(req.body.employeeId, 10);
         if (isNaN(employeeId)) {
-            console.log('Invalid employeeId');
+            console.log("Invalid employeeId");
             res.status(400).json({ message: "Invalid employeeId" });
             return;
         }
-        // Log the file name and employee ID
-        console.log('File name:', fileName);
-        console.log('Employee ID:', employeeId);
-        // Now update the avatar in the database with the file name (not the full path)
-        yield employees_model_1.employees_model.saveFilePath(employeeId, fileName);
-        // Construct the URL to access the uploaded file
-        const fileUrl = `http://localhost:5000/uploads/${fileName}`;
-        // Send the response with the file URL
+        // อัปโหลดไฟล์ไปยัง Cloudinary
+        const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+            folder: "employees",
+        });
+        if (!result.secure_url) {
+            res.status(500).json({ message: "Cloudinary upload failed" });
+            return;
+        }
+        console.log("Cloudinary URL:", result.secure_url);
+        // ใช้ employees_model ในการบันทึกข้อมูลลงฐานข้อมูล
+        yield employees_model_1.employees_model.update_employee_avatar(employeeId, result.secure_url);
+        // ลบไฟล์ที่อัปโหลดในเครื่อง
+        fs_1.default.unlinkSync(req.file.path);
         res.status(200).json({
             message: "File uploaded and avatar updated successfully",
-            fileUrl, // Returning the URL path only
+            fileUrl: result.secure_url,
         });
     }
     catch (error) {
-        console.error('Error uploading file:', error); // Log the error
+        console.error("Error uploading file:", error);
         res.status(500).json({ message: "Error uploading file", error });
     }
 });

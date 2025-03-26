@@ -1,6 +1,8 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import cloudinary from './cloudinary.config';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 // Define the absolute path for the 'uploads' directory
 const uploadDir = path.join(__dirname, '..', 'uploads');
@@ -9,6 +11,13 @@ const uploadDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+const storage1 = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        public_id:(req, file) => file.originalname,
+    },
+});
 
 // Configure storage
 const storage = multer.diskStorage({

@@ -218,6 +218,7 @@ router.post("/sign_in", sign_in_employee);
  */
 router.post('/upload', upload.single('image'), uploadImage);
 
+
 // NOTE - Show Employee Image by ID
 /**
  * @swagger

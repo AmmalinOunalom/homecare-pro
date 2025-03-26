@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import path from "path"; // To handle file paths
+//import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
+import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { employees_model } from "../model/employees.model";
 import bcrypt from "bcrypt";
@@ -62,50 +64,51 @@ export const sign_in_employee = async (req: Request, res: Response) => {
  */
 export const uploadImage = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Log the incoming request
-    console.log('Received upload request:', req.body);
+    console.log("Received upload request:", req.body);
 
     if (!req.file) {
-      console.log('No file uploaded');
+      console.log("No file uploaded");
       res.status(400).json({ message: "No file uploaded" });
       return;
     }
 
-    // Log the file details
-    console.log('File uploaded:', req.file);
+    console.log("File uploaded:", req.file);
 
-    // Extract the file name from the full file path
-    const fileName = path.basename(req.file.path); // Only extract the file name, not full path
-    
-    // Ensure employeeId is provided and is a valid number
     const employeeId = parseInt(req.body.employeeId, 10);
-    
     if (isNaN(employeeId)) {
-      console.log('Invalid employeeId');
+      console.log("Invalid employeeId");
       res.status(400).json({ message: "Invalid employeeId" });
       return;
     }
 
-    // Log the file name and employee ID
-    console.log('File name:', fileName);
-    console.log('Employee ID:', employeeId);
+    // อัปโหลดไฟล์ไปยัง Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "employees",
+    });
 
-    // Now update the avatar in the database with the file name (not the full path)
-    await employees_model.saveFilePath(employeeId, fileName);
+    if (!result.secure_url) {
+      res.status(500).json({ message: "Cloudinary upload failed" });
+      return;
+    }
 
-    // Construct the URL to access the uploaded file
-    const fileUrl = `http://localhost:5000/uploads/${fileName}`;
+    console.log("Cloudinary URL:", result.secure_url);
 
-    // Send the response with the file URL
+    // ใช้ employees_model ในการบันทึกข้อมูลลงฐานข้อมูล
+    await employees_model.update_employee_avatar(employeeId, result.secure_url);
+
+    // ลบไฟล์ที่อัปโหลดในเครื่อง
+    fs.unlinkSync(req.file.path);
+
     res.status(200).json({
       message: "File uploaded and avatar updated successfully",
-      fileUrl, // Returning the URL path only
+      fileUrl: result.secure_url,
     });
   } catch (error) {
-    console.error('Error uploading file:', error); // Log the error
+    console.error("Error uploading file:", error);
     res.status(500).json({ message: "Error uploading file", error });
   }
 };
+
 
 /**
  * Retrieve all employees

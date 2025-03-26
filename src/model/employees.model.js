@@ -87,8 +87,26 @@ class employees_model {
             }
         });
     }
-    // Save file path after upload
-    static saveFilePath(id, filePath) {
+    // // Save file path after upload
+    // static async saveFilePath(id: number, filePath: string) {
+    //   try {
+    //     const query = `
+    //       UPDATE employees
+    //       SET avatar = ?
+    //       WHERE id = ?
+    //     `;
+    //     const values = [filePath, id];
+    //     console.log("Executing query:", query, "with values:", values); // Add logging here
+    //     const [result] = await db.execute(query, values);
+    //     console.log("Query result:", result); // Log the result of the query
+    //     return result;
+    //   } catch (error) {
+    //     console.error("Error saving file path:", error);
+    //     throw new Error("Failed to save file path");
+    //   }
+    // }
+    // ปรับเปลี่ยนฟังก์ชันให้รับ URL จาก Cloudinary
+    static update_employee_avatar(id, cloudinaryUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
@@ -96,15 +114,15 @@ class employees_model {
         SET avatar = ?
         WHERE id = ?
       `;
-                const values = [filePath, id];
-                console.log("Executing query:", query, "with values:", values); // Add logging here
+                const values = [cloudinaryUrl, id];
+                console.log("Executing query:", query, "with values:", values);
                 const [result] = yield base_database_1.default.execute(query, values);
-                console.log("Query result:", result); // Log the result of the query
+                console.log("Query result:", result);
                 return result;
             }
             catch (error) {
-                console.error("Error saving file path:", error);
-                throw new Error("Failed to save file path");
+                console.error("Error updating employee avatar:", error);
+                throw new Error("Failed to update employee avatar");
             }
         });
     }

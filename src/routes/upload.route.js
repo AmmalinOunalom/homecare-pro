@@ -1,9 +1,8 @@
+"use strict";
 // import express from 'express';
 // import upload from '../config/images.config'; // Import multer configuration
 // import { uploadImage } from '../controllers/images.controller';
-
 // const router = express.Router();
-
 // /**
 //  * @swagger
 //  * /upload:
@@ -36,5 +35,4 @@
 //  *         description: Error uploading file
 //  */
 // router.post('/upload', upload.single('image'), uploadImage);
-
 // export default router;
