@@ -33,15 +33,34 @@ export interface User {
 
 export class user_model {
   // Create User
-  static async create(user: User) {
+  static async create(user: any) {
     try {
-      const query = 'INSERT INTO users (username, first_name, last_name, email, tel, password, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-
-      const values = [
-        user.username,
-        user.first_name,
-        user.last_name,
+      // First, check if email, username, or last_name already exist
+      const checkQuery = `
+        SELECT * FROM users 
+        WHERE email = ? OR username = ? OR last_name = ?;
+      `;
+      const [existingUsers]: any = await db.execute(checkQuery, [
         user.email,
+        user.username,
+        user.last_name
+      ]);
+
+      // If any record is found, throw a custom error
+      if (existingUsers.length > 0) {
+        throw new Error("User with the same email, username, or last_name already exists");
+      }
+
+      // If no duplicates, insert the new user
+      const query = `
+        INSERT INTO users (email, username, last_name, first_name, tel, password, gender, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const values = [
+        user.email,
+        user.username,
+        user.last_name,
+        user.first_name,
         user.tel,
         user.password,  // Assuming password is already hashed
         user.gender,
@@ -50,9 +69,13 @@ export class user_model {
 
       const [result] = await db.execute(query, values);
       return result;
-    } catch (error) {
-      console.error("Error inserting user:", error);
-      throw new Error("Failed to create user");
+    } catch (error: unknown) { // Specify the type as 'unknown'
+      if (error instanceof Error && error.message === "User with the same email, username, or last_name already exists") {
+        throw error; // Custom error will be handled in the controller
+      } else {
+        console.error("Error inserting user:", error);
+        throw new Error("Failed to create user");
+      }
     }
   }
 
@@ -102,38 +125,30 @@ static async sign_in(email: string, password: string) {
   }
 
   static async rename_users(
-    id: number,
+    id: number,  // ID as a number
     newUsername: string,
     newFirstname: string,
-    newLastname: string,
-    profileFilename?: string
+    newLastname: string
   ) {
     try {
-      // SQL Query with fixed fields
+      // Update query to change the user's username, first name, and last name based on the ID
       const updateQuery = `
         UPDATE users 
-        SET 
-          username = ?, 
-          first_name = ?, 
-          last_name = ?, 
-          profile = ?, 
-          updated_at = CURRENT_TIMESTAMP 
+        SET username = ?, first_name = ?, last_name = ? 
         WHERE id = ?`;
   
-      // Provide `null` if profileFilename is not given
-      const values = [newUsername, newFirstname, newLastname, profileFilename || null, id];
+      const values = [newUsername, newFirstname, newLastname, id];
   
-      // Execute query
-      const [result]: any = await db.execute(updateQuery, values);
+      // Execute the query using db.execute, result is returned as an array
+      const [result]: any[] = await db.execute(updateQuery, values);  // Notice the [result] destructuring
   
-      // Check if update was successful
+      // Check if the update was successful by checking the affectedRows
       return result.affectedRows > 0 ? result : null;
     } catch (error) {
       console.error("Error updating user:", error);
       throw new Error("Update failed");
     }
   }
-
   static async forgot_password_users(email: string, newPassword: string) {
     try {
       const [result]: any = await db.execute(

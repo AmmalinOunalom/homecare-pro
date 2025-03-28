@@ -166,42 +166,46 @@ router.post("/sign_in", user_controller_1.sign_in_user);
  * /users/rename_user/{id}:
  *   put:
  *     summary: Rename a user
- *     description: Update a user's username, first name, and last name.
+ *     description: Allows an admin to rename a user by updating their first and last name.
  *     tags:
  *       - Users
  *     parameters:
- *       - in: path
- *         name: id
+ *       - name: id
+ *         in: path
  *         required: true
+ *         description: The ID of the user to rename
  *         schema:
  *           type: integer
- *         description: User ID
+ *           example: 1
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - newUsername
+ *               - newFirstname
+ *               - newLastname
  *             properties:
  *               newUsername:
  *                 type: string
- *                 example: "new_user123"
+ *                 example: johndoe123
  *               newFirstname:
  *                 type: string
- *                 example: "John"
+ *                 example: John
  *               newLastname:
  *                 type: string
- *                 example: "Doe"
- *               profileFilename:
- *                 type: string
- *                 example: "profile.jpg"
+ *                 example: Doe
  *     responses:
  *       200:
  *         description: User renamed successfully
  *       400:
- *         description: Invalid request data
+ *         description: Bad request, missing required fields
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
 router.put("/rename_user/:id", user_controller_1.rename_user);
 /**

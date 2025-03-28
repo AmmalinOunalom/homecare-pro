@@ -32,12 +32,30 @@ class user_model {
     static create(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'INSERT INTO users (username, first_name, last_name, email, tel, password, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-                const values = [
-                    user.username,
-                    user.first_name,
-                    user.last_name,
+                // First, check if email, username, or last_name already exist
+                const checkQuery = `
+        SELECT * FROM users 
+        WHERE email = ? OR username = ? OR last_name = ?;
+      `;
+                const [existingUsers] = yield base_database_1.default.execute(checkQuery, [
                     user.email,
+                    user.username,
+                    user.last_name
+                ]);
+                // If any record is found, throw a custom error
+                if (existingUsers.length > 0) {
+                    throw new Error("User with the same email, username, or last_name already exists");
+                }
+                // If no duplicates, insert the new user
+                const query = `
+        INSERT INTO users (email, username, last_name, first_name, tel, password, gender, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+                const values = [
+                    user.email,
+                    user.username,
+                    user.last_name,
+                    user.first_name,
                     user.tel,
                     user.password, // Assuming password is already hashed
                     user.gender,
@@ -46,9 +64,14 @@ class user_model {
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result;
             }
-            catch (error) {
-                console.error("Error inserting user:", error);
-                throw new Error("Failed to create user");
+            catch (error) { // Specify the type as 'unknown'
+                if (error instanceof Error && error.message === "User with the same email, username, or last_name already exists") {
+                    throw error; // Custom error will be handled in the controller
+                }
+                else {
+                    console.error("Error inserting user:", error);
+                    throw new Error("Failed to create user");
+                }
             }
         });
     }
@@ -98,24 +121,19 @@ class user_model {
             }
         });
     }
-    static rename_users(id, newUsername, newFirstname, newLastname, profileFilename) {
+    static rename_users(id, // ID as a number
+    newUsername, newFirstname, newLastname) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // SQL Query with fixed fields
+                // Update query to change the user's username, first name, and last name based on the ID
                 const updateQuery = `
         UPDATE users 
-        SET 
-          username = ?, 
-          first_name = ?, 
-          last_name = ?, 
-          profile = ?, 
-          updated_at = CURRENT_TIMESTAMP 
+        SET username = ?, first_name = ?, last_name = ? 
         WHERE id = ?`;
-                // Provide `null` if profileFilename is not given
-                const values = [newUsername, newFirstname, newLastname, profileFilename || null, id];
-                // Execute query
-                const [result] = yield base_database_1.default.execute(updateQuery, values);
-                // Check if update was successful
+                const values = [newUsername, newFirstname, newLastname, id];
+                // Execute the query using db.execute, result is returned as an array
+                const [result] = yield base_database_1.default.execute(updateQuery, values); // Notice the [result] destructuring
+                // Check if the update was successful by checking the affectedRows
                 return result.affectedRows > 0 ? result : null;
             }
             catch (error) {

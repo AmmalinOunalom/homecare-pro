@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.forgot_password = exports.rename_user = exports.show_all_users = exports.sign_in_user = exports.create_users = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
 // create user
 const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -26,8 +28,7 @@ const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(201).send("User created successfully");
     }
     catch (error) {
-        console.error("Error creating user:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(400).send("User with the same email, username, or last_name already exists");
     }
 });
 exports.create_users = create_users;
@@ -35,12 +36,19 @@ exports.create_users = create_users;
 const sign_in_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        // Call the model's sign_in function
+        // Call the model's sign_in function to verify user credentials
         const user = yield user_model_1.user_model.sign_in(email, password);
         if (user) {
             // If user is found and password is correct
+            // Generate JWT token
+            const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, email: user.email }, // Payload
+            JWT_SECRET, // Secret key
+            { expiresIn: '1h' } // Token expiration time
+            );
+            // Send success response along with the token
             res.status(200).send({
                 message: "Sign-in successful",
+                token, // Sending the generated token to the client
                 user: {
                     id: user.id,
                     username: user.username,
@@ -71,11 +79,14 @@ const show_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.show_all_users = show_all_users;
-// function (Rename User)
 const rename_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, newUsername, newFirstname, newLastname } = req.body;
-        const result = yield user_model_1.user_model.rename_users(id, newUsername, newFirstname, newLastname);
+        // Extract the user ID from the URL parameters and the new user details from the body
+        const { id } = req.params; // ID from the URL path
+        const { newUsername, newFirstname, newLastname } = req.body;
+        // Call the model function with the necessary arguments
+        const result = yield user_model_1.user_model.rename_users(Number(id), newUsername, newFirstname, newLastname);
+        // Check if result is returned
         if (result) {
             res.status(200).send("User updated successfully");
         }
@@ -84,6 +95,7 @@ const rename_user = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
+        // Log and send internal server error
         console.error("Error updating user:", error);
         res.status(500).send("Internal Server Error");
     }

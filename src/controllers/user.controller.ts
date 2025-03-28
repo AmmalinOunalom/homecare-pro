@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { user_model } from '../model/user.model';
 import bcrypt from 'bcrypt';
+
+const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
 
 // create user
 export const create_users = async (req: Request, res: Response) => {
@@ -19,22 +22,31 @@ export const create_users = async (req: Request, res: Response) => {
 
     res.status(201).send("User created successfully");
   } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(400).send("User with the same email, username, or last_name already exists");
   }
 };
+
 // Sign in user
 export const sign_in_user = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Call the model's sign_in function
+    // Call the model's sign_in function to verify user credentials
     const user = await user_model.sign_in(email, password);
 
     if (user) {
       // If user is found and password is correct
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user.id, username: user.username, email: user.email },  // Payload
+        JWT_SECRET,  // Secret key
+        { expiresIn: '1h' }  // Token expiration time
+      );
+
+      // Send success response along with the token
       res.status(200).send({
         message: "Sign-in successful",
+        token,  // Sending the generated token to the client
         user: {
           id: user.id,
           username: user.username,
@@ -61,21 +73,23 @@ export const show_all_users = async (req: Request, res: Response) => {
   }
 };
 
-// function (Rename User)
 export const rename_user = async (req: Request, res: Response) => {
   try {
-    const { id, newUsername, newFirstname, newLastname } = req.body;
+    // Extract the user ID from the URL parameters and the new user details from the body
+    const { id } = req.params; // ID from the URL path
+    const { newUsername, newFirstname, newLastname } = req.body;
 
+    // Call the model function with the necessary arguments
+    const result = await user_model.rename_users(Number(id), newUsername, newFirstname, newLastname);
 
-    const result = await user_model.rename_users(id, newUsername, newFirstname, newLastname);
-
-
+    // Check if result is returned
     if (result) {
       res.status(200).send("User updated successfully");
     } else {
       res.status(404).send("User not found or no changes made");
     }
   } catch (error) {
+    // Log and send internal server error
     console.error("Error updating user:", error);
     res.status(500).send("Internal Server Error");
   }

@@ -51,19 +51,12 @@ router.get("/:id", employees_controller_1.show_employee_by_id);
 // NOTE - Get Employee by ID=5 && cat_name = Moving
 /**
  * @swagger
- * /read_emp_car_employees:
+ * /employees/read_emp_car_employees/5:
  *   get:
- *     summary: Get Employee Details for empId = 5
- *     description: Fetches employee details where empId is fixed to 5.
+ *     summary: Get Employee Details for empId = 5 and cat_name = 'Moving'
+ *     description: Fetches employee details where empId is 5 and category name is 'Moving'.
  *     tags:
  *       - Employees
- *     parameters:
- *       - in: query
- *         name: empId
- *         required: false
- *         schema:
- *           type: integer
- *         example: 5
  *     responses:
  *       200:
  *         description: Successfully retrieved employee details
@@ -75,19 +68,35 @@ router.get("/:id", employees_controller_1.show_employee_by_id);
  *                 empId:
  *                   type: integer
  *                   example: 5
- *                 name:
+ *                 first_name:
  *                   type: string
- *                   example: "John Doe"
- *                 position:
+ *                   example: "John"
+ *                 last_name:
  *                   type: string
- *                   example: "Technician"
- *       400:
- *         description: Invalid request
+ *                   example: "Doe"
+ *                 car_brand:
+ *                   type: string
+ *                   example: "Toyota"
+ *                 model:
+ *                   type: string
+ *                   example: "Corolla"
+ *                 license_plate:
+ *                   type: string
+ *                   example: "XYZ-1234"
+ *                 car_image:
+ *                   type: string
+ *                   example: "http://example.com/car_image.jpg"
+ *                 cat_id:
+ *                   type: integer
+ *                   example: 5
+ *                 cat_name:
+ *                   type: string
+ *                   example: "Moving"
  *       404:
  *         description: Employee details not found
  *       500:
  *         description: Server error
-*/
+ */
 router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employee_by_id);
 // NOTE - Create Employee
 /**
