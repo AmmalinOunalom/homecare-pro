@@ -13,6 +13,9 @@ export interface AddressUserDetails {
     users_id: number;         // Foreign key to users table
     gender_owner: Gender;     // Gender of the owner
     address_name: string;     // User's address
+    address_description: string;
+    city: "CHANTHABULY" | "SIKHOTTABONG" | "XAYSETHA" | "SISATTANAK" | "NAXAITHONG" | "XAYTANY" | "HADXAIFONG"; // ENUM
+    tel: string;
     house_image: string;      // URL or path to house image
     google_link_map: string;  // Google Maps link
     created_at: Date;         // Timestamp when the address was created
@@ -22,59 +25,114 @@ export interface AddressUserDetails {
 
 export class address_users_details_model {
     // Create Address User Details and return the new ID
-    static async create_address_user_details(addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">) {
+    // static async create_address_user_details(
+    //     addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">
+    // ) {
+    //     try {
+    //         // Ensure that undefined values are converted to null
+    //         const values = [
+    //             addressUser.users_id || null,
+    //             addressUser.gender_owner || null,
+    //             addressUser.address_name || null,
+    //             addressUser.house_image || null,
+    //             addressUser.google_link_map || null,
+    //             addressUser.address_description || null, // New field
+    //             addressUser.city || null, // New field
+    //             addressUser.tel || null // New field
+    //         ];
+
+    //         const query = `
+    //             INSERT INTO address_users_detail 
+    //             (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    //         `;
+
+    //         // Execute the query with the sanitized values
+    //         const [result]: any = await db.execute(query, values);
+
+    //         // Return the result of the insertion
+    //         return result;
+    //     } catch (error: unknown) {
+    //         console.error("Error inserting address_users_detail:", error);
+    //         throw new Error("Failed to create address_users_detail");
+    //     }
+    // }
+
+    static async create_address_user_details(
+        addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">
+    ) {
         try {
             // Ensure that undefined values are converted to null
             const values = [
-                addressUser.users_id || null, // If users_id is undefined, set to null
-                addressUser.gender_owner || null, // If gender_owner is undefined, set to null
-                addressUser.address_name || null, // If address_name is undefined, set to null
-                addressUser.house_image || null, // If house_image is undefined, set to null
-                addressUser.google_link_map || null // If google_link_map is undefined, set to null
+                addressUser.users_id || null,
+                addressUser.gender_owner || null,
+                addressUser.address_name || null,
+                addressUser.house_image || null,
+                addressUser.google_link_map || null,
+                addressUser.address_description || null, // New field
+                addressUser.city || null, // New field
+                addressUser.tel || null // New field
             ];
-
+    
             const query = `
                 INSERT INTO address_users_detail 
-                (users_id, gender_owner, address_name, house_image, google_link_map)
-                VALUES (?, ?, ?, ?, ?)
+                (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
-
-            // Execute the query with the sanitized values
+    
+            // Insert into address_users_detail table
             const [result]: any = await db.execute(query, values);
-
-            // Return the result of the insertion
-            return result;
-        } catch (error) {
+    
+            // Check if insertion was successful
+            if (!result.insertId) {
+                throw new Error("Failed to retrieve insertId after inserting address");
+            }
+    
+            const addressUsersDetailId = result.insertId;
+            console.log("New Address ID:", addressUsersDetailId);
+    
+            // Update users table with the new address ID
+            const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
+            const [updateResult]: any = await db.execute(updateQuery, [addressUsersDetailId, addressUser.users_id]);
+    
+            console.log("Update Query Result:", updateResult);
+    
+            if (updateResult.affectedRows === 0) {
+                throw new Error(`User ID ${addressUser.users_id} not found or update failed.`);
+            }
+    
+            return { insertId: addressUsersDetailId };
+        } catch (error: unknown) {
             console.error("Error inserting address_users_detail:", error);
-            throw new Error("Failed to create address_users_detail");
+            throw new Error("Failed to create address_users_detail and update users table");
         }
     }
 
-    
+
     //UPLOAD HOUSE IMAGE
 
     static async update_house_image(addressId: number, cloudinaryUrl: string) {
         try {
-          // Update the house image for the specific addressId
-          const query = `
+            // Update the house image for the specific addressId
+            const query = `
             UPDATE address_users_detail 
             SET house_image = ? 
             WHERE id = ?;
           `;
-    
-          const [result]: any[] = await db.execute(query, [cloudinaryUrl, addressId]);
-    
-          // Check if any rows were affected
-          if (result.affectedRows === 0) {
-            return { success: false, message: "House image not found or update failed" };
-          }
-    
-          return { success: true, message: "House image updated successfully" };
+
+            const [result]: any[] = await db.execute(query, [cloudinaryUrl, addressId]);
+
+            // Check if any rows were affected
+            if (result.affectedRows === 0) {
+                return { success: false, message: "House image not found or update failed" };
+            }
+
+            return { success: true, message: "House image updated successfully" };
         } catch (error) {
-          console.error("Error updating house image:", error);
-          return { success: false, message: "Failed to update house image" };
+            console.error("Error updating house image:", error);
+            return { success: false, message: "Failed to update house image" };
         }
-      }
+    }
 
     //SELECT USER BY ID
 
@@ -114,21 +172,40 @@ export class address_users_details_model {
     }
 
     // Update Address User Details
-    static async update_address_user_details(id: number, addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">) {
+    static async update_address_user_details(
+        id: number,
+        addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">
+    ) {
         try {
-            const query = `UPDATE address_users_detail 
-                           SET users_id = ?, gender_owner = ?, address_name = ?, house_image = ?, google_link_map = ?, updated_at = NOW() 
-                           WHERE id = ?`;
+            const query = `
+                UPDATE address_users_detail 
+                SET 
+                    users_id = ?, 
+                    gender_owner = ?, 
+                    address_name = ?, 
+                    house_image = ?, 
+                    google_link_map = ?, 
+                    address_description = ?, 
+                    city = ?, 
+                    tel = ?, 
+                    updated_at = NOW() 
+                WHERE id = ?
+            `;
+    
             const values = [
                 addressUser.users_id,
                 addressUser.gender_owner,
                 addressUser.address_name,
                 addressUser.house_image,
                 addressUser.google_link_map,
+                addressUser.address_description,
+                addressUser.city,
+                addressUser.tel,
                 id
             ];
+    
             const [result] = await db.execute(query, values);
-            return result;  // Return the result to indicate update status
+            return result; // Return the result to indicate update status
         } catch (error) {
             console.error("Error updating address_users_details:", error);
             throw new Error("Failed to update address_users_details");

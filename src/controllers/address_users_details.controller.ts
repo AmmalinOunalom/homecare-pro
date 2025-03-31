@@ -5,54 +5,79 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { address_users_details_model } from "../model/address_users_details.model";
 import db from "../config/base.database";
+import { log } from "console";
 
 /**
  * Create a new address user detail
  */
+
 // export const create_address_user_details = async (req: Request, res: Response) => {
 //   try {
 //     const addressUserData = req.body;
+//     const usersId = addressUserData.users_id;
 
 //     console.log("Inserting address user details", addressUserData);
 //     const addressUser = await address_users_details_model.create_address_user_details(addressUserData);
 //     console.log("Address user created", addressUser);
 
 //     const addressUsersDetailId = addressUser.insertId;
-//     const usersId = addressUserData.users_id;
 
-//     const updateQuery = `
-//       UPDATE users 
-//       SET address_users_detail_id = ? 
-//       WHERE id = ?
-//     `;
+//     // Fetch all address_user_details for this user
+//     const [existingAddresses]: any = await db.execute(
+//       `SELECT id FROM address_users_details WHERE users_id = ?`,
+//       [usersId]
+//     );
 
-//     console.log("Executing update query", updateQuery, [addressUsersDetailId, usersId]);
-//     await db.execute(updateQuery, [addressUsersDetailId, usersId]);
+//     console.log("Existing addresses for user:", existingAddresses);
+
+//     // Determine which address to save in the users table (choose the latest created one)
+//     const validAddressIds = existingAddresses.map((record: any) => record.id);
+//     const addressToSave = validAddressIds.includes(addressUsersDetailId)
+//       ? addressUsersDetailId
+//       : validAddressIds[0]; // Pick the first valid address if needed
+
+//     console.log(`Saving address_users_detail_id ${addressToSave} for user ${usersId}`);
+
+//     const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
+//     await db.execute(updateQuery, [addressToSave, usersId]);
 
 //     res.status(201).send("Address user detail created successfully and users table updated.");
 //   } catch (error) {
 //     console.error("Error occurred:", error);
+//     console.log(error);
+    
 //     res.status(500).send("Failed to create address user detail");
 //   }
 // };
 
 export const create_address_user_details = async (req: Request, res: Response) => {
   try {
+    // Log incoming request body
     const addressUserData = req.body;
     const usersId = addressUserData.users_id;
 
-    console.log("Inserting address user details", addressUserData);
-    const addressUser = await address_users_details_model.create_address_user_details(addressUserData);
-    console.log("Address user created", addressUser);
+    console.log("Received address user details:", addressUserData); // Log the received data
+    console.log(`User ID: ${usersId}`); // Log the user ID
 
+    // Call model function to create address user details and update users table
+    console.log("Calling model to create address user details...");
+    const addressUser = await address_users_details_model.create_address_user_details(addressUserData);
+
+    // Log result of model function (address user created)
+    console.log("Address user created:", addressUser);
+
+    // Extract the insertId to get the newly created address user's ID
     const addressUsersDetailId = addressUser.insertId;
+    console.log("Newly created address_users_detail_id:", addressUsersDetailId); // Log the inserted ID
 
     // Fetch all address_user_details for this user
+    console.log(`Fetching existing address details for user ID ${usersId}...`);
     const [existingAddresses]: any = await db.execute(
-      `SELECT id FROM address_users_details WHERE users_id = ?`,
+      `SELECT id FROM address_users_detail WHERE users_id = ?`,
       [usersId]
     );
 
+    // Log the existing addresses for this user
     console.log("Existing addresses for user:", existingAddresses);
 
     // Determine which address to save in the users table (choose the latest created one)
@@ -61,17 +86,28 @@ export const create_address_user_details = async (req: Request, res: Response) =
       ? addressUsersDetailId
       : validAddressIds[0]; // Pick the first valid address if needed
 
-    console.log(`Saving address_users_detail_id ${addressToSave} for user ${usersId}`);
+    // Log which address ID will be saved
+    console.log(`Address ID to save in users table: ${addressToSave}`);
 
+    // Update users table with the new address detail ID
+    console.log("Updating users table with new address_users_detail_id...");
     const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
     await db.execute(updateQuery, [addressToSave, usersId]);
 
+    // Log the successful update
+    console.log("Users table updated successfully with address_users_detail_id.");
+
+    // Send a success response
     res.status(201).send("Address user detail created successfully and users table updated.");
   } catch (error) {
-    console.error("Error occurred:", error);
+    // Log error details
+    console.error("Error occurred while creating address user detail:", error);
+
+    // Send an error response
     res.status(500).send("Failed to create address user detail");
   }
 };
+
 
 // UPLOAD HOUSE IMAGE
 

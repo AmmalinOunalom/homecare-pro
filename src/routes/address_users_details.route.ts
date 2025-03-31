@@ -31,6 +31,9 @@ const router = express.Router();
  *               - gender_owner
  *               - address_name
  *               - google_link_map
+ *               - address_description
+ *               - city
+ *               - tel
  *             properties:
  *               users_id:
  *                 type: integer
@@ -53,6 +56,26 @@ const router = express.Router();
  *                 type: string
  *                 description: Google Maps link to the address location
  *                 example: "https://maps.google.com/example-link"
+ *               address_description:
+ *                 type: string
+ *                 description: Detailed description of the address
+ *                 example: "Near the central park, blue house with a white gate."
+ *               city:
+ *                 type: string
+ *                 enum: 
+ *                   - CHANTHABULY
+ *                   - SIKHOTTABONG
+ *                   - XAYSETHA
+ *                   - SISATTANAK
+ *                   - NAXAITHONG
+ *                   - XAYTANY
+ *                   - HADXAIFONG
+ *                 description: City where the address is located
+ *                 example: "SISATTANAK"
+ *               tel:
+ *                 type: string
+ *                 description: Contact phone number for the address
+ *                 example: "+856202345678"
  *     responses:
  *       201:
  *         description: Address user detail created successfully and users table updated.

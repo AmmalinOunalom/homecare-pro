@@ -23,30 +23,74 @@ var Gender;
 })(Gender || (Gender = {}));
 class address_users_details_model {
     // Create Address User Details and return the new ID
+    // static async create_address_user_details(
+    //     addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">
+    // ) {
+    //     try {
+    //         // Ensure that undefined values are converted to null
+    //         const values = [
+    //             addressUser.users_id || null,
+    //             addressUser.gender_owner || null,
+    //             addressUser.address_name || null,
+    //             addressUser.house_image || null,
+    //             addressUser.google_link_map || null,
+    //             addressUser.address_description || null, // New field
+    //             addressUser.city || null, // New field
+    //             addressUser.tel || null // New field
+    //         ];
+    //         const query = `
+    //             INSERT INTO address_users_detail 
+    //             (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    //         `;
+    //         // Execute the query with the sanitized values
+    //         const [result]: any = await db.execute(query, values);
+    //         // Return the result of the insertion
+    //         return result;
+    //     } catch (error: unknown) {
+    //         console.error("Error inserting address_users_detail:", error);
+    //         throw new Error("Failed to create address_users_detail");
+    //     }
+    // }
     static create_address_user_details(addressUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Ensure that undefined values are converted to null
                 const values = [
-                    addressUser.users_id || null, // If users_id is undefined, set to null
-                    addressUser.gender_owner || null, // If gender_owner is undefined, set to null
-                    addressUser.address_name || null, // If address_name is undefined, set to null
-                    addressUser.house_image || null, // If house_image is undefined, set to null
-                    addressUser.google_link_map || null // If google_link_map is undefined, set to null
+                    addressUser.users_id || null,
+                    addressUser.gender_owner || null,
+                    addressUser.address_name || null,
+                    addressUser.house_image || null,
+                    addressUser.google_link_map || null,
+                    addressUser.address_description || null, // New field
+                    addressUser.city || null, // New field
+                    addressUser.tel || null // New field
                 ];
                 const query = `
                 INSERT INTO address_users_detail 
-                (users_id, gender_owner, address_name, house_image, google_link_map)
-                VALUES (?, ?, ?, ?, ?)
+                (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
-                // Execute the query with the sanitized values
+                // Insert into address_users_detail table
                 const [result] = yield base_database_1.default.execute(query, values);
-                // Return the result of the insertion
-                return result;
+                // Check if insertion was successful
+                if (!result.insertId) {
+                    throw new Error("Failed to retrieve insertId after inserting address");
+                }
+                const addressUsersDetailId = result.insertId;
+                console.log("New Address ID:", addressUsersDetailId);
+                // Update users table with the new address ID
+                const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
+                const [updateResult] = yield base_database_1.default.execute(updateQuery, [addressUsersDetailId, addressUser.users_id]);
+                console.log("Update Query Result:", updateResult);
+                if (updateResult.affectedRows === 0) {
+                    throw new Error(`User ID ${addressUser.users_id} not found or update failed.`);
+                }
+                return { insertId: addressUsersDetailId };
             }
             catch (error) {
                 console.error("Error inserting address_users_detail:", error);
-                throw new Error("Failed to create address_users_detail");
+                throw new Error("Failed to create address_users_detail and update users table");
             }
         });
     }
@@ -115,15 +159,29 @@ class address_users_details_model {
     static update_address_user_details(id, addressUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `UPDATE address_users_detail 
-                           SET users_id = ?, gender_owner = ?, address_name = ?, house_image = ?, google_link_map = ?, updated_at = NOW() 
-                           WHERE id = ?`;
+                const query = `
+                UPDATE address_users_detail 
+                SET 
+                    users_id = ?, 
+                    gender_owner = ?, 
+                    address_name = ?, 
+                    house_image = ?, 
+                    google_link_map = ?, 
+                    address_description = ?, 
+                    city = ?, 
+                    tel = ?, 
+                    updated_at = NOW() 
+                WHERE id = ?
+            `;
                 const values = [
                     addressUser.users_id,
                     addressUser.gender_owner,
                     addressUser.address_name,
                     addressUser.house_image,
                     addressUser.google_link_map,
+                    addressUser.address_description,
+                    addressUser.city,
+                    addressUser.tel,
                     id
                 ];
                 const [result] = yield base_database_1.default.execute(query, values);
