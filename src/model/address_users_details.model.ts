@@ -136,13 +136,18 @@ export class address_users_details_model {
 
     //SELECT USER BY ID
 
-    static async show_by_user_id(userId: number) {
+    static async show_address_by_user_id(userId: number) {
         try {
             const query = `
-                SELECT * 
+                SELECT 
+                    u.id, 
+                    u.username, 
+                    COALESCE(GROUP_CONCAT(a.id), '') AS address_users_detail_id
                 FROM users u
                 LEFT JOIN address_users_detail a ON u.id = a.users_id
-                WHERE u.id = ?;
+                WHERE u.id = ?
+                GROUP BY u.id, u.username;
+
             `;
 
             const result = await db.execute(query, [userId]); // Get query result directly

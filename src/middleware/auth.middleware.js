@@ -5,19 +5,87 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authenticateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const SECRET_KEY = process.env.JWT_SECRET_USERS || "ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c";
+// Secret keys for each user type
+const SECRET_KEYS = {
+    users: process.env.JWT_SECRET_USERS || "ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c",
+    employees: process.env.JWT_SECRET_EMPLOYEE || "63kLCJudFfAA7uioZf56mKCaHZyfhzKFZlKXt52wDb1aqu4ux2eD8oC2OcPTPAo6VkE7LwXAqK7YpCXpvop2BVmoRX",
+    admins: process.env.JWT_SECRET_ADMIN || "UOK9wmEuGRmtAeGXZEutF1G0BPwCZYoIUfvsXtYmVL99jGF6BAcYVQf7f5FHZ5DTFPw1xgBRgu06ER4DQoc5vUV7EI"
+};
+// Function to generate Token
+const generateToken = (id, type) => {
+    const secret = SECRET_KEYS[type];
+    return jsonwebtoken_1.default.sign({ id, type }, secret, { expiresIn: "1h" });
+};
+// // Middleware to authenticate Token
+// export const authenticateToken = (req: RequestWithUser, res: Response, next: NextFunction): void => {
+//     console.log("Token verification started...");
+//   const token = req.header("Authorization")?.split(" ")[1];  // Get Token from Authorization header
+//   if (!token) {
+//     res.status(403).json({ error: "Access denied: No token provided" });  // No token provided
+//     return; // Avoid further processing if token is not found
+//   }
+//   try {
+//     let decoded: any = null;
+//     let userType: "users" | "employees" | "admins" | null = null;
+//     // Check for token validity for each type of user
+//     for (const type of ["users", "employees", "admins"] as const) {
+//       try {
+//         decoded = jwt.verify(token, SECRET_KEYS[type]);  // Verify token
+//         userType = type;
+//         break;  // Break the loop if token is valid
+//       } catch (err) {
+//         continue;  // Continue to next type if verification fails
+//       }
+//     }
+//     if (!decoded || !userType) {
+//       res.status(401).json({ error: "Invalid token: No matching user type" });  // Invalid token or no matching user type
+//       return;  // Exit if token is invalid
+//     }
+//     // Add the user info to request object
+//     req.user = { id: decoded.id, type: userType };
+//     // Call next middleware or route handler
+//     next();
+//   } catch (error) {
+//     res.status(401).json({ error: "Invalid token: Error while verifying token" });  // Error verifying token
+//   }
+// };
 const authenticateToken = (req, res, next) => {
     var _a;
-    const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-    if (!token)
-        return res.status(403).json({ error: "Access denied" });
+    console.log("Token verification started...");
+    const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.split(" ")[1]; // รับ Token จาก Header
+    if (!token) {
+        console.log("No token provided"); // แสดงข้อความถ้าไม่มี Token
+        res.status(403).json({ error: "Access denied: No token provided" });
+        return;
+    }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, SECRET_KEY);
-        req.user = decoded;
+        let decoded = null;
+        let userType = null;
+        // ตรวจสอบว่า Token เป็นของ user, employee หรือ admin
+        for (const type of ["users", "employees", "admins"]) {
+            try {
+                decoded = jsonwebtoken_1.default.verify(token, SECRET_KEYS[type]); // ตรวจสอบ Token
+                userType = type;
+                break;
+            }
+            catch (err) {
+                continue;
+            }
+        }
+        if (!decoded || !userType) {
+            console.log("Invalid token: No matching user type"); // แสดงถ้า Token ไม่ถูกต้อง
+            res.status(401).json({ error: "Invalid token: No matching user type" });
+            return;
+        }
+        // แสดงข้อมูลของ Token ใน Terminal
+        console.log(`✅ Token Verified! User ID: ${decoded.id}, User Type: ${userType}`);
+        // เพิ่มข้อมูล user ลงใน request object
+        req.user = { id: decoded.id, type: userType };
         next();
     }
     catch (error) {
-        res.status(401).json({ error: "Invalid token" });
+        console.log("Error verifying token:", error); // แสดงข้อผิดพลาด
+        res.status(401).json({ error: "Invalid token: Error while verifying token" });
     }
 };
 exports.authenticateToken = authenticateToken;

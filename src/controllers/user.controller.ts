@@ -27,26 +27,62 @@ export const create_users = async (req: Request, res: Response) => {
 };
 
 // Sign in user
+// export const sign_in_user = async (req: Request, res: Response) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Call the model's sign_in function to verify user credentials
+//     const user = await user_model.sign_in(email, password);
+
+//     if (user) {
+//       // If user is found and password is correct
+//       // Generate JWT token
+//       const token = jwt.sign(
+//         { id: user.id, username: user.username, email: user.email },  // Payload
+//         JWT_SECRET,  // Secret key
+//         { expiresIn: '1h' }  // Token expiration time
+//       );
+
+//       // Send success response along with the token
+//       res.status(200).send({
+//         message: "Sign-in successful",
+//         token,  // Sending the generated token to the client
+//         user: {
+//           id: user.id,
+//           username: user.username,
+//           email: user.email
+//         },
+//       });
+//     } else {
+//       // If credentials are invalid
+//       res.status(401).send("Invalid email or password");
+//     }
+//   } catch (error) {
+//     console.error("Error during sign in:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
 export const sign_in_user = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Call the model's sign_in function to verify user credentials
+    // เรียกใช้ฟังก์ชัน sign_in ของ model เพื่อยืนยันข้อมูลผู้ใช้
     const user = await user_model.sign_in(email, password);
 
     if (user) {
-      // If user is found and password is correct
-      // Generate JWT token
+      // ถ้าผู้ใช้พบและรหัสผ่านถูกต้อง
+      // สร้าง JWT token
       const token = jwt.sign(
         { id: user.id, username: user.username, email: user.email },  // Payload
         JWT_SECRET,  // Secret key
-        { expiresIn: '1h' }  // Token expiration time
+        { expiresIn: '1h' }  // ระยะเวลาหมดอายุของ token
       );
 
-      // Send success response along with the token
+      // ส่งข้อมูลกลับไปยัง client
       res.status(200).send({
         message: "Sign-in successful",
-        token,  // Sending the generated token to the client
+        token,  // ส่ง token ที่ถูกสร้าง
         user: {
           id: user.id,
           username: user.username,
@@ -54,7 +90,7 @@ export const sign_in_user = async (req: Request, res: Response) => {
         },
       });
     } else {
-      // If credentials are invalid
+      // หากข้อมูลไม่ถูกต้อง
       res.status(401).send("Invalid email or password");
     }
   } catch (error) {
@@ -62,6 +98,8 @@ export const sign_in_user = async (req: Request, res: Response) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
 // show all users
 export const show_all_users = async (req: Request, res: Response) => {
   try {

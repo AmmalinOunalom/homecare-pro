@@ -163,12 +163,12 @@ export const upload_house_image = async (req: Request, res: Response): Promise<v
 
   //SELECT USER BY ID
 
-export const show_by_user_id = async (req: Request, res: Response) => {
+export const show_address_by_user_id = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     console.log("Received userId:", id);  // Log to ensure the request is reaching the controller
 
-    const addressUserDetails = await address_users_details_model.show_by_user_id(Number(id));
+    const addressUserDetails = await address_users_details_model.show_address_by_user_id(Number(id));
     console.log("Address User Details:", addressUserDetails);  // Log the result returned by the model
 
     if (addressUserDetails) {

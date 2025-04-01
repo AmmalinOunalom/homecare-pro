@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cloudinary_1 = require("cloudinary");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config(); // โหลดค่าจากไฟล์ .env
-console.log(process.env.CLOUDINARY_CLOUD_NAME);
+//console.log(process.env.CLOUDINARY_CLOUD_NAME)
 // ตั้งค่า Cloudinary
 cloudinary_1.v2.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

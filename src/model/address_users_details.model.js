@@ -122,10 +122,15 @@ class address_users_details_model {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                SELECT * 
+                SELECT 
+                    u.id, 
+                    u.username, 
+                    COALESCE(GROUP_CONCAT(a.id), '') AS address_users_detail_id
                 FROM users u
                 LEFT JOIN address_users_detail a ON u.id = a.users_id
-                WHERE u.id = ?;
+                WHERE u.id = ?
+                GROUP BY u.id, u.username;
+
             `;
                 const result = yield base_database_1.default.execute(query, [userId]); // Get query result directly
                 if (result && result.length > 0) {

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const auth_middleware_1 = require("../middleware/auth.middleware"); // เชื่อมต่อกับ middleware
 const user_controller_1 = require("../controllers/user.controller");
 const router = express_1.default.Router();
 // NOTE - Read All users
@@ -21,7 +22,7 @@ const router = express_1.default.Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/read_user", user_controller_1.show_all_users);
+router.get("/read_user", auth_middleware_1.authenticateToken, user_controller_1.show_all_users);
 // NOTE - SIGN_UP USER
 /**
  * @swagger

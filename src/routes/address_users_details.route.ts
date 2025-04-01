@@ -1,7 +1,7 @@
 import express from "express";
 import { 
     create_address_user_details, 
-    show_by_user_id, 
+    show_address_by_user_id, 
     show_all_address_users_details, 
     update_address_user_details, 
     delete_address_user_details, 
@@ -149,7 +149,7 @@ router.post('/upload_house_image', upload.single('house_image'), upload_house_im
  *       500:
  *         description: Internal server error.
  */
-router.get("/:id", show_by_user_id);
+router.get("/:id", show_address_by_user_id);
 
 // NOTE - Show All Address Users
 /**
