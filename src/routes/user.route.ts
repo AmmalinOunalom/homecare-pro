@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticateToken } from "../middleware/auth.middleware"; // เชื่อมต่อกับ middleware
+import { validateToken } from "../middleware/auth.middleware"; // เชื่อมต่อกับ middleware
 import { create_users, show_all_users, forgot_password, rename_user, sign_in_user } from "../controllers/user.controller";
 
 const router = express.Router();
@@ -19,7 +19,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/read_user",authenticateToken, show_all_users);
+router.get("/read_user",validateToken, show_all_users);
 
 // NOTE - SIGN_UP USER
 /**

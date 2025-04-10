@@ -14,6 +14,7 @@ export interface AddressUserDetails {
     gender_owner: Gender;     // Gender of the owner
     address_name: string;     // User's address
     address_description: string;
+    village: string;
     city: "CHANTHABULY" | "SIKHOTTABONG" | "XAYSETHA" | "SISATTANAK" | "NAXAITHONG" | "XAYTANY" | "HADXAIFONG"; // ENUM
     tel: string;
     house_image: string;      // URL or path to house image
@@ -67,6 +68,7 @@ export class address_users_details_model {
                 addressUser.users_id || null,
                 addressUser.gender_owner || null,
                 addressUser.address_name || null,
+                addressUser.village || null,
                 addressUser.house_image || null,
                 addressUser.google_link_map || null,
                 addressUser.address_description || null, // New field
@@ -76,8 +78,8 @@ export class address_users_details_model {
     
             const query = `
                 INSERT INTO address_users_detail 
-                (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (users_id, gender_owner, address_name, village, house_image, google_link_map, address_description, city, tel)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
     
             // Insert into address_users_detail table

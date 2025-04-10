@@ -3,13 +3,12 @@ import { create_service_order, show_all_service_orders, show_service_order_by_id
 
 const router = express.Router();
 
-// NOTE - Create Service Order
 /**
  * @swagger
- * /service_order/create:
+ * /service_order/create:  # This should match the route path
  *   post:
  *     summary: Create a new service order
- *     description: Adds a new service order with payment status and amount.
+ *     description: Adds a new service order with payment status and amount, after validating user_id, employees_id, cat_id, and address_users_detail_id.
  *     tags:
  *       - Service Orders
  *     requestBody:
@@ -42,7 +41,7 @@ const router = express.Router();
  *       201:
  *         description: Service order created successfully.
  *       400:
- *         description: Invalid input data.
+ *         description: Invalid input data (e.g., non-existent user_id, employees_id, category, or address).
  *       500:
  *         description: Internal server error.
  */

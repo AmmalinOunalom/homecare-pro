@@ -3,8 +3,11 @@ import path from "path"; // To handle file paths
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import jwt from 'jsonwebtoken';
 import { employees_model } from "../model/employees.model";
 import bcrypt from "bcrypt";
+
+const JWT_SECRET_EMPLOYEE = '63kLCJudFfAA7uioZf56mKCaHZyfhzKFZlKXt52wDb1aqu4ux2eD8oC2OcPTPAo6VkE7LwXAqK7YpCXpvop2BVmoRX';
 
 /**
  * Create a new employee
@@ -24,6 +27,41 @@ export const create_employees = async (req: Request, res: Response) => {
   }
 };
 // Sign in employee
+// export const sign_in_employee = async (req: Request, res: Response) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Call the model's sign_in_employee function
+//     const employee = await employees_model.sign_in_employee(email, password);
+
+//     if (employee) {
+//       // If employee is found and password is correct
+//       res.status(200).send({
+//         message: "Sign-in successful",
+//         employee: {
+//           id: employee.id,
+//           first_name: employee.first_name,
+//           last_name: employee.last_name,
+//           email: employee.email,
+//         },
+//       });
+//     } else {
+//       // If credentials are invalid
+//       res.status(401).send({
+//         message: "Invalid email or password",
+//       });
+//     }
+//   } catch (error) {
+//     // Log error with more context
+//     console.error("Error during employee sign in process:", error);
+
+//     // Respond with internal server error
+//     res.status(500).send({
+//       message: "Internal Server Error, please try again later",
+//     });
+//   }
+// };
+
 export const sign_in_employee = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -32,9 +70,17 @@ export const sign_in_employee = async (req: Request, res: Response) => {
     const employee = await employees_model.sign_in_employee(email, password);
 
     if (employee) {
-      // If employee is found and password is correct
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: employee.id, first_name: employee.first_name, email: employee.email },
+        JWT_SECRET_EMPLOYEE,
+        { expiresIn: "1h" }
+      );
+
+      // Send success response with token
       res.status(200).send({
         message: "Sign-in successful",
+        token,
         employee: {
           id: employee.id,
           first_name: employee.first_name,
@@ -43,7 +89,7 @@ export const sign_in_employee = async (req: Request, res: Response) => {
         },
       });
     } else {
-      // If credentials are invalid
+      // Invalid credentials response
       res.status(401).send({
         message: "Invalid email or password",
       });
@@ -58,6 +104,7 @@ export const sign_in_employee = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 /**
  *  UPDATE PROFILE EMPLOYEE
