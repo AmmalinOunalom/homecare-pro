@@ -13,9 +13,13 @@ const router = express.Router();
  *     description: Retrieve a list of all users
  *     tags:
  *       - Users
+ *     security:
+ *       - bearerAuth: [] 
  *     responses:
  *       200:
  *         description: Successfully retrieved users
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -58,14 +62,14 @@ router.get("/read_user",authenticateToken, show_all_users);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: johndoe@example.com
+ *                 example: bie@gmail.com
  *               tel:
  *                 type: string
  *                 example: "1234567890"
  *               password:
  *                 type: string
  *                 format: password
- *                 example: "securePass123"
+ *                 example: "123456"
  *               gender:
  *                 type: string
  *                 enum: [MALE, FEMALE, OTHER]

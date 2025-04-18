@@ -26,6 +26,7 @@ const router = express_1.default.Router();
  *               - users_id
  *               - gender_owner
  *               - address_name
+ *               - village
  *               - google_link_map
  *               - address_description
  *               - city
@@ -34,7 +35,7 @@ const router = express_1.default.Router();
  *               users_id:
  *                 type: integer
  *                 description: ID of the user who owns the address
- *                 example: 1
+ *                 example: 11
  *               gender_owner:
  *                 type: string
  *                 enum: [MALE, FEMALE, OTHER]
@@ -44,6 +45,10 @@ const router = express_1.default.Router();
  *                 type: string
  *                 description: The name or label of the address
  *                 example: "123 Main Street"
+ *               village:
+ *                 type: string
+ *                 description: Village of the address
+ *                 example: "Ban Phonthan"
  *               house_image:
  *                 type: string
  *                 description: Image file name of the house
@@ -143,7 +148,7 @@ router.post('/upload_house_image', images_config_1.default.single('house_image')
  *       500:
  *         description: Internal server error.
  */
-router.get("/:id", address_users_details_controller_1.show_by_user_id);
+router.get("/:id", address_users_details_controller_1.show_address_by_user_id);
 // NOTE - Show All Address Users
 /**
  * @swagger

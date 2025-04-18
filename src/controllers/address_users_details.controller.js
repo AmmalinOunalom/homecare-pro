@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.show_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
+exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.show_address_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
 const fs_1 = __importDefault(require("fs"));
@@ -137,11 +137,11 @@ const upload_house_image = (req, res) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.upload_house_image = upload_house_image;
 //SELECT USER BY ID
-const show_by_user_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const show_address_by_user_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         console.log("Received userId:", id); // Log to ensure the request is reaching the controller
-        const addressUserDetails = yield address_users_details_model_1.address_users_details_model.show_by_user_id(Number(id));
+        const addressUserDetails = yield address_users_details_model_1.address_users_details_model.show_address_by_user_id(Number(id));
         console.log("Address User Details:", addressUserDetails); // Log the result returned by the model
         if (addressUserDetails) {
             res.status(200).send(addressUserDetails);
@@ -155,7 +155,7 @@ const show_by_user_id = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).send("Failed to fetch address user details");
     }
 });
-exports.show_by_user_id = show_by_user_id;
+exports.show_address_by_user_id = show_address_by_user_id;
 /**
  * Retrieve all address user details
  */

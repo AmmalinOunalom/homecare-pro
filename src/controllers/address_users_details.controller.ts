@@ -50,6 +50,7 @@ import { log } from "console";
 //   }
 // };
 
+
 export const create_address_user_details = async (req: Request, res: Response) => {
   try {
     // Log incoming request body

@@ -30,6 +30,7 @@ const router = express.Router();
  *               - users_id
  *               - gender_owner
  *               - address_name
+ *               - village
  *               - google_link_map
  *               - address_description
  *               - city
@@ -38,7 +39,7 @@ const router = express.Router();
  *               users_id:
  *                 type: integer
  *                 description: ID of the user who owns the address
- *                 example: 1
+ *                 example: 11
  *               gender_owner:
  *                 type: string
  *                 enum: [MALE, FEMALE, OTHER]
@@ -48,6 +49,10 @@ const router = express.Router();
  *                 type: string
  *                 description: The name or label of the address
  *                 example: "123 Main Street"
+ *               village:
+ *                 type: string
+ *                 description: Village of the address
+ *                 example: "Ban Phonthan"
  *               house_image:
  *                 type: string
  *                 description: Image file name of the house
