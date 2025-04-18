@@ -13,6 +13,7 @@ const emp_car_route_1 = __importDefault(require("./src/routes/emp_car.route"));
 const comments_route_1 = __importDefault(require("./src/routes/comments.route"));
 const address_users_details_route_1 = __importDefault(require("./src/routes/address_users_details.route"));
 const service_order_route_1 = __importDefault(require("./src/routes/service_order.route"));
+const sms_route_1 = __importDefault(require("./src/routes/sms.route")); // Import SMS route (for sending messages)
 const swagger_1 = require("./src/config/swagger"); // Swagger setup
 dotenv_1.default.config(); // Load environment variables
 const app = (0, express_1.default)();
@@ -38,6 +39,7 @@ app.use("/emp_car", emp_car_route_1.default);
 app.use("/comments", comments_route_1.default);
 app.use("/address_users_details", address_users_details_route_1.default);
 app.use("/service_order", service_order_route_1.default);
+app.use('/sms', sms_route_1.default);
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server running at ${process.env.URL || "http://localhost"}:${port}`);
