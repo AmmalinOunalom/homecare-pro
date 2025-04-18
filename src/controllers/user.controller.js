@@ -16,7 +16,7 @@ exports.forgot_password = exports.rename_user = exports.show_all_users = exports
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const JWT_SECRET_USER = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
+const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
 // create user
 const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -74,7 +74,7 @@ const sign_in_user = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             // ถ้าผู้ใช้พบและรหัสผ่านถูกต้อง
             // สร้าง JWT token
             const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, email: user.email }, // Payload
-            JWT_SECRET_USER, // Secret key
+            JWT_SECRET, // Secret key
             { expiresIn: '1h' } // ระยะเวลาหมดอายุของ token
             );
             // ส่งข้อมูลกลับไปยัง client

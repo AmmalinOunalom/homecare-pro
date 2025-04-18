@@ -22,7 +22,7 @@ const router = express_1.default.Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/read_user", auth_middleware_1.validateToken, user_controller_1.show_all_users);
+router.get("/read_user", auth_middleware_1.authenticateToken, user_controller_1.show_all_users);
 // NOTE - SIGN_UP USER
 /**
  * @swagger

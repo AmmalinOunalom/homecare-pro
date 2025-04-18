@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { user_model } from '../model/user.model';
 import bcrypt from 'bcrypt';
 
-const JWT_SECRET_USER = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
+const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
 
 // create user
 export const create_users = async (req: Request, res: Response) => {
@@ -75,7 +75,7 @@ export const sign_in_user = async (req: Request, res: Response) => {
       // สร้าง JWT token
       const token = jwt.sign(
         { id: user.id, username: user.username, email: user.email },  // Payload
-        JWT_SECRET_USER,  // Secret key
+        JWT_SECRET,  // Secret key
         { expiresIn: '1h' }  // ระยะเวลาหมดอายุของ token
       );
 

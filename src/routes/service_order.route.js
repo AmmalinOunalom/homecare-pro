@@ -6,12 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const service_order_controller_1 = require("../controllers/service_order.controller");
 const router = express_1.default.Router();
+// NOTE - Create Service Order
 /**
  * @swagger
- * /service_order/create:  # This should match the route path
+ * /service_order/create:
  *   post:
  *     summary: Create a new service order
- *     description: Adds a new service order with payment status and amount, after validating user_id, employees_id, cat_id, and address_users_detail_id.
+ *     description: Adds a new service order with payment status and amount.
  *     tags:
  *       - Service Orders
  *     requestBody:
@@ -44,7 +45,7 @@ const router = express_1.default.Router();
  *       201:
  *         description: Service order created successfully.
  *       400:
- *         description: Invalid input data (e.g., non-existent user_id, employees_id, category, or address).
+ *         description: Invalid input data.
  *       500:
  *         description: Internal server error.
  */

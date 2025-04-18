@@ -17,10 +17,8 @@ const path_1 = __importDefault(require("path")); // To handle file paths
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
 const fs_1 = __importDefault(require("fs"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const employees_model_1 = require("../model/employees.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const JWT_SECRET_EMPLOYEE = '63kLCJudFfAA7uioZf56mKCaHZyfhzKFZlKXt52wDb1aqu4ux2eD8oC2OcPTPAo6VkE7LwXAqK7YpCXpvop2BVmoRX';
 /**
  * Create a new employee
  */
@@ -39,49 +37,15 @@ const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.create_employees = create_employees;
 // Sign in employee
-// export const sign_in_employee = async (req: Request, res: Response) => {
-//   try {
-//     const { email, password } = req.body;
-//     // Call the model's sign_in_employee function
-//     const employee = await employees_model.sign_in_employee(email, password);
-//     if (employee) {
-//       // If employee is found and password is correct
-//       res.status(200).send({
-//         message: "Sign-in successful",
-//         employee: {
-//           id: employee.id,
-//           first_name: employee.first_name,
-//           last_name: employee.last_name,
-//           email: employee.email,
-//         },
-//       });
-//     } else {
-//       // If credentials are invalid
-//       res.status(401).send({
-//         message: "Invalid email or password",
-//       });
-//     }
-//   } catch (error) {
-//     // Log error with more context
-//     console.error("Error during employee sign in process:", error);
-//     // Respond with internal server error
-//     res.status(500).send({
-//       message: "Internal Server Error, please try again later",
-//     });
-//   }
-// };
 const sign_in_employee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
         // Call the model's sign_in_employee function
         const employee = yield employees_model_1.employees_model.sign_in_employee(email, password);
         if (employee) {
-            // Generate JWT token
-            const token = jsonwebtoken_1.default.sign({ id: employee.id, first_name: employee.first_name, email: employee.email }, JWT_SECRET_EMPLOYEE, { expiresIn: "1h" });
-            // Send success response with token
+            // If employee is found and password is correct
             res.status(200).send({
                 message: "Sign-in successful",
-                token,
                 employee: {
                     id: employee.id,
                     first_name: employee.first_name,
@@ -91,7 +55,7 @@ const sign_in_employee = (req, res) => __awaiter(void 0, void 0, void 0, functio
             });
         }
         else {
-            // Invalid credentials response
+            // If credentials are invalid
             res.status(401).send({
                 message: "Invalid email or password",
             });

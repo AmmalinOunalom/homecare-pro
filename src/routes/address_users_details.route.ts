@@ -34,7 +34,6 @@ const router = express.Router();
  *               - address_description
  *               - city
  *               - tel
- *               - village  # New required field
  *             properties:
  *               users_id:
  *                 type: integer
@@ -73,10 +72,6 @@ const router = express.Router();
  *                   - HADXAIFONG
  *                 description: City where the address is located
  *                 example: "SISATTANAK"
- *               village:  # New field
- *                 type: string
- *                 description: Village or neighborhood where the address is located
- *                 example: "Central Village"
  *               tel:
  *                 type: string
  *                 description: Contact phone number for the address

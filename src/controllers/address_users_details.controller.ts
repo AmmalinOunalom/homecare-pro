@@ -50,7 +50,6 @@ import { log } from "console";
 //   }
 // };
 
-
 export const create_address_user_details = async (req: Request, res: Response) => {
   try {
     // Log incoming request body
@@ -226,6 +225,6 @@ export const delete_address_user_details = async (req: Request, res: Response) =
       res.status(404).send("Address user detail not found");
     }
   } catch (error) {
-    res.status(500).send("Failed to delete address user detail nah jah");
+    res.status(500).send("Failed to delete address user detail");
   }
 };

@@ -60,7 +60,6 @@ class address_users_details_model {
                     addressUser.users_id || null,
                     addressUser.gender_owner || null,
                     addressUser.address_name || null,
-                    addressUser.village || null,
                     addressUser.house_image || null,
                     addressUser.google_link_map || null,
                     addressUser.address_description || null, // New field
@@ -69,8 +68,8 @@ class address_users_details_model {
                 ];
                 const query = `
                 INSERT INTO address_users_detail 
-                (users_id, gender_owner, address_name, village, house_image, google_link_map, address_description, city, tel)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
                 // Insert into address_users_detail table
                 const [result] = yield base_database_1.default.execute(query, values);
@@ -119,7 +118,7 @@ class address_users_details_model {
         });
     }
     //SELECT USER BY ID
-    static show_address_by_user_id(userId) {
+    static show_by_user_id(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `

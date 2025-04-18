@@ -30,7 +30,6 @@ const router = express_1.default.Router();
  *               - address_description
  *               - city
  *               - tel
- *               - village  # New required field
  *             properties:
  *               users_id:
  *                 type: integer
@@ -69,10 +68,6 @@ const router = express_1.default.Router();
  *                   - HADXAIFONG
  *                 description: City where the address is located
  *                 example: "SISATTANAK"
- *               village:  # New field
- *                 type: string
- *                 description: Village or neighborhood where the address is located
- *                 example: "Central Village"
  *               tel:
  *                 type: string
  *                 description: Contact phone number for the address
@@ -148,7 +143,7 @@ router.post('/upload_house_image', images_config_1.default.single('house_image')
  *       500:
  *         description: Internal server error.
  */
-router.get("/:id", address_users_details_controller_1.show_address_by_user_id);
+router.get("/:id", address_users_details_controller_1.show_by_user_id);
 // NOTE - Show All Address Users
 /**
  * @swagger
