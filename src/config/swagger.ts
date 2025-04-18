@@ -19,19 +19,10 @@ const options: Options = {
         },
         servers: [
             {
-                url: 'https://homecare-pro.onrender.com',
-                description: 'Production server',
+              url: 'https://homecare-pro.onrender.com',
+              description: 'Production server',
             },
-        ],
-        components: {
-            securitySchemes: {
-                bearerAuth: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    bearerFormat: 'JWT',
-                },
-            },
-        },
+          ],
     },
     apis: ["./src/routes/*.ts"],
 };

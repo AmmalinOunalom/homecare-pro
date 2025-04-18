@@ -16,27 +16,9 @@ const router = express_1.default.Router();
  *     description: Retrieve a list of all users
  *     tags:
  *       - Users
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved users
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                   username:
- *                     type: string
- *                   email:
- *                     type: string
- *                   # Add other properties as needed
- *       401:
- *         description: Unauthorized - invalid token
  *       500:
  *         description: Internal server error
  */
@@ -125,11 +107,11 @@ router.post("/sign_up_user", user_controller_1.create_users);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: bie@gmail.com
+ *                 example: johndoe@example.com
  *               password:
  *                 type: string
  *                 format: password
- *                 example: "123456"
+ *                 example: "securePass123"
  *     responses:
  *       200:
  *         description: Sign-in successful
