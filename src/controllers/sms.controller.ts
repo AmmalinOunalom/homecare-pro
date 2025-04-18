@@ -16,7 +16,7 @@ export const sendSmsToEmployee = async (to: string, body: string) => {
     });
 
     console.log('SMS sent:', message.sid);
-    // Optionally, return this or save to DBZ
+    // Optionally, return this or save to DB
   } catch (error) {
     console.error('Error sending SMS:', error);
     throw error;
