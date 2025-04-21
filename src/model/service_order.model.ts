@@ -3,7 +3,8 @@ import db from "../config/base.database";
 enum ServiceStatus {
     NotStart = "Not Start",
     Arrived = "Arrived",
-    InProgress = "In Progress"
+    InProgress = "In Progress",
+    Finished = "Finished"
 }
 
 enum PaymentStatus {
@@ -82,33 +83,30 @@ export class service_order_model {
     }
 
     // Update service order
-    static async update_service_order(id: number, order: Omit<ServiceOrder, "id" | "created_at" | "updated_at">) {
+    static async update_service_order(
+        id: number,
+        order: Omit<ServiceOrder, "id" | "created_at" | "updated_at">
+      ) {
         try {
-            const query = `
-                UPDATE service_orders 
-                SET user_id = ?, employees_id = ?, cat_id = ?, address_users_detail_id = ?, 
-                    amount = ?, service_status = ?, payment_status, updated_at = NOW() 
-                WHERE id = ?
-            `;
-
-            const values = [
-                order.user_id,
-                order.employees_id,
-                order.cat_id,
-                order.address_users_detail_id,
-                order.amount,
-                order.service_status,
-                order.payment_status,
-                id
-            ];
-
-            const [result] = await db.execute(query, values);
-            return result;
+          const query = `
+            UPDATE service_order
+            SET service_status = ?, payment_status = ?, updated_at = NOW() 
+            WHERE id = ?
+          `;
+      
+          const values = [
+            order.service_status,
+            order.payment_status,
+            id
+          ];
+      
+          const [result] = await db.execute(query, values);
+          return result;
         } catch (error) {
-            console.error("Error updating service order:", error);
-            throw new Error("Failed to update service order");
+          console.error("Error updating service order:", error);
+          throw new Error("Failed to update service order");
         }
-    }
+      }
 
     // Delete service order
     static async delete_service_order(id: number) {

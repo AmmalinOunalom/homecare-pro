@@ -54,12 +54,12 @@ const router = express_1.default.Router();
  *                 type: string
  *                 description: Status of the payment.
  *                 enum: [not paid, paid]
- *                 example: "arrived"
+ *                 example: "not paid"
  *               service_status:
  *                 type: string
  *                 description: Current status of the service.
  *                 enum: [Not Start, Arrived, In Progress]
- *                 example: "pending"
+ *                 example: "Not Start"
  *     responses:
  *       201:
  *         description: Service order created successfully.
@@ -110,13 +110,12 @@ router.get("/", service_order_controller_1.show_all_service_orders);
  *         description: Internal server error.
  */
 router.get("/:id", service_order_controller_1.show_service_order_by_id);
-// NOTE - Update Service Order
 /**
-  * @swagger
+ * @swagger
  * /service_order/update/{id}:
  *   put:
- *     summary: Update a service order
- *     description: Updates an existing service order by ID, including the payment status.
+ *     summary: Update service order payment and status
+ *     description: Updates the payment status and service status of a specific service order by ID.
  *     tags:
  *       - Service Orders
  *     parameters:
@@ -133,29 +132,19 @@ router.get("/:id", service_order_controller_1.show_service_order_by_id);
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: integer
- *                 example: 5
- *               employees_id:
- *                 type: integer
- *                 example: 10
- *               cat_id:
- *                 type: integer
- *                 example: 3
- *               address_users_detail_id:
- *                 type: integer
- *                 example: 7
- *               amount:
- *                 type: integer
- *                 example: 200
  *               payment_status:
  *                 type: string
  *                 description: Payment status of the service order.
- *                 enum: [arrived, finished]
- *                 example: "finished"
+ *                 enum: [Not Paid, Paid]
+ *                 example: "Not Paid"
+ *               service_status:
+ *                 type: string
+ *                 description: Service completion status of the order.
+ *                 enum: [Not Start, Arrived, In Progress, finished]
+ *                 example: "Not Start"
  *     responses:
  *       200:
- *         description: Service order updated successfully.
+ *         description: Service order status updated successfully.
  *       400:
  *         description: Invalid request data.
  *       404:

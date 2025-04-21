@@ -19,6 +19,7 @@ var ServiceStatus;
     ServiceStatus["NotStart"] = "Not Start";
     ServiceStatus["Arrived"] = "Arrived";
     ServiceStatus["InProgress"] = "In Progress";
+    ServiceStatus["Finished"] = "Finished";
 })(ServiceStatus || (ServiceStatus = {}));
 var PaymentStatus;
 (function (PaymentStatus) {
@@ -91,17 +92,11 @@ class service_order_model {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                UPDATE service_orders 
-                SET user_id = ?, employees_id = ?, cat_id = ?, address_users_detail_id = ?, 
-                    amount = ?, service_status = ?, payment_status, updated_at = NOW() 
-                WHERE id = ?
-            `;
+            UPDATE service_order
+            SET service_status = ?, payment_status = ?, updated_at = NOW() 
+            WHERE id = ?
+          `;
                 const values = [
-                    order.user_id,
-                    order.employees_id,
-                    order.cat_id,
-                    order.address_users_detail_id,
-                    order.amount,
                     order.service_status,
                     order.payment_status,
                     id

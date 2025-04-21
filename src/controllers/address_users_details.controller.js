@@ -21,76 +21,48 @@ const base_database_1 = __importDefault(require("../config/base.database"));
 /**
  * Create a new address user detail
  */
-// export const create_address_user_details = async (req: Request, res: Response) => {
-//   try {
-//     const addressUserData = req.body;
-//     const usersId = addressUserData.users_id;
-//     console.log("Inserting address user details", addressUserData);
-//     const addressUser = await address_users_details_model.create_address_user_details(addressUserData);
-//     console.log("Address user created", addressUser);
-//     const addressUsersDetailId = addressUser.insertId;
-//     // Fetch all address_user_details for this user
-//     const [existingAddresses]: any = await db.execute(
-//       `SELECT id FROM address_users_details WHERE users_id = ?`,
-//       [usersId]
-//     );
-//     console.log("Existing addresses for user:", existingAddresses);
-//     // Determine which address to save in the users table (choose the latest created one)
-//     const validAddressIds = existingAddresses.map((record: any) => record.id);
-//     const addressToSave = validAddressIds.includes(addressUsersDetailId)
-//       ? addressUsersDetailId
-//       : validAddressIds[0]; // Pick the first valid address if needed
-//     console.log(`Saving address_users_detail_id ${addressToSave} for user ${usersId}`);
-//     const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
-//     await db.execute(updateQuery, [addressToSave, usersId]);
-//     res.status(201).send("Address user detail created successfully and users table updated.");
-//   } catch (error) {
-//     console.error("Error occurred:", error);
-//     console.log(error);
-//     res.status(500).send("Failed to create address user detail");
-//   }
-// };
 const create_address_user_details = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Log incoming request body
         const addressUserData = req.body;
         const usersId = addressUserData.users_id;
-        console.log("Received address user details:", addressUserData); // Log the received data
-        console.log(`User ID: ${usersId}`); // Log the user ID
-        // Call model function to create address user details and update users table
-        console.log("Calling model to create address user details...");
+        console.log("Received address user details:", addressUserData);
+        // Step 1: Insert address_user_details into DB
         const addressUser = yield address_users_details_model_1.address_users_details_model.create_address_user_details(addressUserData);
-        // Log result of model function (address user created)
-        console.log("Address user created:", addressUser);
-        // Extract the insertId to get the newly created address user's ID
         const addressUsersDetailId = addressUser.insertId;
-        console.log("Newly created address_users_detail_id:", addressUsersDetailId); // Log the inserted ID
-        // Fetch all address_user_details for this user
-        console.log(`Fetching existing address details for user ID ${usersId}...`);
+        console.log("Address user created with ID:", addressUsersDetailId);
+        // Step 2: Upload image to Cloudinary if file exists
+        if (req.file) {
+            console.log("Uploading image to Cloudinary...");
+            const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+                folder: "house_image",
+            });
+            if (!result.secure_url) {
+                throw new Error("Cloudinary upload failed");
+            }
+            console.log("Cloudinary image URL:", result.secure_url);
+            // Update DB with image URL
+            yield address_users_details_model_1.address_users_details_model.update_house_image(addressUsersDetailId, result.secure_url);
+            // Remove local file
+            fs_1.default.unlinkSync(req.file.path);
+        }
+        else {
+            console.log("No image file provided, skipping upload.");
+        }
+        // Step 3: Fetch and decide which address ID to update in users table
         const [existingAddresses] = yield base_database_1.default.execute(`SELECT id FROM address_users_detail WHERE users_id = ?`, [usersId]);
-        // Log the existing addresses for this user
-        console.log("Existing addresses for user:", existingAddresses);
-        // Determine which address to save in the users table (choose the latest created one)
         const validAddressIds = existingAddresses.map((record) => record.id);
         const addressToSave = validAddressIds.includes(addressUsersDetailId)
             ? addressUsersDetailId
-            : validAddressIds[0]; // Pick the first valid address if needed
-        // Log which address ID will be saved
-        console.log(`Address ID to save in users table: ${addressToSave}`);
-        // Update users table with the new address detail ID
-        console.log("Updating users table with new address_users_detail_id...");
-        const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
-        yield base_database_1.default.execute(updateQuery, [addressToSave, usersId]);
-        // Log the successful update
-        console.log("Users table updated successfully with address_users_detail_id.");
-        // Send a success response
-        res.status(201).send("Address user detail created successfully and users table updated.");
+            : validAddressIds[0];
+        yield base_database_1.default.execute(`UPDATE users SET address_users_detail_id = ? WHERE id = ?`, [addressToSave, usersId]);
+        res.status(201).json({
+            message: "Address user detail created and image uploaded successfully",
+            address_users_detail_id: addressUsersDetailId,
+        });
     }
     catch (error) {
-        // Log error details
-        console.error("Error occurred while creating address user detail:", error);
-        // Send an error response
-        res.status(500).send("Failed to create address user detail");
+        console.error("Error creating address user detail with image upload:", error);
+        res.status(500).json({ message: "Failed to create address user detail", error });
     }
 });
 exports.create_address_user_details = create_address_user_details;

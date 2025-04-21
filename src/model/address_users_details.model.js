@@ -22,6 +22,36 @@ var Gender;
     Gender["Other"] = "Other";
 })(Gender || (Gender = {}));
 class address_users_details_model {
+    // Create Address User Details and return the new ID
+    // static async create_address_user_details(
+    //     addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">
+    // ) {
+    //     try {
+    //         // Ensure that undefined values are converted to null
+    //         const values = [
+    //             addressUser.users_id || null,
+    //             addressUser.gender_owner || null,
+    //             addressUser.address_name || null,
+    //             addressUser.house_image || null,
+    //             addressUser.google_link_map || null,
+    //             addressUser.address_description || null, // New field
+    //             addressUser.city || null, // New field
+    //             addressUser.tel || null // New field
+    //         ];
+    //         const query = `
+    //             INSERT INTO address_users_detail 
+    //             (users_id, gender_owner, address_name, house_image, google_link_map, address_description, city, tel)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    //         `;
+    //         // Execute the query with the sanitized values
+    //         const [result]: any = await db.execute(query, values);
+    //         // Return the result of the insertion
+    //         return result;
+    //     } catch (error: unknown) {
+    //         console.error("Error inserting address_users_detail:", error);
+    //         throw new Error("Failed to create address_users_detail");
+    //     }
+    // }
     static create_address_user_details(addressUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -38,10 +68,10 @@ class address_users_details_model {
                     addressUser.tel || null
                 ];
                 const query = `
-  INSERT INTO address_users_detail 
-  (users_id, gender_owner, address_name, village, house_image, google_link_map, address_description, city, tel)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-`;
+                INSERT INTO address_users_detail 
+                (users_id, gender_owner, address_name, village, house_image, google_link_map, address_description, city, tel)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
                 // Insert into address_users_detail table
                 const [result] = yield base_database_1.default.execute(query, values);
                 if (!result.insertId) {
