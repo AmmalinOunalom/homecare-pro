@@ -12,7 +12,7 @@ const router = express_1.default.Router();
  * /service_order/create:
  *   post:
  *     summary: Create a new service order
- *     description: Adds a new service order with payment status and amount.
+ *     description: Adds a new service order including user, employee, category, address, amount, payment status, and service status.
  *     tags:
  *       - Service Orders
  *     requestBody:
@@ -21,26 +21,45 @@ const router = express_1.default.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - user_id
+ *               - employees_id
+ *               - cat_id
+ *               - address_users_detail_id
+ *               - amount
+ *               - payment_status
+ *               - service_status
  *             properties:
  *               user_id:
  *                 type: integer
+ *                 description: ID of the user placing the order.
  *                 example: 5
  *               employees_id:
  *                 type: integer
+ *                 description: ID of the employee assigned to the service.
  *                 example: 10
  *               cat_id:
  *                 type: integer
+ *                 description: Category ID of the service.
  *                 example: 3
  *               address_users_detail_id:
  *                 type: integer
+ *                 description: ID referencing user's address detail.
  *                 example: 7
  *               amount:
  *                 type: integer
+ *                 description: Cost of the service.
  *                 example: 150
  *               payment_status:
  *                 type: string
- *                 enum: ["arrived", "finished"]
+ *                 description: Status of the payment.
+ *                 enum: [not paid, paid]
  *                 example: "arrived"
+ *               service_status:
+ *                 type: string
+ *                 description: Current status of the service.
+ *                 enum: [Not Start, Arrived, In Progress]
+ *                 example: "pending"
  *     responses:
  *       201:
  *         description: Service order created successfully.
@@ -93,11 +112,11 @@ router.get("/", service_order_controller_1.show_all_service_orders);
 router.get("/:id", service_order_controller_1.show_service_order_by_id);
 // NOTE - Update Service Order
 /**
- * @swagger
+  * @swagger
  * /service_order/update/{id}:
  *   put:
  *     summary: Update a service order
- *     description: Updates an existing service order by ID.
+ *     description: Updates an existing service order by ID, including the payment status.
  *     tags:
  *       - Service Orders
  *     parameters:
@@ -131,7 +150,8 @@ router.get("/:id", service_order_controller_1.show_service_order_by_id);
  *                 example: 200
  *               payment_status:
  *                 type: string
- *                 enum: ["arrived", "finished"]
+ *                 description: Payment status of the service order.
+ *                 enum: [arrived, finished]
  *                 example: "finished"
  *     responses:
  *       200:

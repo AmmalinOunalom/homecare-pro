@@ -1,8 +1,14 @@
 import db from "../config/base.database";
 
+enum ServiceStatus {
+    NotStart = "Not Start",
+    Arrived = "Arrived",
+    InProgress = "In Progress"
+}
+
 enum PaymentStatus {
-    Arrived = "arrived",
-    Finished = "finished"
+    NotPaid = "Not paid",
+    Paid = "Paid"
 }
 
 // Service Order Interface
@@ -13,7 +19,8 @@ export interface ServiceOrder {
     cat_id: number;                   // Foreign key referencing categories
     address_users_detail_id: number;  // Foreign key referencing address details
     amount: number;                   // Order amount
-    payment_status: PaymentStatus;    // Payment status (arrived/finished)
+    service_status: ServiceStatus;   // Payment status (arrived/finished)
+    payment_status: PaymentStatus;   // Payment status
     created_at?: Date;                // Timestamp when created
     updated_at?: Date;                // Timestamp when last updated
 }
@@ -24,8 +31,8 @@ export class service_order_model {
         try {
             const query = `
                 INSERT INTO service_order 
-                (user_id, employees_id, cat_id, address_users_detail_id, amount, payment_status) 
-                VALUES (?, ?, ?, ?, ?, ?)
+                (user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
 
             const values = [
@@ -34,6 +41,7 @@ export class service_order_model {
                 order.cat_id,
                 order.address_users_detail_id,
                 order.amount,
+                order.service_status,
                 order.payment_status
             ];
 
@@ -79,7 +87,7 @@ export class service_order_model {
             const query = `
                 UPDATE service_orders 
                 SET user_id = ?, employees_id = ?, cat_id = ?, address_users_detail_id = ?, 
-                    amount = ?, payment_status = ?, updated_at = NOW() 
+                    amount = ?, service_status = ?, payment_status, updated_at = NOW() 
                 WHERE id = ?
             `;
 
@@ -89,6 +97,7 @@ export class service_order_model {
                 order.cat_id,
                 order.address_users_detail_id,
                 order.amount,
+                order.service_status,
                 order.payment_status,
                 id
             ];

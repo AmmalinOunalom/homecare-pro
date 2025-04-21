@@ -14,10 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.service_order_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
+var ServiceStatus;
+(function (ServiceStatus) {
+    ServiceStatus["NotStart"] = "Not Start";
+    ServiceStatus["Arrived"] = "Arrived";
+    ServiceStatus["InProgress"] = "In Progress";
+})(ServiceStatus || (ServiceStatus = {}));
 var PaymentStatus;
 (function (PaymentStatus) {
-    PaymentStatus["Arrived"] = "arrived";
-    PaymentStatus["Finished"] = "finished";
+    PaymentStatus["NotPaid"] = "Not paid";
+    PaymentStatus["Paid"] = "Paid";
 })(PaymentStatus || (PaymentStatus = {}));
 class service_order_model {
     // Create a new service order
@@ -26,8 +32,8 @@ class service_order_model {
             try {
                 const query = `
                 INSERT INTO service_order 
-                (user_id, employees_id, cat_id, address_users_detail_id, amount, payment_status) 
-                VALUES (?, ?, ?, ?, ?, ?)
+                (user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
                 const values = [
                     order.user_id,
@@ -35,6 +41,7 @@ class service_order_model {
                     order.cat_id,
                     order.address_users_detail_id,
                     order.amount,
+                    order.service_status,
                     order.payment_status
                 ];
                 const [result] = yield base_database_1.default.execute(query, values);
@@ -86,7 +93,7 @@ class service_order_model {
                 const query = `
                 UPDATE service_orders 
                 SET user_id = ?, employees_id = ?, cat_id = ?, address_users_detail_id = ?, 
-                    amount = ?, payment_status = ?, updated_at = NOW() 
+                    amount = ?, service_status = ?, payment_status, updated_at = NOW() 
                 WHERE id = ?
             `;
                 const values = [
@@ -95,6 +102,7 @@ class service_order_model {
                     order.cat_id,
                     order.address_users_detail_id,
                     order.amount,
+                    order.service_status,
                     order.payment_status,
                     id
                 ];
