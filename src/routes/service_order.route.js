@@ -88,34 +88,10 @@ router.get("/", service_order_controller_1.show_all_service_orders);
 // NOTE - Show Service Order by ID
 /**
  * @swagger
- * /service_order/{id}:
- *   get:
- *     summary: Get service order by ID
- *     description: Fetches a specific service order by its ID.
- *     tags:
- *       - Service Orders
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The ID of the service order to retrieve.
- *     responses:
- *       200:
- *         description: Service order found.
- *       404:
- *         description: Service order not found.
- *       500:
- *         description: Internal server error.
- */
-router.get("/:id", service_order_controller_1.show_service_order_by_id);
-/**
- * @swagger
  * /service_order/update/{id}:
  *   put:
  *     summary: Update service order payment and status
- *     description: Updates the payment status and service status of a specific service order by ID.
+ *     description: Updates the service status (required) and optionally the payment status of a specific service order by ID.
  *     tags:
  *       - Service Orders
  *     parameters:
@@ -131,12 +107,9 @@ router.get("/:id", service_order_controller_1.show_service_order_by_id);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - service_status
  *             properties:
- *               payment_status:
- *                 type: string
- *                 description: Payment status of the service order.
- *                 enum: [Not Paid, Paid]
- *                 example: "Not Paid"
  *               service_status:
  *                 type: string
  *                 description: Service completion status of the order.

@@ -258,9 +258,10 @@ WHERE e.id =?`;
                     console.log("Employee not found with ID:", id);
                     return { success: false, message: "Employee not found" };
                 }
-                const query = `UPDATE employees SET status = ? WHERE id = ?`;
-                const [result] = yield base_database_1.default.execute(query, [Status.Inactive, id]);
-                return result;
+                // Permanently delete employee
+                const deleteQuery = `DELETE FROM employees WHERE id = ?`;
+                const [result] = yield base_database_1.default.execute(deleteQuery, [id]);
+                return { success: true, message: "Employee deleted successfully", result };
             }
             catch (error) {
                 console.error("Error deleting employee:", error);

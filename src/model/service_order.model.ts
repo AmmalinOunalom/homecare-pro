@@ -85,18 +85,17 @@ export class service_order_model {
     // Update service order
     static async update_service_order(
         id: number,
-        order: Omit<ServiceOrder, "id" | "created_at" | "updated_at">
+        order: Pick<ServiceOrder, "service_status"> // รับแค่ service_status อย่างเดียว
       ) {
         try {
           const query = `
             UPDATE service_order
-            SET service_status = ?, payment_status = ?, updated_at = NOW() 
+            SET service_status = ?, updated_at = NOW() 
             WHERE id = ?
           `;
       
           const values = [
             order.service_status,
-            order.payment_status,
             id
           ];
       
@@ -107,7 +106,6 @@ export class service_order_model {
           throw new Error("Failed to update service order");
         }
       }
-
     // Delete service order
     static async delete_service_order(id: number) {
         try {

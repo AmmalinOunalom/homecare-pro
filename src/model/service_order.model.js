@@ -88,17 +88,17 @@ class service_order_model {
         });
     }
     // Update service order
-    static update_service_order(id, order) {
+    static update_service_order(id, order // รับแค่ service_status อย่างเดียว
+    ) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
             UPDATE service_order
-            SET service_status = ?, payment_status = ?, updated_at = NOW() 
+            SET service_status = ?, updated_at = NOW() 
             WHERE id = ?
           `;
                 const values = [
                     order.service_status,
-                    order.payment_status,
                     id
                 ];
                 const [result] = yield base_database_1.default.execute(query, values);

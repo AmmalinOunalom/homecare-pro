@@ -260,15 +260,17 @@ WHERE e.id =?`;
       // Check if employee exists before deleting
       const checkQuery = "SELECT id FROM employees WHERE id = ?";
       const [rows]: any[] = await db.execute(checkQuery, [id]);
-
+  
       if (rows.length === 0) {
         console.log("Employee not found with ID:", id);
         return { success: false, message: "Employee not found" };
       }
-
-      const query = `UPDATE employees SET status = ? WHERE id = ?`;
-      const [result]: any[] = await db.execute(query, [Status.Inactive, id]);
-      return result;
+  
+      // Permanently delete employee
+      const deleteQuery = `DELETE FROM employees WHERE id = ?`;
+      const [result]: any[] = await db.execute(deleteQuery, [id]);
+  
+      return { success: true, message: "Employee deleted successfully", result };
     } catch (error) {
       console.error("Error deleting employee:", error);
       throw new Error("Failed to delete employee");
