@@ -19,7 +19,7 @@ const router = express_1.default.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -34,33 +34,20 @@ const router = express_1.default.Router();
  *             properties:
  *               users_id:
  *                 type: integer
- *                 description: ID of the user who owns the address
- *                 example: 11
  *               gender_owner:
  *                 type: string
  *                 enum: [MALE, FEMALE, OTHER]
- *                 description: Gender of the address owner
- *                 example: "MALE"
  *               address_name:
  *                 type: string
- *                 description: The name or label of the address
- *                 example: "123 Main Street"
  *               village:
  *                 type: string
- *                 description: Village of the address
- *                 example: "Ban Phonthan"
  *               house_image:
  *                 type: string
- *                 description: Image file name of the house
- *                 example: "house_image.jpg"
+ *                 format: binary
  *               google_link_map:
  *                 type: string
- *                 description: Google Maps link to the address location
- *                 example: "https://maps.google.com/example-link"
  *               address_description:
  *                 type: string
- *                 description: Detailed description of the address
- *                 example: "Near the central park, blue house with a white gate."
  *               city:
  *                 type: string
  *                 enum:
@@ -71,12 +58,8 @@ const router = express_1.default.Router();
  *                   - NAXAITHONG
  *                   - XAYTANY
  *                   - HADXAIFONG
- *                 description: City where the address is located
- *                 example: "SISATTANAK"
  *               tel:
  *                 type: string
- *                 description: Contact phone number for the address
- *                 example: "+856202345678"
  *     responses:
  *       201:
  *         description: Address user detail created successfully and users table updated.
@@ -85,7 +68,7 @@ const router = express_1.default.Router();
  *       500:
  *         description: Internal server error.
  */
-router.post("/create", address_users_details_controller_1.create_address_user_details);
+router.post("/create", images_config_1.default.single("house_image"), address_users_details_controller_1.create_address_user_details);
 // NOTE - Upload House Image
 /**
  * @swagger

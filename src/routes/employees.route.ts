@@ -279,13 +279,16 @@ router.post("/sign_in", sign_in_employee);
 router.post('/upload', upload.single('image'), uploadImage);
 
 
-// NOTE - Show Employee Image by ID
+
 /**
  * @swagger
  * /employees/image/{id}:
  *   get:
  *     summary: Get employee image by ID
- *     description: Retrieve the avatar image of a specific employee by their ID.
+ *     description: |
+ *       Retrieves the avatar image for a specific employee by their ID.
+ *       - If the image is stored as a URL, it redirects to that URL.
+ *       - If the image is a local file, it serves the file directly.
  *     tags:
  *       - Employees
  *     parameters:
@@ -294,17 +297,16 @@ router.post('/upload', upload.single('image'), uploadImage);
  *         required: true
  *         schema:
  *           type: integer
- *         description: Employee ID.
+ *         description: Employee ID
  *     responses:
  *       200:
- *         description: Employee image retrieved successfully.
- *       404:
- *         description: Image not found for this employee.
+ *         description: Employee image retrieved successfully
+ *       400:
+ *         description: Image not found for this employee
  *       500:
- *         description: Internal server error.
+ *         description: Internal server error
  */
-router.get("/employees/image/:id", show_image_employee_by_id); // Route with the new path
-
+router.get("/image/:id", show_image_employee_by_id);
 
 
 // NOTE - Update Employee

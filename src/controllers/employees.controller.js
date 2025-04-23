@@ -173,25 +173,27 @@ exports.show_more_employee_by_id = show_more_employee_by_id;
  */
 const show_image_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params; // Get employee ID from request parameters
-        console.log("Received employeeId:", id); // Log the received ID
-        // Get employee image details from the model
+        const { id } = req.params;
+        console.log("Received employeeId:", id);
         const employeeImage = yield employees_model_1.employees_model.show_image_employee_by_id(Number(id));
-        console.log("Employee Image:", employeeImage); // Log the result returned by the model
-        // Check if employee image was found
+        console.log("Employee Image:", employeeImage);
         if (employeeImage && employeeImage.avatar) {
-            const imagePath = path_1.default.join(__dirname, "../uploads", employeeImage.avatar); // Construct the full path to the image
-            // Check if the image file exists
+            // If the avatar is a URL, just redirect or send the URL
+            if (employeeImage.avatar.startsWith("http")) {
+                return res.redirect(employeeImage.avatar); // Option 1: redirect
+                // OR: res.status(200).json({ imageUrl: employeeImage.avatar }); // Option 2: return as JSON
+            }
+            // Fallback: try to serve as local file if it's not a URL
+            const imagePath = path_1.default.join(__dirname, "../uploads", employeeImage.avatar);
             if (fs_1.default.existsSync(imagePath)) {
-                res.sendFile(imagePath); // Send the image if it exists
+                return res.sendFile(imagePath);
             }
             else {
-                res.status(404).send("Image not found for this employee");
+                res.status(400).send("Image not found for this employee");
             }
         }
         else {
-            // If no image found or an error occurred
-            res.status(404).send(employeeImage.message || "Employee image not found");
+            res.status(400).send("Employee image not found");
         }
     }
     catch (error) {
