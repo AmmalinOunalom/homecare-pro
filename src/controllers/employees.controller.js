@@ -22,17 +22,42 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 /**
  * Create a new employee
  */
+// export const create_employees = async (req: Request, res: Response) => {
+//   try {
+//     const { password } = req.body;
+//     // Hash the password before saving
+//     const saltRounds = 10;
+//     req.body.password = await bcrypt.hash(password, saltRounds);
+//     const employee = await employees_model.create_employees(req.body); // Now the password is hashed
+//     res.status(200).send("Employee created successfully");
+//   } catch (error) {
+//     res.status(500).send(error);
+//   }
+// };
 const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { password } = req.body;
         // Hash the password before saving
         const saltRounds = 10;
         req.body.password = yield bcrypt_1.default.hash(password, saltRounds);
-        const employee = yield employees_model_1.employees_model.create_employees(req.body); // Now the password is hashed
-        res.status(200).send("Employee created successfully");
+        // Upload avatar to Cloudinary if provided
+        if (req.file) {
+            const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+                folder: "avatars",
+            });
+            req.body.avatar = result.secure_url;
+            // Remove local file
+            fs_1.default.unlinkSync(req.file.path);
+        }
+        const employee = yield employees_model_1.employees_model.create_employees(req.body);
+        res.status(201).json({
+            message: "Employee created successfully",
+            employee,
+        });
     }
     catch (error) {
-        res.status(500).send(error);
+        console.error("Error creating employee:", error);
+        res.status(500).json({ message: "Failed to create employee", error });
     }
 });
 exports.create_employees = create_employees;

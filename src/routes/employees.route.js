@@ -104,13 +104,13 @@ router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employe
  * /employees/create_employees:
  *   post:
  *     summary: Create a new employee
- *     description: Registers a new employee in the system.
+ *     description: Registers a new employee and uploads avatar image to Cloudinary.
  *     tags:
  *       - Employees
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -121,7 +121,6 @@ router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employe
  *               - password
  *               - address
  *               - gender
- *               - cv
  *               - cat_id
  *               - price
  *               - city
@@ -155,7 +154,8 @@ router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employe
  *                 example: "cv.pdf"
  *               avatar:
  *                 type: string
- *                 example: "avatar.jpg"
+ *                 format: binary
+ *                 description: Upload avatar image file
  *               cat_id:
  *                 type: integer
  *                 example: 2
@@ -163,14 +163,15 @@ router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employe
  *                 type: number
  *                 format: float
  *                 example: 100.00
+ *               city:
+ *                 type: string
+ *                 enum: ['CHANTHABULY','SIKHOTTABONG','XAYSETHA','SISATTANAK','NAXAITHONG','XAYTANY','HADXAIFONG']
+ *                 example: SISATTANAK
  *               status:
  *                 type: string
  *                 enum: [active, inactive]
+ *                 description: The status of the employee.
  *                 example: active
- *               city:
- *                 type: string
- *                 enum: ['CHANTHABULY','SIKHOTTABONG','XAYSETHA','SISATTANAK','NAXAITHONG','XAYTANY','HADXAIFONG']  # Example cities
- *                 example: CHANTHABULY, SIKHOTTABONG, XAYSETHA, SISATTANAK, NAXAITHONG, XAYTANY, HADXAIFONG  # You can change these city names based on your actual enum values
  *     responses:
  *       201:
  *         description: Employee created successfully.
@@ -179,7 +180,7 @@ router.get("/read_emp_car_employees/5", employees_controller_1.show_more_employe
  *       500:
  *         description: Internal server error.
  */
-router.post("/create_employees", employees_controller_1.create_employees);
+router.post("/create_employees", images_config_1.default.single("avatar"), employees_controller_1.create_employees);
 // NOTE - Employee Sign-In
 /**
  * @swagger

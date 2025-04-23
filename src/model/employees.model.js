@@ -51,7 +51,6 @@ class employees_model {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             try {
-                // Ensure that city is provided
                 if (!employee.city) {
                     throw new Error("City is required");
                 }

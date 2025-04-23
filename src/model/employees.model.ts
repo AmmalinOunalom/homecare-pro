@@ -54,17 +54,16 @@ export class employees_model {
   // Create employee
   static async create_employees(employee: Employee) {
     try {
-      // Ensure that city is provided
       if (!employee.city) {
         throw new Error("City is required");
       }
-
+  
       const query = `
         INSERT INTO employees 
         (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status, city) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
-
+  
       const values = [
         employee.first_name,
         employee.last_name,
@@ -80,7 +79,7 @@ export class employees_model {
         employee.status || Status.Active,
         employee.city,
       ];
-
+  
       const [result] = await db.execute(query, values);
       return result;
     } catch (error) {
