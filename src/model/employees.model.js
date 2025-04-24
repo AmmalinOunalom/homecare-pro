@@ -233,13 +233,18 @@ WHERE e.id =?`;
                     console.log("Employee not found with ID:", id);
                     return { success: false, message: "Employee not found" };
                 }
+                // Prepare the fields for updating
                 const fields = Object.keys(employee)
                     .map((key) => `${key} = ?`)
                     .join(", ");
-                const values = [...Object.values(employee), id];
+                const values = [...Object.values(employee), id]; // Ensure id is the last value
                 const query = `UPDATE employees SET ${fields} WHERE id = ?`;
                 const [result] = yield base_database_1.default.execute(query, values);
-                return result;
+                // Check if any rows were affected
+                if (result.affectedRows === 0) {
+                    return { success: false, message: "No changes made to the employee." };
+                }
+                return { success: true, message: "Employee updated successfully" };
             }
             catch (error) {
                 console.error("Error updating employee:", error);

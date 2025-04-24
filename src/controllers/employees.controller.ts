@@ -237,15 +237,30 @@ export const show_image_employee_by_id = async (req: Request, res: Response): Pr
 /**
  * Update an employee
  */
-export const update_employees = async (req: Request, res: Response) => {
+export const update_employees = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const updatedEmployee = await employees_model.update_employees(Number(id), req.body);
-    res.status(200).send("Employee updated successfully");
+
+    const employeeId = Number(id);
+    if (isNaN(employeeId)) {
+      res.status(400).json({ success: false, message: "Invalid employee ID" });
+      return;
+    }
+
+    const result = await employees_model.update_employees(employeeId, req.body);
+
+    if (!result.success) {
+      res.status(404).json(result);
+      return;
+    }
+
+    res.status(200).json({ success: true, message: "Employee updated successfullyyyyy" });
   } catch (error) {
-    res.status(500).send("Failed to update employee");
+    console.error("Error updating employee:", error);
+    res.status(500).json({ success: false, message: "Failed to update employee" });
   }
 };
+
 
 /**
  * Delete an employee (Soft Delete)

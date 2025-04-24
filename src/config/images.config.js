@@ -1,46 +1,80 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+// import multer from 'multer';
+// import path from 'path';
+// import fs from 'fs';
+// import cloudinary from './cloudinary.config';
+// import { CloudinaryStorage } from 'multer-storage-cloudinary';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// // Define the absolute path for the 'uploads' directory
+// const uploadDir = path.join(__dirname, '..', 'uploads');
+// // Ensure the 'uploads' directory exists, if not, create it
+// if (!fs.existsSync(uploadDir)) {
+//     fs.mkdirSync(uploadDir, { recursive: true });
+// }
+// const storage1 = new CloudinaryStorage({
+//     cloudinary: cloudinary,
+//     params: {
+//         public_id:(req, file) => file.originalname,
+//     },
+// });
+// // Configure storage
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, uploadDir);  // Save images to the 'uploads' folder
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, `${Date.now()}-${file.originalname}`);  // Use timestamp + original file name
+//     }
+// });
+// const upload = multer({
+//     storage: storage,  // เก็บไฟล์ในเครื่องก่อน
+//     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+//     fileFilter: (req, file, cb) => {
+//       const fileTypes = /jpeg|jpg|png/;
+//       const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+//       const mimeType = fileTypes.test(file.mimetype);
+//       if (extName && mimeType) {
+//         return cb(null, true);  // File type is allowed
+//       } else {
+//         return cb(new Error('Only JPEG, JPG, or PNG images are allowed'));  // Reject invalid file type
+//       }
+//     }
+//   });
+// export default upload;
 const multer_1 = __importDefault(require("multer"));
-const multer_storage_cloudinary_1 = require("multer-storage-cloudinary");
+const path_1 = __importDefault(require("path"));
 const cloudinary_config_1 = __importDefault(require("./cloudinary.config"));
-// ใช้ CloudinaryStorage อย่างเดียว
+const multer_storage_cloudinary_1 = require("multer-storage-cloudinary");
+const os_1 = __importDefault(require("os"));
+// ใช้ temporary directory ของระบบปฏิบัติการ
+const uploadDir = os_1.default.tmpdir();
+// แก้ไขตรงนี้โดยกำหนด params ที่ถูกต้องตาม type definition
 const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
     cloudinary: cloudinary_config_1.default,
-    params: (req, file) => __awaiter(void 0, void 0, void 0, function* () {
-        return {
-            folder: 'homecare/house_images', // ตั้งชื่อโฟลเดอร์ใน Cloudinary ได้
-            public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
-            format: file.mimetype.split('/')[1], // กำหนดฟอร์แมต (jpg, png, ฯลฯ)
-            transformation: [{ width: 800, height: 600, crop: 'limit' }] // ตัวเลือกเสริม
-        };
-    }),
+    params: {
+        // ใส่ folder ใน callback แทน
+        public_id: (req, file) => `house_image/${Date.now()}-${file.originalname}`,
+        // หรือถ้าต้องการใช้แบบอื่น สามารถตั้งค่าเพิ่มเติมได้ตาม documentation
+        allowedFormats: ['jpg', 'png', 'jpeg'],
+        transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
+    } // ใช้ as any ชั่วคราวเพื่อแก้ปัญหา TypeScript
 });
-// ตรวจสอบไฟล์เฉพาะรูปภาพ
 const upload = (0, multer_1.default)({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // จำกัดขนาด 5MB
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png/;
-        const ext = allowedTypes.test(file.originalname.toLowerCase());
-        const mime = allowedTypes.test(file.mimetype);
-        if (ext && mime) {
-            cb(null, true);
+        const fileTypes = /jpeg|jpg|png/;
+        const extName = fileTypes.test(path_1.default.extname(file.originalname).toLowerCase());
+        const mimeType = fileTypes.test(file.mimetype);
+        if (extName && mimeType) {
+            return cb(null, true);
         }
         else {
-            cb(new Error('Only JPEG, JPG, or PNG images are allowed'));
+            return cb(new Error('Only JPEG, JPG, or PNG images are allowed'));
         }
-    },
+    }
 });
 exports.default = upload;

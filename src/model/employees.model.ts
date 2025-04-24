@@ -230,30 +230,36 @@ WHERE e.id =?`;
 
   // Update employee details
   static async update_employees(id: number, employee: Partial<Employee>) {
-    try {
-      // Check if employee exists before updating
-      const checkQuery = "SELECT id FROM employees WHERE id = ?";
-      const [rows]: any[] = await db.execute(checkQuery, [id]);
+  try {
+    // Check if employee exists before updating
+    const checkQuery = "SELECT id FROM employees WHERE id = ?";
+    const [rows]: any[] = await db.execute(checkQuery, [id]);
 
-      if (rows.length === 0) {
-        console.log("Employee not found with ID:", id);
-        return { success: false, message: "Employee not found" };
-      }
-
-      const fields = Object.keys(employee)
-        .map((key) => `${key} = ?`)
-        .join(", ");
-      const values = [...Object.values(employee), id];
-
-      const query = `UPDATE employees SET ${fields} WHERE id = ?`;
-      const [result]: any[] = await db.execute(query, values);
-      return result;
-    } catch (error) {
-      console.error("Error updating employee:", error);
-      throw new Error("Failed to update employee");
+    if (rows.length === 0) {
+      console.log("Employee not found with ID:", id);
+      return { success: false, message: "Employee not found" };
     }
-  }
 
+    // Prepare the fields for updating
+    const fields = Object.keys(employee)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    const values = [...Object.values(employee), id]; // Ensure id is the last value
+
+    const query = `UPDATE employees SET ${fields} WHERE id = ?`;
+    const [result]: any[] = await db.execute(query, values);
+    
+    // Check if any rows were affected
+    if (result.affectedRows === 0) {
+      return { success: false, message: "No changes made to the employee." };
+    }
+
+    return { success: true, message: "Employee updated successfully" };
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    throw new Error("Failed to update employee");
+  }
+}
   // Soft delete employee (set status to Inactive)
   static async delete_employees(id: number) {
     try {

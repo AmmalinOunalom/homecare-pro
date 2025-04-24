@@ -18,20 +18,10 @@ dotenv.config(); // Load environment variables
 const app = express();
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-// CORS setup (allowing Swagger UI, frontend, and localhost to access the API)
 
-// app.use(cors({
-//   origin: [
-//     'https://homecare-pro.onrender.com',  // Your frontend deployed URL
-//     'http://localhost:5173',  // Allow local frontend (adjust if necessary)
-//   ],
-//   methods: 'GET, POST, PUT, DELETE, OPTIONS',
-//   allowedHeaders: 'Content-Type, Authorization',
-//   credentials: true, // Allow cookies and authorization headers
-// }));
 
 app.use(cors());
-
+app.use(express.json());
 
 
 // Setup Swagger
@@ -50,3 +40,5 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running at ${process.env.URL || "http://localhost"}:${port}`);
 });
+
+

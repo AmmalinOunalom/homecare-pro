@@ -279,8 +279,6 @@ router.post("/sign_in", sign_in_employee);
  */
 router.post('/upload', upload.single('image'), uploadImage);
 
-
-
 /**
  * @swagger
  * /employees/image/{id}:
@@ -313,12 +311,20 @@ router.get("/image/:id", show_image_employee_by_id);
 // NOTE - Update Employee
 /**
  * @swagger
- * /employees/update_employees:
+ * /employees/update_employees/{id}:
  *   put:
  *     summary: Update an employee
  *     description: Updates an employee's details by ID.
  *     tags:
  *       - Employees
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the employee to update
+ *         schema:
+ *           type: integer
+ *           example: 1
  *     requestBody:
  *       required: true
  *       content:
@@ -326,7 +332,6 @@ router.get("/image/:id", show_image_employee_by_id);
  *           schema:
  *             type: object
  *             required:
- *               - id
  *               - first_name
  *               - last_name
  *               - email
@@ -339,9 +344,6 @@ router.get("/image/:id", show_image_employee_by_id);
  *               - price
  *               - status
  *             properties:
- *               id:
- *                 type: integer
- *                 example: 1
  *               first_name:
  *                 type: string
  *                 example: John
@@ -393,7 +395,7 @@ router.get("/image/:id", show_image_employee_by_id);
  *       500:
  *         description: Internal server error.
  */
-router.put("/update_employees", update_employees);
+router.put("/update_employees/:id", update_employees); 
 
 // NOTE - Delete Employee (Soft Delete)
 /**

@@ -52,8 +52,8 @@ const options: Options = {
     },
     servers: [
       {
-        url: "https://homecare-pro.onrender.com",
-        description: "Production server",
+        url: process.env.URL || "http://localhost:5000", // Fallback to localhost for local development
+        description: process.env.URL ? "Production server" : "Local Development server",
       },
     ],
     components: {

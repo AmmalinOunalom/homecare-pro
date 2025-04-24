@@ -233,11 +233,21 @@ exports.show_image_employee_by_id = show_image_employee_by_id;
 const update_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const updatedEmployee = yield employees_model_1.employees_model.update_employees(Number(id), req.body);
-        res.status(200).send("Employee updated successfully");
+        const employeeId = Number(id);
+        if (isNaN(employeeId)) {
+            res.status(400).json({ success: false, message: "Invalid employee ID" });
+            return;
+        }
+        const result = yield employees_model_1.employees_model.update_employees(employeeId, req.body);
+        if (!result.success) {
+            res.status(404).json(result);
+            return;
+        }
+        res.status(200).json({ success: true, message: "Employee updated successfullyyyyy" });
     }
     catch (error) {
-        res.status(500).send("Failed to update employee");
+        console.error("Error updating employee:", error);
+        res.status(500).json({ success: false, message: "Failed to update employee" });
     }
 });
 exports.update_employees = update_employees;
