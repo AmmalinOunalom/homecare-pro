@@ -46,12 +46,12 @@ const options = {
             version: "1.0.0",
             description: "API Documentation for HomeCare Node.js & TypeScript Project",
         },
-        servers: [
-            {
-                url: process.env.URL || "http://localhost:5000", // Fallback to localhost for local development
-                description: process.env.URL ? "Production server" : "Local Development server",
-            },
-        ],
+        // servers: [
+        //   {
+        //     url: process.env.URL || "http://localhost:5000", // Fallback to localhost for local development
+        //     description: process.env.URL ? "Production server" : "Local Development server",
+        //   },
+        // ],
         components: {
             securitySchemes: {
                 bearerAuth: {
