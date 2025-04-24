@@ -1,6 +1,6 @@
 import express from "express";
 import { 
-    create_address_user_detail, 
+    create_address_user_details, 
     show_address_by_user_id, 
     show_all_address_users_details, 
     update_address_user_details, 
@@ -73,7 +73,7 @@ const router = express.Router();
  *         description: Internal server error.
  */
 
-router.post("/create", upload.single("house_image"), create_address_user_detail);
+router.post("/create", upload.single("house_image"), create_address_user_details);
 
 // NOTE - Upload House Image
 /**

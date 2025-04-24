@@ -68,7 +68,7 @@ const router = express_1.default.Router();
  *       500:
  *         description: Internal server error.
  */
-router.post("/create", images_config_1.default.single("house_image"), address_users_details_controller_1.create_address_user_detail);
+router.post("/create", images_config_1.default.single("house_image"), address_users_details_controller_1.create_address_user_details);
 // NOTE - Upload House Image
 /**
  * @swagger
