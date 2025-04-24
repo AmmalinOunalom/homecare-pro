@@ -22,9 +22,6 @@ var Gender;
     Gender["Other"] = "Other";
 })(Gender || (Gender = {}));
 class address_users_details_model {
-    static update_user_address(users_id, insertId) {
-        throw new Error("Method not implemented.");
-    }
     static create_address_user_details(addressUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

@@ -52,37 +52,79 @@ export interface Employee {
 
 export class employees_model {
   // Create employee
-  static async create_employees(employee: Employee) {
+  // static async create_employees(employee: Employee) {
+  //   try {
+  //     if (!employee.city) {
+  //       throw new Error("City is required");
+  //     }
+  
+  //     const query = `
+  //       INSERT INTO employees 
+  //       (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status, city) 
+  //       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  //     `;
+  
+  //     const values = [
+  //       employee.first_name,
+  //       employee.last_name,
+  //       employee.email,
+  //       employee.tel,
+  //       employee.password,
+  //       employee.address || "",
+  //       employee.gender,
+  //       employee.cv || "",
+  //       employee.avatar || "",
+  //       employee.cat_id ?? 0,
+  //       employee.price ?? 0.00,
+  //       employee.status || Status.Active,
+  //       employee.city,
+  //     ];
+  
+  //     const [result] = await db.execute(query, values);
+  //     return result;
+  //   } catch (error) {
+  //     console.error("Error inserting employee:", error);
+  //     throw new Error("Failed to create employee");
+  //   }
+  // }
+
+
+  static async create_employees(
+    employee: Omit<Employee, "id" | "created_at" | "updated_at">
+  ) {
     try {
-      if (!employee.city) {
-        throw new Error("City is required");
-      }
+      const values = [
+        employee.first_name || null,
+        employee.last_name || null,
+        employee.email || null,
+        employee.tel || null,
+        employee.password || null,
+        employee.address || null,
+        employee.gender || null,
+        employee.cv || null,
+        employee.avatar || null,
+        employee.cat_id ?? 0,
+        employee.price ?? 0.0,
+        employee.status || "active",
+        employee.city || null,
+      ];
   
       const query = `
         INSERT INTO employees 
-        (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status, city) 
+        (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status, city)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
   
-      const values = [
-        employee.first_name,
-        employee.last_name,
-        employee.email,
-        employee.tel,
-        employee.password,
-        employee.address || "",
-        employee.gender,
-        employee.cv || "",
-        employee.avatar || "",
-        employee.cat_id ?? 0,
-        employee.price ?? 0.00,
-        employee.status || Status.Active,
-        employee.city,
-      ];
+      const [result]: any = await db.execute(query, values);
   
-      const [result] = await db.execute(query, values);
-      return result;
-    } catch (error) {
+      if (!result.insertId) {
+        throw new Error("Failed to retrieve insertId after inserting employee");
+      }
+  
+      console.log("New Employee ID:", result.insertId);
+  
+      return { insertId: result.insertId };
+    } catch (error: unknown) {
       console.error("Error inserting employee:", error);
       throw new Error("Failed to create employee");
     }

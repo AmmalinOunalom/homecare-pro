@@ -35,19 +35,10 @@ const create_address_user_detail = (req, res) => __awaiter(void 0, void 0, void 
         // Update the house image URL in the database
         yield address_users_details_model_1.address_users_details_model.update_house_image(addressUser.insertId, result.secure_url);
     }
-    // // Optionally update the users table to link the new address (if needed)
-    // await address_users_details_model.update_user_address(addressUserData.users_id, addressUser.insertId);
     res.status(201).json({
         message: "Address user detail created and image uploaded successfully",
         address_users_detail_id: addressUser.insertId,
     });
-    // } catch (error) {
-    //   console.error("Error creating address user detail:", error);
-    //   res.status(500).json({
-    //     message: "Failed to create address user detail",
-    //     error,
-    //   });
-    // }
 });
 exports.create_address_user_detail = create_address_user_detail;
 // UPLOAD HOUSE IMAGE

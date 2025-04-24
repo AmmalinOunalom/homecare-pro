@@ -28,37 +28,47 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 //     // Hash the password before saving
 //     const saltRounds = 10;
 //     req.body.password = await bcrypt.hash(password, saltRounds);
-//     const employee = await employees_model.create_employees(req.body); // Now the password is hashed
-//     res.status(200).send("Employee created successfully");
+//     // Upload avatar to Cloudinary if provided
+//     if (req.file) {
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "avatars",
+//       });
+//       req.body.avatar = result.secure_url;
+//       // Remove local file
+//       fs.unlinkSync(req.file.path);
+//     }
+//     const employee = await employees_model.create_employees(req.body);
+//     res.status(201).json({
+//       message: "Employee created successfully",
+//       employee,
+//     });
 //   } catch (error) {
-//     res.status(500).send(error);
+//     console.error("Error creating employee:", error);
+//     res.status(500).json({ message: "Failed to create employee", error });
 //   }
 // };
 const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { password } = req.body;
-        // Hash the password before saving
-        const saltRounds = 10;
-        req.body.password = yield bcrypt_1.default.hash(password, saltRounds);
-        // Upload avatar to Cloudinary if provided
-        if (req.file) {
-            const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
-                folder: "avatars",
-            });
-            req.body.avatar = result.secure_url;
-            // Remove local file
-            fs_1.default.unlinkSync(req.file.path);
-        }
-        const employee = yield employees_model_1.employees_model.create_employees(req.body);
-        res.status(201).json({
-            message: "Employee created successfully",
-            employee,
+    const employeeData = req.body;
+    // Hash the password before saving
+    const saltRounds = 10;
+    employeeData.password = yield bcrypt_1.default.hash(employeeData.password, saltRounds);
+    // Insert the employee data first (without avatar)
+    const employee = yield employees_model_1.employees_model.create_employees(employeeData);
+    // Handle avatar upload if a file is present
+    if (req.file && req.file.path) {
+        const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+            folder: "avatars",
         });
+        if (!result.secure_url) {
+            throw new Error("Cloudinary upload failed");
+        }
+        // Update the avatar URL in the database
+        yield employees_model_1.employees_model.update_employee_avatar(employee.insertId, result.secure_url);
     }
-    catch (error) {
-        console.error("Error creating employee:", error);
-        res.status(500).json({ message: "Failed to create employee", error });
-    }
+    res.status(201).json({
+        message: "Employee created and avatar uploaded successfully",
+        employee_id: employee.insertId,
+    });
 });
 exports.create_employees = create_employees;
 // Sign in employee
