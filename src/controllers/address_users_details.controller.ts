@@ -10,65 +10,6 @@ import { log } from "console";
 /**
  * Create a new address user detail
  */
-
-
-// export const create_address_user_details = async (req: Request, res: Response) => {
-//   try {
-//     const addressUserData = req.body;
-//     const usersId = addressUserData.users_id;
-
-//     console.log("Received address user details:", addressUserData);
-
-//     // Step 1: Insert address_user_details into DB
-//     const addressUser = await address_users_details_model.create_address_user_details(addressUserData);
-//     const addressUsersDetailId = addressUser.insertId;
-//     console.log("Address user created with ID:", addressUsersDetailId);
-
-//     // Step 2: Upload image to Cloudinary if file exists
-//     if (req.file) {
-//       console.log("Uploading image to Cloudinary...");
-//       const result = await cloudinary.uploader.upload(req.file.path, {
-//         folder: "house_image",
-//       });
-
-//       if (!result.secure_url) {
-//         throw new Error("Cloudinary upload failed");
-//       }
-
-//       console.log("Cloudinary image URL:", result.secure_url);
-
-//       // Update DB with image URL
-//       await address_users_details_model.update_house_image(addressUsersDetailId, result.secure_url);
-
-//       // Remove local file
-//       fs.unlinkSync(req.file.path);
-//     } else {
-//       console.log("No image file provided, skipping upload.");
-//     }
-
-//     // Step 3: Fetch and decide which address ID to update in users table
-//     const [existingAddresses]: any = await db.execute(
-//       `SELECT id FROM address_users_detail WHERE users_id = ?`,
-//       [usersId]
-//     );
-
-//     const validAddressIds = existingAddresses.map((record: any) => record.id);
-//     const addressToSave = validAddressIds.includes(addressUsersDetailId)
-//       ? addressUsersDetailId
-//       : validAddressIds[0];
-
-//     await db.execute(`UPDATE users SET address_users_detail_id = ? WHERE id = ?`, [addressToSave, usersId]);
-
-//     res.status(201).json({
-//       message: "Address user detail created and image uploaded successfully",
-//       address_users_detail_id: addressUsersDetailId,
-//     });
-//   } catch (error) {
-//     console.error("Error creating address user detail with image upload:", error);
-//     res.status(500).json({ message: "Failed to create address user detail", error });
-//   }
-// };
-
 export const create_address_user_details = async (req: Request, res: Response) => {
   try {
     const addressUserData = req.body;
@@ -81,7 +22,7 @@ export const create_address_user_details = async (req: Request, res: Response) =
     const addressUsersDetailId = addressUser.insertId;
     console.log("Address user created with ID:", addressUsersDetailId);
 
-    // Step 2: Upload house image if file exists
+    // Step 2: Upload house image to Cloudinary if file exists
     if (req.file) {
       console.log("Uploading image to Cloudinary...");
       const result = await cloudinary.uploader.upload(req.file.path, {
@@ -94,11 +35,14 @@ export const create_address_user_details = async (req: Request, res: Response) =
 
       console.log("Cloudinary image URL:", result.secure_url);
 
-      // Update address with house image URL
+      // Update database with Cloudinary URL
       await address_users_details_model.update_house_image(addressUsersDetailId, result.secure_url);
 
-      // Remove local file
-      fs.unlinkSync(req.file.path);
+      // Safely remove local file only if it exists
+      if (req.file.path && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+        console.log("Local file deleted");
+      }
     } else {
       console.log("No image file provided, skipping upload.");
     }
@@ -114,7 +58,10 @@ export const create_address_user_details = async (req: Request, res: Response) =
       ? addressUsersDetailId
       : validAddressIds[0];
 
-    await db.execute(`UPDATE users SET address_users_detail_id = ? WHERE id = ?`, [addressToSave, usersId]);
+    await db.execute(
+      `UPDATE users SET address_users_detail_id = ? WHERE id = ?`,
+      [addressToSave, usersId]
+    );
 
     res.status(201).json({
       message: "Address user detail created and image uploaded successfully",
@@ -122,7 +69,10 @@ export const create_address_user_details = async (req: Request, res: Response) =
     });
   } catch (error) {
     console.error("Error creating address user detail with image upload:", error);
-    res.status(500).json({ message: "Failed to create address user detail", error });
+    res.status(500).json({
+      message: "Failed to create address user detail",
+      error,
+    });
   }
 };
 

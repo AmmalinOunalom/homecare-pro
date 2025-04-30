@@ -6,24 +6,51 @@ export interface EmpCar {
     emp_id: number;         // Foreign key for employee ID
     car_brand: string;      // Brand of the car
     model: string;          // Model of the car
+    car_image: string | null;  // Allow null if no image is uploaded
     license_plate: string;  // License plate of the car
     created_at: Date;       // Date when the car was added
     updated_at: Date;       // Date when the car record was updated
 }
 
 export class emp_car_model {
+    static get_employee_by_id(emp_id: any) {
+      throw new Error("Method not implemented.");
+    }
+    static update_car_image(empCarId: any, secure_url: string) {
+      throw new Error("Method not implemented.");
+    }
     // Create EmpCar
     static async create_emp_car(empCar: Omit<EmpCar, "id" | "created_at" | "updated_at">) {
         try {
-            const query = `INSERT INTO emp_cars (emp_id, car_brand, model, license_plate) VALUES (?, ?, ?, ?)`;
-            const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate];
-            const [result] = await db.execute(query, values);
-            return result;  // Returning the result of the insertion
+          const query = `
+            INSERT INTO emp_cars 
+              (emp_id, car_brand, model, license_plate, car_image)
+            VALUES (?, ?, ?, ?, ?)
+          `;
+          const values = [
+            empCar.emp_id,
+            empCar.car_brand,
+            empCar.model,
+            empCar.license_plate,
+            empCar.car_image
+          ];
+    
+          // Execute the query and get the result
+          const [result] = await db.execute(query, values);
+    
+          // If the result is of type ResultSetHeader, access the insertId
+          if ('insertId' in result) {
+            return result.insertId; // Return the insertId for further use (e.g., in the controller)
+          }
+    
+          // If for some reason insertId doesn't exist, handle the failure
+          throw new Error("Failed to retrieve insertId from emp_car insertion");
+    
         } catch (error) {
-            console.error("Error inserting emp_car:", error);
-            throw new Error("Failed to create emp_car");
+          console.error("Error inserting emp_car:", error);
+          throw new Error("Failed to create emp_car");
         }
-    }
+      }
 
     // Show All EmpCars
     static async show_all_emp_cars() {

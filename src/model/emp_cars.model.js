@@ -15,14 +15,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.emp_car_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
 class emp_car_model {
+    static get_employee_by_id(emp_id) {
+        throw new Error("Method not implemented.");
+    }
+    static update_car_image(empCarId, secure_url) {
+        throw new Error("Method not implemented.");
+    }
     // Create EmpCar
     static create_emp_car(empCar) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `INSERT INTO emp_cars (emp_id, car_brand, model, license_plate) VALUES (?, ?, ?, ?)`;
-                const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate];
+                const query = `
+            INSERT INTO emp_cars 
+              (emp_id, car_brand, model, license_plate, car_image)
+            VALUES (?, ?, ?, ?, ?)
+          `;
+                const values = [
+                    empCar.emp_id,
+                    empCar.car_brand,
+                    empCar.model,
+                    empCar.license_plate,
+                    empCar.car_image
+                ];
+                // Execute the query and get the result
                 const [result] = yield base_database_1.default.execute(query, values);
-                return result; // Returning the result of the insertion
+                // If the result is of type ResultSetHeader, access the insertId
+                if ('insertId' in result) {
+                    return result.insertId; // Return the insertId for further use (e.g., in the controller)
+                }
+                // If for some reason insertId doesn't exist, handle the failure
+                throw new Error("Failed to retrieve insertId from emp_car insertion");
             }
             catch (error) {
                 console.error("Error inserting emp_car:", error);

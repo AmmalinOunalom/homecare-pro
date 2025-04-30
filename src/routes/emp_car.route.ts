@@ -61,14 +61,14 @@ router.post("/upload_car_image", upload.single("car_image"), upload_car_image);
  * @swagger
  * /emp_car/create_emp_car:
  *   post:
- *     summary: Create a new emp_car
- *     description: Adds a new emp_car to the database.
+ *     summary: Create a new employee car with an image
+ *     description: Adds a new car for the employee along with the uploaded car image.
  *     tags:
  *       - EmpCars
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -76,7 +76,7 @@ router.post("/upload_car_image", upload.single("car_image"), upload_car_image);
  *               - car_brand
  *               - model
  *               - license_plate
- *               - status
+ *               - car_image
  *             properties:
  *               emp_id:
  *                 type: integer
@@ -90,19 +90,19 @@ router.post("/upload_car_image", upload.single("car_image"), upload_car_image);
  *               license_plate:
  *                 type: string
  *                 example: "ABC-1234"
- *               status:
+ *               car_image:
  *                 type: string
- *                 enum: [ACTIVE, INACTIVE]
- *                 example: ACTIVE
+ *                 format: binary
+ *                 description: The car image to be uploaded
  *     responses:
  *       201:
- *         description: EmpCar created successfully.
+ *         description: Employee car created successfully.
  *       400:
- *         description: Bad request, missing required fields.
+ *         description: Bad request, missing required fields or invalid file format.
  *       500:
  *         description: Internal server error.
  */
-router.post("/create_emp_car", create_emp_car);
+router.post("/create_emp_car", upload.single("car_image"), create_emp_car);
 
 // NOTE - Update EmpCar
 /**

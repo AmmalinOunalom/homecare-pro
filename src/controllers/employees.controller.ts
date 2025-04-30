@@ -10,67 +10,80 @@ import bcrypt from "bcrypt";
  * Create a new employee
  */
 
-// export const create_employees = async (req: Request, res: Response) => {
-//   try {
-//     const { password } = req.body;
-
-//     // Hash the password before saving
-//     const saltRounds = 10;
-//     req.body.password = await bcrypt.hash(password, saltRounds);
-
-//     // Upload avatar to Cloudinary if provided
-//     if (req.file) {
-//       const result = await cloudinary.uploader.upload(req.file.path, {
-//         folder: "avatars",
-//       });
-
-//       req.body.avatar = result.secure_url;
-
-//       // Remove local file
-//       fs.unlinkSync(req.file.path);
-//     }
-
-//     const employee = await employees_model.create_employees(req.body);
-//     res.status(201).json({
-//       message: "Employee created successfully",
-//       employee,
-//     });
-//   } catch (error) {
-//     console.error("Error creating employee:", error);
-//     res.status(500).json({ message: "Failed to create employee", error });
-//   }
-// };
-
 export const create_employees = async (req: Request, res: Response) => {
-  const employeeData = req.body;
+  try {
+    const employeeData = req.body;
 
-  // Hash the password before saving
-  const saltRounds = 10;
-  employeeData.password = await bcrypt.hash(employeeData.password, saltRounds);
+    // Hash the password
+    const saltRounds = 10;
+    employeeData.password = await bcrypt.hash(employeeData.password, saltRounds);
 
-  // Insert the employee data first (without avatar)
-  const employee = await employees_model.create_employees(employeeData);
+    // Upload avatar first if available
+    if (req.file && req.file.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars",
+      });
 
-  // Handle avatar upload if a file is present
-  if (req.file && req.file.path) {
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "avatars",
-    });
+      if (!result.secure_url) {
+        throw new Error("Cloudinary upload failed");
+      }
 
-    if (!result.secure_url) {
-      throw new Error("Cloudinary upload failed");
+      // Add avatar URL to employee data
+      employeeData.avatar = result.secure_url;
+
+      // Delete local file
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
     }
 
-    // Update the avatar URL in the database
-    await employees_model.update_employee_avatar(employee.insertId, result.secure_url);
+    // Insert employee with avatar URL (if uploaded)
+    const employee = await employees_model.create_employees(employeeData);
 
+    res.status(201).json({
+      message: "Employee created successfully",
+      employee_id: employee.insertId,
+      avatar: employeeData.avatar || null,
+    });
+  } catch (error) {
+    console.error("Error creating employee:", error);
+    res.status(500).json({
+      message: "Failed to create employee",
+      error,
+    });
   }
-
-  res.status(201).json({
-    message: "Employee created and avatar uploaded successfully",
-    employee_id: employee.insertId,
-  });
 };
+
+// export const create_employees = async (req: Request, res: Response) => {
+//   const employeeData = req.body;
+
+//   // Hash the password before saving
+//   const saltRounds = 10;
+//   employeeData.password = await bcrypt.hash(employeeData.password, saltRounds);
+
+//   // Insert the employee data first (without avatar)
+//   const employee = await employees_model.create_employees(employeeData);
+
+//   // Handle avatar upload if a file is present
+//   if (req.file && req.file.path) {
+//     const result = await cloudinary.uploader.upload(req.file.path, {
+//       folder: "avatars",
+//     });
+
+//     if (!result.secure_url) {
+//       throw new Error("Cloudinary upload failed");
+//     }
+
+//     // Update the avatar URL in the database
+//     await employees_model.update_employee_avatar(employee.insertId, result.secure_url);
+
+//   }
+
+//   res.status(201).json({
+//     message: "Employee created and avatar uploaded successfully",
+//     employee_id: employee.insertId,
+//   });
+// };
 
 // Sign in employee
 export const sign_in_employee = async (req: Request, res: Response) => {

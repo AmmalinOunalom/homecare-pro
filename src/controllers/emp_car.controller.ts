@@ -8,15 +8,53 @@ import { emp_car_model } from "../model/emp_cars.model";
 /**
  * Create a new emp_car
  */
-export const create_emp_car = async (req: Request, res: Response) => {
+
+export const create_emp_car = async (req: Request, res: Response): Promise<void> => {
   try {
     const empCarData = req.body;
-    const empCar = await emp_car_model.create_emp_car(empCarData);
-    res.status(201).send("EmpCar created successfully");
+    let carImageUrl: string | null = null;
+
+    // Handle car image upload if file exists
+    if (req.file && req.file.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'car_images', // Store the image in this folder on Cloudinary
+      });
+
+      if (!result.secure_url) {
+        throw new Error('Cloudinary upload failed');
+      }
+
+      carImageUrl = result.secure_url;
+
+      // Remove local file after upload
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+
+    // Create emp_car entry in database with the uploaded image URL
+    const empCarId = await emp_car_model.create_emp_car({
+      emp_id: empCarData.emp_id,
+      car_brand: empCarData.car_brand,
+      model: empCarData.model,
+      license_plate: empCarData.license_plate,
+      car_image: carImageUrl, // Store the Cloudinary URL of the uploaded image
+    });
+
+    res.status(201).json({
+      message: 'Employee car created successfully',
+      emp_car_id: empCarId,
+      car_image: carImageUrl, // Return the uploaded image URL
+    });
   } catch (error) {
-    res.status(500).send("Failed to create empCar");
+    console.error('Error creating emp_car:', error);
+    res.status(500).json({
+      message: 'Failed to create empCar',
+      error,
+    });
   }
 };
+
 
 /**
  * Retrieve all emp_cars
