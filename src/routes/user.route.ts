@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken } from "../middleware/auth.middleware"; // เชื่อมต่อกับ middleware
-import { create_users, show_all_users, forgot_password, rename_user, sign_in_user } from "../controllers/user.controller";
+import { create_users, show_all_users, get_user_profile, forgot_password, rename_user, sign_in_user } from "../controllers/user.controller";
 
 const router = express.Router();
 
@@ -166,8 +166,30 @@ router.post("/sign_up_user", create_users);
  */
 router.post("/sign_in", sign_in_user);
 
+// Add Get User Profile route
+/**
+ * @swagger
+ * /users/verify_token:
+ *   get:
+ *     summary: Get user profile
+ *     description: Retrieve the profile of the logged-in user.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []  
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user profile
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/profile", authenticateToken, get_user_profile);
 
-
+// Add Rename User route
 /**
  * @swagger
  * /users/rename_user/{id}:

@@ -1,5 +1,5 @@
 import express from "express";
-import { create_emp_car, show_all_emp_cars, update_emp_car, delete_emp_car, upload_car_image  } from "../controllers/emp_car.controller";
+import { create_emp_car, show_all_emp_cars, get_emp_car_by_id, update_emp_car, delete_emp_car, upload_car_image  } from "../controllers/emp_car.controller";
 import upload from "../config/images.config";
 
 const router = express.Router();
@@ -20,6 +20,33 @@ const router = express.Router();
  *         description: Internal server error.
  */
 router.get("/read_emp_car", show_all_emp_cars);
+
+
+// NOTE - Get EmpCar by ID
+/**
+ * @swagger
+ * /emp_car/get_emp_car_by_id/{id}:
+ *   get:
+ *     summary: Get EmpCar by ID
+ *     description: Retrieve details of a specific EmpCar by its ID.
+ *     tags:
+ *       - EmpCars
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: EmpCar ID.
+ *     responses:
+ *       200:
+ *         description: EmpCar details retrieved successfully.
+ *       404:
+ *         description: EmpCar not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get("/get_emp_car_by_id/:id", get_emp_car_by_id);
 
 // NOTE - Upload Car Image
 /**
@@ -104,13 +131,13 @@ router.post("/upload_car_image", upload.single("car_image"), upload_car_image);
  */
 router.post("/create_emp_car", upload.single("car_image"), create_emp_car);
 
-// NOTE - Update EmpCar
+// NOTE - Update EmpCar by ID
 /**
  * @swagger
  * /emp_car/update_emp_car/{id}:
  *   put:
- *     summary: Update an emp_car
- *     description: Updates an emp_car's details in the database by ID.
+ *     summary: Update an emp_car by ID
+ *     description: Updates an emp_car's details (car_brand, model, license_plate, car_image) in the database by ID.
  *     tags:
  *       - EmpCars
  *     parameters:
@@ -123,13 +150,10 @@ router.post("/create_emp_car", upload.single("car_image"), create_emp_car);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
- *               emp_id:
- *                 type: integer
- *                 example: 3
  *               car_brand:
  *                 type: string
  *                 example: "Toyota"
@@ -139,17 +163,47 @@ router.post("/create_emp_car", upload.single("car_image"), create_emp_car);
  *               license_plate:
  *                 type: string
  *                 example: "ABC-1234"
+ *               car_image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Optional car image file
  *     responses:
  *       200:
  *         description: EmpCar updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "EmpCar updated successfully"
+ *                 emp_car_id:
+ *                   type: integer
+ *                   example: 1
+ *                 updated_fields:
+ *                   type: object
+ *                   properties:
+ *                     car_brand:
+ *                       type: string
+ *                       example: "Toyota"
+ *                     model:
+ *                       type: string
+ *                       example: "Camry"
+ *                     license_plate:
+ *                       type: string
+ *                       example: "ABC-1234"
+ *                     car_image:
+ *                       type: string
+ *                       example: "https://res.cloudinary.com/.../car_image.jpg"
  *       400:
- *         description: Invalid request data.
+ *         description: Invalid request data (e.g., no fields to update).
  *       404:
  *         description: EmpCar not found.
  *       500:
  *         description: Internal server error.
  */
-router.put("/update_emp_car/:id", update_emp_car);
+router.put('/update_emp_car/:id', upload.single('car_image'), update_emp_car);
 
 // NOTE - Delete EmpCar
 /**

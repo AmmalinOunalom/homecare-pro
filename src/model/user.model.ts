@@ -124,6 +124,13 @@ static async sign_in(email: string, password: string) {
     }
   }
 
+  static async get_user_by_id(id: number) {
+    const query = 'SELECT id, username, email, first_name, last_name, tel, avatar FROM users WHERE id = ?';
+    const [rows]: any = await db.execute(query, [id]);
+    return rows.length > 0 ? rows[0] : null;
+  }
+  
+
   static async rename_users(
     id: number,  // ID as a number
     newUsername: string,

@@ -308,8 +308,8 @@ router.get("/image/:id", employees_controller_1.show_image_employee_by_id);
  * @swagger
  * /employees/update_employees/{id}:
  *   put:
- *     summary: Update an employee
- *     description: Updates an employee's details by ID.
+ *     summary: Update an employee's details
+ *     description: Updates an employee's details by ID, including the option to update the avatar.
  *     tags:
  *       - Employees
  *     parameters:
@@ -323,21 +323,9 @@ router.get("/image/:id", employees_controller_1.show_image_employee_by_id);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - first_name
- *               - last_name
- *               - email
- *               - tel
- *               - password
- *               - address
- *               - gender
- *               - cv
- *               - cat_id
- *               - price
- *               - status
  *             properties:
  *               first_name:
  *                 type: string
@@ -352,10 +340,6 @@ router.get("/image/:id", employees_controller_1.show_image_employee_by_id);
  *               tel:
  *                 type: string
  *                 example: "1234567890"
- *               password:
- *                 type: string
- *                 format: password
- *                 example: "securePass123"
  *               address:
  *                 type: string
  *                 example: "123 Main St, City, Country"
@@ -368,7 +352,8 @@ router.get("/image/:id", employees_controller_1.show_image_employee_by_id);
  *                 example: "cv.pdf"
  *               avatar:
  *                 type: string
- *                 example: "avatar.jpg"
+ *                 format: binary
+ *                 description: Avatar image file (optional)
  *               cat_id:
  *                 type: integer
  *                 example: 2
@@ -390,7 +375,7 @@ router.get("/image/:id", employees_controller_1.show_image_employee_by_id);
  *       500:
  *         description: Internal server error.
  */
-router.put("/update_employees/:id", employees_controller_1.update_employees);
+router.put('/update_employees/:id', images_config_1.default.single('avatar'), employees_controller_1.update_employees);
 // NOTE - Delete Employee (Soft Delete)
 /**
  * @swagger

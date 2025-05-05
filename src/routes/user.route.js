@@ -166,6 +166,29 @@ router.post("/sign_up_user", user_controller_1.create_users);
  *         description: Internal server error
  */
 router.post("/sign_in", user_controller_1.sign_in_user);
+// Add Get User Profile route
+/**
+ * @swagger
+ * /users/profile:
+ *   get:
+ *     summary: Get user profile
+ *     description: Retrieve the profile of the logged-in user.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []  // Use bearer token authentication
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user profile
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/profile", auth_middleware_1.authenticateToken, user_controller_1.get_user_profile);
+// Add Rename User route
 /**
  * @swagger
  * /users/rename_user/{id}:

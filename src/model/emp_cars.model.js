@@ -15,12 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.emp_car_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
 class emp_car_model {
-    static get_employee_by_id(emp_id) {
-        throw new Error("Method not implemented.");
-    }
-    static update_car_image(empCarId, secure_url) {
-        throw new Error("Method not implemented.");
-    }
     // Create EmpCar
     static create_emp_car(empCar) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -66,18 +60,60 @@ class emp_car_model {
             }
         });
     }
+    static get_emp_car_by_id(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Query to get the emp_car by its ID
+                const query = `SELECT * FROM emp_cars WHERE id = ?`;
+                // Execute query
+                const [rows] = yield base_database_1.default.execute(query, [id]);
+                // If the result is not empty, return the first row
+                if (rows.length > 0) {
+                    return rows[0];
+                }
+                else {
+                    return null; // If no record found
+                }
+            }
+            catch (error) {
+                console.error("Error fetching emp_car details:", error);
+                throw new Error("Failed to fetch emp_car details.");
+            }
+        });
+    }
     static update_emp_car(id, empCar) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Check if emp_id exists
-                const empCheckQuery = "SELECT id FROM employees WHERE id = ?";
-                const [empResult] = yield base_database_1.default.execute(empCheckQuery, [empCar.emp_id]);
-                if (!Array.isArray(empResult) || empResult.length === 0) {
-                    throw new Error("Invalid emp_id: Employee does not exist");
+                // Build the dynamic SET clause
+                const fields = [];
+                const values = [];
+                if (empCar.car_brand !== undefined) {
+                    fields.push("car_brand = ?");
+                    values.push(empCar.car_brand);
                 }
-                // Proceed with the update if emp_id exists
-                const query = `UPDATE emp_cars SET emp_id = ?, car_brand = ?, model = ?, license_plate = ?, updated_at = NOW() WHERE id = ?`;
-                const values = [empCar.emp_id, empCar.car_brand, empCar.model, empCar.license_plate, id];
+                if (empCar.model !== undefined) {
+                    fields.push("model = ?");
+                    values.push(empCar.model);
+                }
+                if (empCar.license_plate !== undefined) {
+                    fields.push("license_plate = ?");
+                    values.push(empCar.license_plate);
+                }
+                if (empCar.car_image !== undefined) {
+                    fields.push("car_image = ?");
+                    values.push(empCar.car_image);
+                }
+                // Always update updated_at
+                fields.push("updated_at = NOW()");
+                if (fields.length === 1) {
+                    throw new Error("No valid fields provided for update");
+                }
+                const query = `
+                UPDATE emp_cars 
+                SET ${fields.join(", ")} 
+                WHERE id = ?
+            `;
+                values.push(id);
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result;
             }

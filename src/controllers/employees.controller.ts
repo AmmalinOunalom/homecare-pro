@@ -54,36 +54,6 @@ export const create_employees = async (req: Request, res: Response) => {
   }
 };
 
-// export const create_employees = async (req: Request, res: Response) => {
-//   const employeeData = req.body;
-
-//   // Hash the password before saving
-//   const saltRounds = 10;
-//   employeeData.password = await bcrypt.hash(employeeData.password, saltRounds);
-
-//   // Insert the employee data first (without avatar)
-//   const employee = await employees_model.create_employees(employeeData);
-
-//   // Handle avatar upload if a file is present
-//   if (req.file && req.file.path) {
-//     const result = await cloudinary.uploader.upload(req.file.path, {
-//       folder: "avatars",
-//     });
-
-//     if (!result.secure_url) {
-//       throw new Error("Cloudinary upload failed");
-//     }
-
-//     // Update the avatar URL in the database
-//     await employees_model.update_employee_avatar(employee.insertId, result.secure_url);
-
-//   }
-
-//   res.status(201).json({
-//     message: "Employee created and avatar uploaded successfully",
-//     employee_id: employee.insertId,
-//   });
-// };
 
 // Sign in employee
 export const sign_in_employee = async (req: Request, res: Response) => {
@@ -268,27 +238,195 @@ export const show_image_employee_by_id = async (req: Request, res: Response): Pr
 /**
  * Update an employee
  */
+
+// export const update_employees = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { id } = req.params;
+//     const employeeId = Number(id);
+
+//     if (isNaN(employeeId)) {
+//       res.status(400).json({ success: false, message: "Invalid employee ID" });
+//       return;
+//     }
+
+//     const employeeData = req.body;
+
+//     let avatarUrl: string | null = null;
+
+//     // Handle avatar image upload if a file exists
+//     if (req.file && req.file.path) {
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "avatars", // Optionally, specify a folder in Cloudinary
+//       });
+
+//       if (!result.secure_url) {
+//         throw new Error("Cloudinary upload failed");
+//       }
+
+//       avatarUrl = result.secure_url;
+
+//       // Clean up the uploaded file locally after Cloudinary upload
+//       if (fs.existsSync(req.file.path)) {
+//         fs.unlinkSync(req.file.path); // Delete local file
+//       }
+//     }
+
+//     // Build update data only from allowed fields
+//     const updateData: any = {};
+
+//     if (employeeData.first_name) {
+//       updateData.first_name = employeeData.first_name;
+//     }
+//     if (employeeData.last_name) {
+//       updateData.last_name = employeeData.last_name;
+//     }
+//     if (employeeData.email) {
+//       updateData.email = employeeData.email;
+//     }
+//     if (employeeData.tel) {
+//       updateData.tel = employeeData.tel;
+//     }
+//     if (employeeData.address) {
+//       updateData.address = employeeData.address;
+//     }
+//     if (employeeData.gender) {
+//       updateData.gender = employeeData.gender;
+//     }
+//     if (employeeData.cv) {
+//       updateData.cv = employeeData.cv;
+//     }
+//     if (avatarUrl) {
+//       updateData.avatar = avatarUrl;
+//     }
+//     if (employeeData.cat_id) {
+//       updateData.cat_id = employeeData.cat_id;
+//     }
+//     if (employeeData.price) {
+//       updateData.price = employeeData.price;
+//     }
+//     if (employeeData.status) {
+//       updateData.status = employeeData.status;
+//     }
+
+//     // Ensure there is something to update
+//     if (Object.keys(updateData).length === 0) {
+//       res.status(400).json({ message: "No valid fields to update" });
+//       return;
+//     }
+
+//     // Proceed with the update using the model
+//     await employees_model.update_employees(employeeId, updateData);
+
+//     res.status(200).json({
+//       message: "Employee updated successfully",
+//       employee_id: employeeId,
+//       updated_fields: updateData,
+//     });
+//   } catch (error) {
+//     console.error("Error updating employee:", error);
+//     res.status(500).json({
+//       message: "Failed to update employee",
+//       error: error instanceof Error ? error.message : error,
+//     });
+//   }
+// };
+
 export const update_employees = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-
     const employeeId = Number(id);
+
     if (isNaN(employeeId)) {
       res.status(400).json({ success: false, message: "Invalid employee ID" });
       return;
     }
 
-    const result = await employees_model.update_employees(employeeId, req.body);
-
-    if (!result.success) {
-      res.status(404).json(result);
+    // Check if the employee exists
+    const employeeExists = await employees_model.show_more_employee_by_id(employeeId);
+    if (!employeeExists) {
+      res.status(404).json({ success: false, message: `Employee with ID ${employeeId} not found` });
       return;
     }
 
-    res.status(200).json({ success: true, message: "Employee updated successfullyyyyy" });
+    const employeeData = req.body;
+
+    let avatarUrl: string | null = null;
+
+    // Handle avatar image upload if a file exists
+    if (req.file && req.file.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars", // Optionally, specify a folder in Cloudinary
+      });
+
+      if (!result.secure_url) {
+        throw new Error("Cloudinary upload failed");
+      }
+
+      avatarUrl = result.secure_url;
+
+      // Clean up the uploaded file locally after Cloudinary upload
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path); // Delete local file
+      }
+    }
+
+    // Build update data only from allowed fields
+    const updateData: any = {};
+
+    if (employeeData.first_name) {
+      updateData.first_name = employeeData.first_name;
+    }
+    if (employeeData.last_name) {
+      updateData.last_name = employeeData.last_name;
+    }
+    if (employeeData.email) {
+      updateData.email = employeeData.email;
+    }
+    if (employeeData.tel) {
+      updateData.tel = employeeData.tel;
+    }
+    if (employeeData.address) {
+      updateData.address = employeeData.address;
+    }
+    if (employeeData.gender) {
+      updateData.gender = employeeData.gender;
+    }
+    if (employeeData.cv) {
+      updateData.cv = employeeData.cv;
+    }
+    if (avatarUrl) {
+      updateData.avatar = avatarUrl;
+    }
+    if (employeeData.cat_id) {
+      updateData.cat_id = employeeData.cat_id;
+    }
+    if (employeeData.price) {
+      updateData.price = employeeData.price;
+    }
+    if (employeeData.status) {
+      updateData.status = employeeData.status;
+    }
+
+    // Ensure there is something to update
+    if (Object.keys(updateData).length === 0) {
+      res.status(400).json({ message: "No valid fields to update" });
+      return;
+    }
+
+    // Proceed with the update using the model
+    await employees_model.update_employees(employeeId, updateData);
+
+    res.status(200).json({
+      message: "Employee updated successfully",
+      employee_id: employeeId,
+      updated_fields: updateData,
+    });
   } catch (error) {
     console.error("Error updating employee:", error);
-    res.status(500).json({ success: false, message: "Failed to update employee" });
+    res.status(500).json({
+      message: "Failed to update employee",
+      error: error instanceof Error ? error.message : error,
+    });
   }
 };
 
@@ -305,3 +443,7 @@ export const delete_employees = async (req: Request, res: Response) => {
     res.status(500).send("Failed to delete employee");
   }
 };
+function uploadAvatar(file: Express.Multer.File): string | PromiseLike<string | undefined> | undefined {
+  throw new Error("Function not implemented.");
+}
+

@@ -20,45 +20,9 @@ interface RequestWithUser extends Request {
   user?: { id: number; type: "users" | "employees" | "admins" };
 }
 
-// // Middleware to authenticate Token
-// export const authenticateToken = (req: RequestWithUser, res: Response, next: NextFunction): void => {
-//     console.log("Token verification started...");
-//   const token = req.header("Authorization")?.split(" ")[1];  // Get Token from Authorization header
 
-//   if (!token) {
-//     res.status(403).json({ error: "Access denied: No token provided" });  // No token provided
-//     return; // Avoid further processing if token is not found
-//   }
 
-//   try {
-//     let decoded: any = null;
-//     let userType: "users" | "employees" | "admins" | null = null;
-
-//     // Check for token validity for each type of user
-//     for (const type of ["users", "employees", "admins"] as const) {
-//       try {
-//         decoded = jwt.verify(token, SECRET_KEYS[type]);  // Verify token
-//         userType = type;
-//         break;  // Break the loop if token is valid
-//       } catch (err) {
-//         continue;  // Continue to next type if verification fails
-//       }
-//     }
-
-//     if (!decoded || !userType) {
-//       res.status(401).json({ error: "Invalid token: No matching user type" });  // Invalid token or no matching user type
-//       return;  // Exit if token is invalid
-//     }
-
-//     // Add the user info to request object
-//     req.user = { id: decoded.id, type: userType };
-
-//     // Call next middleware or route handler
-//     next();
-//   } catch (error) {
-//     res.status(401).json({ error: "Invalid token: Error while verifying token" });  // Error verifying token
-//   }
-// };
+// Middleware to authenticate Token
 
 export const authenticateToken = (req: RequestWithUser, res: Response, next: NextFunction): void => {
     console.log("Token verification started...");

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgot_password = exports.rename_user = exports.show_all_users = exports.sign_in_user = exports.create_users = void 0;
+exports.forgot_password = exports.rename_user = exports.get_user_profile = exports.show_all_users = exports.sign_in_user = exports.create_users = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -33,38 +33,6 @@ const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.create_users = create_users;
 // Sign in user
-// export const sign_in_user = async (req: Request, res: Response) => {
-//   try {
-//     const { email, password } = req.body;
-//     // Call the model's sign_in function to verify user credentials
-//     const user = await user_model.sign_in(email, password);
-//     if (user) {
-//       // If user is found and password is correct
-//       // Generate JWT token
-//       const token = jwt.sign(
-//         { id: user.id, username: user.username, email: user.email },  // Payload
-//         JWT_SECRET,  // Secret key
-//         { expiresIn: '1h' }  // Token expiration time
-//       );
-//       // Send success response along with the token
-//       res.status(200).send({
-//         message: "Sign-in successful",
-//         token,  // Sending the generated token to the client
-//         user: {
-//           id: user.id,
-//           username: user.username,
-//           email: user.email
-//         },
-//       });
-//     } else {
-//       // If credentials are invalid
-//       res.status(401).send("Invalid email or password");
-//     }
-//   } catch (error) {
-//     console.error("Error during sign in:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
 const sign_in_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
@@ -111,6 +79,31 @@ const show_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.show_all_users = show_all_users;
+const get_user_profile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    try {
+        // Retrieve user ID and type from req.user directly (using optional chaining)
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const userType = (_b = req.user) === null || _b === void 0 ? void 0 : _b.type;
+        // Validate user type
+        if (userType !== 'users') {
+            res.status(403).json({ error: "Access denied: Only users can access this route" });
+        }
+        // Fetch user data by ID
+        const user = yield user_model_1.user_model.get_user_by_id(userId);
+        // Check if user exists
+        if (!user) {
+            res.status(404).json({ error: "User not found" });
+        }
+        // Return user profile data
+        res.json({ user });
+    }
+    catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+exports.get_user_profile = get_user_profile;
 const rename_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Extract the user ID from the URL parameters and the new user details from the body

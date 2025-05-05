@@ -121,6 +121,13 @@ class user_model {
             }
         });
     }
+    static get_user_by_id(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = 'SELECT id, username, email, first_name, last_name, tel, avatar FROM users WHERE id = ?';
+            const [rows] = yield base_database_1.default.execute(query, [id]);
+            return rows.length > 0 ? rows[0] : null;
+        });
+    }
     static rename_users(id, // ID as a number
     newUsername, newFirstname, newLastname) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -27,41 +27,6 @@ export const create_users = async (req: Request, res: Response) => {
 };
 
 // Sign in user
-// export const sign_in_user = async (req: Request, res: Response) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     // Call the model's sign_in function to verify user credentials
-//     const user = await user_model.sign_in(email, password);
-
-//     if (user) {
-//       // If user is found and password is correct
-//       // Generate JWT token
-//       const token = jwt.sign(
-//         { id: user.id, username: user.username, email: user.email },  // Payload
-//         JWT_SECRET,  // Secret key
-//         { expiresIn: '1h' }  // Token expiration time
-//       );
-
-//       // Send success response along with the token
-//       res.status(200).send({
-//         message: "Sign-in successful",
-//         token,  // Sending the generated token to the client
-//         user: {
-//           id: user.id,
-//           username: user.username,
-//           email: user.email
-//         },
-//       });
-//     } else {
-//       // If credentials are invalid
-//       res.status(401).send("Invalid email or password");
-//     }
-//   } catch (error) {
-//     console.error("Error during sign in:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
 
 export const sign_in_user = async (req: Request, res: Response) => {
   try {
@@ -108,6 +73,33 @@ export const show_all_users = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+export const get_user_profile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Retrieve user ID and type from req.user directly (using optional chaining)
+    const userId = req.user?.id;
+    const userType = req.user?.type;
+
+    // Validate user type
+    if (userType !== 'users') {
+      res.status(403).json({ error: "Access denied: Only users can access this route" });
+    }
+
+    // Fetch user data by ID
+    const user = await user_model.get_user_by_id(userId);
+
+    // Check if user exists
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+    }
+
+    // Return user profile data
+    res.json({ user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
