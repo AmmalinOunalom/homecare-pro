@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgot_password = exports.rename_user = exports.get_user_profile = exports.show_all_users = exports.sign_in_user = exports.create_users = void 0;
+exports.forgot_password = exports.rename_user = exports.get_user_profile = exports.get_user_name = exports.show_all_users = exports.sign_in_user = exports.create_users = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -79,20 +79,54 @@ const show_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.show_all_users = show_all_users;
+//get user name by ID
+const get_user_name = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.query;
+        // Ensure userId is a string and can be parsed to a number
+        if (typeof userId !== 'string') {
+            res.status(400).json({ message: 'User ID is required and must be a string.' });
+            return;
+        }
+        const id = parseInt(userId, 10);
+        if (isNaN(id)) {
+            res.status(400).json({ message: 'User ID must be a valid number.' });
+            return;
+        }
+        const user = yield user_model_1.user_model.get_user_name(id);
+        if (!user) {
+            res.status(404).json({ message: 'User not found.' });
+            return;
+        }
+        res.status(200).json(user); // Return the user name
+    }
+    catch (error) {
+        console.error('Error fetching user name:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+exports.get_user_name = get_user_name;
 const get_user_profile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        // Retrieve user ID and type from req.user directly (using optional chaining)
+        // 🔍 Log the full req.user object
+        console.log("Authenticated user from token:", req.user);
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         const userType = (_b = req.user) === null || _b === void 0 ? void 0 : _b.type;
+        // 🔍 Log extracted values
+        console.log("User ID:", userId);
+        console.log("User Type:", userType);
         // Validate user type
         if (userType !== 'users') {
+            console.log("Access denied: User type is not 'users'");
             res.status(403).json({ error: "Access denied: Only users can access this route" });
         }
         // Fetch user data by ID
         const user = yield user_model_1.user_model.get_user_by_id(userId);
+        console.log("Fetched user from DB:", user);
         // Check if user exists
         if (!user) {
+            console.log("User not found in DB for ID:", userId);
             res.status(404).json({ error: "User not found" });
         }
         // Return user profile data

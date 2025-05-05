@@ -169,14 +169,14 @@ router.post("/sign_in", user_controller_1.sign_in_user);
 // Add Get User Profile route
 /**
  * @swagger
- * /users/profile:
+ * /users/get_user_profile:
  *   get:
  *     summary: Get user profile
  *     description: Retrieve the profile of the logged-in user.
  *     tags:
  *       - Users
  *     security:
- *       - bearerAuth: []  // Use bearer token authentication
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved the user profile
@@ -187,7 +187,7 @@ router.post("/sign_in", user_controller_1.sign_in_user);
  *       500:
  *         description: Internal server error
  */
-router.get("/profile", auth_middleware_1.authenticateToken, user_controller_1.get_user_profile);
+router.get("/get_user_profile", auth_middleware_1.authenticateToken, user_controller_1.get_user_profile);
 // Add Rename User route
 /**
  * @swagger
@@ -236,6 +236,65 @@ router.get("/profile", auth_middleware_1.authenticateToken, user_controller_1.ge
  *         description: Internal server error
  */
 router.put("/rename_user/:id", user_controller_1.rename_user);
+// Add Get User Name route
+/**
+ * @swagger
+ * /users/get_user_name:
+ *   get:
+ *     summary: Retrieve user name by user ID
+ *     description: Fetch the name of a user by their ID.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to fetch the name for.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user name.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The name of the user.
+ *       400:
+ *         description: Bad request, missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating what was wrong.
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating user not found.
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating internal error.
+ */
+router.get("/get_user_name", user_controller_1.get_user_name);
 /**
  * @swagger
  * /users/forgot_password:

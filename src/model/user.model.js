@@ -75,6 +75,24 @@ class user_model {
             }
         });
     }
+    // get ussr name by id
+    static get_user_name(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = 'SELECT name FROM users WHERE id = ?';
+                const [rows] = yield base_database_1.default.execute(query, [userId]);
+                if (rows.length === 0) {
+                    console.log('User not found with ID:', userId);
+                    return null;
+                }
+                return { name: rows[0].name }; // Return user's name
+            }
+            catch (error) {
+                console.error('Error fetching user name:', error);
+                return null;
+            }
+        });
+    }
     // Sign in user function
     static sign_in(email, password) {
         return __awaiter(this, void 0, void 0, function* () {

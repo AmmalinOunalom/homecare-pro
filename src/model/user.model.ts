@@ -79,39 +79,57 @@ export class user_model {
     }
   }
 
-// Sign in user function
-static async sign_in(email: string, password: string) {
+  // get ussr name by id
+ static async get_user_name(userId: number): Promise<{ name: string } | null> {
   try {
-    // Query to find the user by email
-    const query = 'SELECT id, username, email, password FROM users WHERE email = ?';
-    const [rows]: any = await db.execute(query, [email]);
+    const query = 'SELECT name FROM users WHERE id = ?';
+    const [rows]: any[] = await db.execute(query, [userId]);
 
-    // If user is not found, return null
-    if (rows.length === 0) return null;
+    if (rows.length === 0) {
+      console.log('User not found with ID:', userId);
+      return null;
+    }
 
-    const user = rows[0];
-
-    // Check if password is valid
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    // Return user data if password is valid, else return null
-    return isPasswordValid ? {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      tel: user.tel,
-      avatar: user.avatar,
-      address: user.address,
-      gender: user.gender,
-      status: user.status
-    } : null;
+    return { name: rows[0].name }; // Return user's name
   } catch (error) {
-    console.error("Error during sign in:", error);
+    console.error('Error fetching user name:', error);
     return null;
   }
 }
+
+  // Sign in user function
+  static async sign_in(email: string, password: string) {
+    try {
+      // Query to find the user by email
+      const query = 'SELECT id, username, email, password FROM users WHERE email = ?';
+      const [rows]: any = await db.execute(query, [email]);
+
+      // If user is not found, return null
+      if (rows.length === 0) return null;
+
+      const user = rows[0];
+
+      // Check if password is valid
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      // Return user data if password is valid, else return null
+      return isPasswordValid ? {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        tel: user.tel,
+        avatar: user.avatar,
+        address: user.address,
+        gender: user.gender,
+        status: user.status
+      } : null;
+    } catch (error) {
+      console.error("Error during sign in:", error);
+      return null;
+    }
+  }
 
   // Show all users
   static async show_all() {
@@ -129,7 +147,7 @@ static async sign_in(email: string, password: string) {
     const [rows]: any = await db.execute(query, [id]);
     return rows.length > 0 ? rows[0] : null;
   }
-  
+
 
   static async rename_users(
     id: number,  // ID as a number
@@ -143,12 +161,12 @@ static async sign_in(email: string, password: string) {
         UPDATE users 
         SET username = ?, first_name = ?, last_name = ? 
         WHERE id = ?`;
-  
+
       const values = [newUsername, newFirstname, newLastname, id];
-  
+
       // Execute the query using db.execute, result is returned as an array
       const [result]: any[] = await db.execute(updateQuery, values);  // Notice the [result] destructuring
-  
+
       // Check if the update was successful by checking the affectedRows
       return result.affectedRows > 0 ? result : null;
     } catch (error) {
@@ -162,7 +180,7 @@ static async sign_in(email: string, password: string) {
         "UPDATE users SET password = ? WHERE email = ?",
         [newPassword, email]
       );
-  
+
       return result.affectedRows > 0 ? result : null;
     } catch (error) {
       console.error("Error updating password:", error);
