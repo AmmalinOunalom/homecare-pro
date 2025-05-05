@@ -131,22 +131,22 @@ router.post("/upload_car_image", upload.single("car_image"), upload_car_image);
  */
 router.post("/create_emp_car", upload.single("car_image"), create_emp_car);
 
-// NOTE - Update EmpCar by ID
+// NOTE - Update EmpCar by emp_id
 /**
  * @swagger
- * /emp_car/update_emp_car/{id}:
+ * /emp_car/update_emp_car/{emp_id}:
  *   put:
- *     summary: Update an emp_car by ID
- *     description: Updates an emp_car's details (car_brand, model, license_plate, car_image) in the database by ID.
+ *     summary: Update an emp_car by emp_id
+ *     description: Updates an emp_car's details (car_brand, model, license_plate, car_image) in the database by emp_id.
  *     tags:
  *       - EmpCars
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: emp_id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the emp_car record to update.
+ *         description: The emp_id of the emp_car record to update.
  *     requestBody:
  *       required: true
  *       content:
@@ -203,7 +203,8 @@ router.post("/create_emp_car", upload.single("car_image"), create_emp_car);
  *       500:
  *         description: Internal server error.
  */
-router.put('/update_emp_car/:id', upload.single('car_image'), update_emp_car);
+router.put('/update_emp_car/:emp_id', upload.single('car_image'), update_emp_car);
+
 
 // NOTE - Delete EmpCar
 /**

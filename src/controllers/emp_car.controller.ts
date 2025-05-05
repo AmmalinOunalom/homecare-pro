@@ -73,9 +73,73 @@ export const show_all_emp_cars = async (req: Request, res: Response) => {
  */
 
 
+// export const update_emp_car = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { id } = req.params;
+//     const empCarData = req.body;
+
+//     let carImageUrl: string | null = null;
+
+//     // Handle image upload if a file exists
+//     if (req.file && req.file.path) {
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "car_images",
+//       });
+
+//       if (!result.secure_url) {
+//         throw new Error("Cloudinary upload failed");
+//       }
+
+//       carImageUrl = result.secure_url;
+
+//       // Clean up the uploaded file locally
+//       if (fs.existsSync(req.file.path)) {
+//         fs.unlinkSync(req.file.path); // Delete local file after upload
+//       }
+//     }
+
+//     // Build update data only from allowed fields
+//     const updateData: any = {};
+
+//     if (empCarData.car_brand) {
+//       updateData.car_brand = empCarData.car_brand;
+//     }
+//     if (empCarData.model) {
+//       updateData.model = empCarData.model;
+//     }
+//     if (empCarData.license_plate) {
+//       updateData.license_plate = empCarData.license_plate;
+//     }
+//     if (carImageUrl) {
+//       updateData.car_image = carImageUrl;
+//     }
+
+//     // Ensure there is something to update
+//     if (Object.keys(updateData).length === 0) {
+//       res.status(400).json({ message: "No valid fields to update" });
+//       return;
+//     }
+
+//     // Proceed with the update
+//     await emp_car_model.update_emp_car(Number(id), updateData);
+
+//     res.status(200).json({
+//       message: "EmpCar updated successfully",
+//       emp_car_id: id,
+//       updated_fields: updateData,
+//     });
+//   } catch (error) {
+//     console.error("Error updating emp_car:", error);
+//     res.status(500).json({
+//       message: "Failed to update empCar",
+//       error: error instanceof Error ? error.message : error,
+//     });
+//   }
+// };
+
 export const update_emp_car = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const { emp_id } = req.params;  // Change 'id' to 'emp_id' here
     const empCarData = req.body;
 
     let carImageUrl: string | null = null;
@@ -120,12 +184,12 @@ export const update_emp_car = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Proceed with the update
-    await emp_car_model.update_emp_car(Number(id), updateData);
+    // Proceed with the update, using emp_id instead of id
+    await emp_car_model.update_emp_car(Number(emp_id), updateData);  // Pass emp_id here
 
     res.status(200).json({
       message: "EmpCar updated successfully",
-      emp_car_id: id,
+      emp_car_id: emp_id,  // Use emp_id here as well
       updated_fields: updateData,
     });
   } catch (error) {
