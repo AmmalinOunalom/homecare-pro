@@ -71,21 +71,21 @@ export class employees_model {
         employee.status || "active",
         employee.city || null,
       ];
-  
+
       const query = `
         INSERT INTO employees 
         (first_name, last_name, email, tel, password, address, gender, cv, avatar, cat_id, price, status, city)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
-  
+
       const [result]: any = await db.execute(query, values);
-  
+
       if (!result.insertId) {
         throw new Error("Failed to retrieve insertId after inserting employee");
       }
-  
+
       console.log("New Employee ID:", result.insertId);
-  
+
       return { insertId: result.insertId };
     } catch (error: unknown) {
       console.error("Error inserting employee:", error);
@@ -199,9 +199,9 @@ WHERE e.id =?`;
         LEFT JOIN emp_cars ec ON e.id = ec.emp_id
         WHERE c.id = 5 AND c.cat_name = 'Moving';
       `;
-  
+
       const [rows]: any[] = await db.execute(query);
-  
+
       if (rows.length > 0) {
         return rows; // ✅ Return all employees, not just the first one
       } else {
@@ -213,7 +213,7 @@ WHERE e.id =?`;
     }
   }
 
-  
+
 
   // Show image of employee by ID
   static async show_image_employee_by_id(Id: number) {
@@ -234,142 +234,77 @@ WHERE e.id =?`;
   }
 
   // Update employee details
-//   static async update_employees(id: number, employee: Partial<Employee>) {
-//   try {
-//     // Check if employee exists before updating
-//     const checkQuery = "SELECT id FROM employees WHERE id = ?";
-//     const [rows]: any[] = await db.execute(checkQuery, [id]);
 
-//     if (rows.length === 0) {
-//       console.log("Employee not found with ID:", id);
-//       return { success: false, message: "Employee not found" };
-//     }
+  static async update_employees(
+    id: number,
+    employeeData: Partial<Pick<Employee,
+      "first_name" | "last_name" | "email" | "tel" | "address" | "gender" | "cv" | "status" | "cat_id" | "price">>
+      & { avatar?: string }
+  ) {
+    try {
+      // First, validate that the employee exists
+      const [existingRows]: any = await db.execute('SELECT id FROM employees WHERE id = ?', [id]);
+      if (!Array.isArray(existingRows) || existingRows.length === 0) {
+        throw new Error(`Employee with ID ${id} does not exist`);
+      }
 
-//     // Prepare the fields for updating
-//     const fields = Object.keys(employee)
-//       .map((key) => `${key} = ?`)
-//       .join(", ");
-//     const values = [...Object.values(employee), id]; // Ensure id is the last value
+      // Build dynamic SET clause
+      const fields: string[] = [];
+      const values: any[] = [];
 
-//     const query = `UPDATE employees SET ${fields} WHERE id = ?`;
-//     const [result]: any[] = await db.execute(query, values);
-    
-//     // Check if any rows were affected
-//     if (result.affectedRows === 0) {
-//       return { success: false, message: "No changes made to the employee." };
-//     }
+      if (employeeData.first_name !== undefined) fields.push("first_name = ?"), values.push(employeeData.first_name);
+      if (employeeData.last_name !== undefined) fields.push("last_name = ?"), values.push(employeeData.last_name);
+      if (employeeData.email !== undefined) fields.push("email = ?"), values.push(employeeData.email);
+      if (employeeData.tel !== undefined) fields.push("tel = ?"), values.push(employeeData.tel);
+      if (employeeData.address !== undefined) fields.push("address = ?"), values.push(employeeData.address);
+      if (employeeData.gender !== undefined) fields.push("gender = ?"), values.push(employeeData.gender);
+      if (employeeData.cv !== undefined) fields.push("cv = ?"), values.push(employeeData.cv);
+      if (employeeData.avatar !== undefined) fields.push("avatar = ?"), values.push(employeeData.avatar);
+      if (employeeData.cat_id !== undefined) fields.push("cat_id = ?"), values.push(employeeData.cat_id);
+      if (employeeData.price !== undefined) fields.push("price = ?"), values.push(employeeData.price);
+      if (employeeData.status !== undefined) fields.push("status = ?"), values.push(employeeData.status);
 
-//     return { success: true, message: "Employee updated successfully" };
-//   } catch (error) {
-//     console.error("Error updating employee:", error);
-//     throw new Error("Failed to update employee");
-//   }
-// }
+      // Always update updated_at
+      fields.push("updated_at = NOW()");
 
-static async update_employees(
-  id: number, 
-  employeeData: Partial<Pick<Employee, "first_name" | "last_name" | "email" | "tel" | "address" | "gender" | "cv" | "status" | "cat_id" | "price">> & { avatar?: string }
-) {
-  try {
-    // Build the dynamic SET clause
-    const fields: string[] = [];
-    const values: any[] = [];
+      if (fields.length === 1) {
+        throw new Error("No valid fields provided for update");
+      }
 
-    if (employeeData.first_name !== undefined) {
-      fields.push("first_name = ?");
-      values.push(employeeData.first_name);
+      const query = `UPDATE employees SET ${fields.join(", ")} WHERE id = ?`;
+      values.push(id);
+
+      const [result]: any = await db.execute(query, values);
+
+      if (result.affectedRows === 0) {
+        throw new Error(`No changes made to employee with ID ${id}`);
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error updating employee:", error);
+      throw error;
     }
-
-    if (employeeData.last_name !== undefined) {
-      fields.push("last_name = ?");
-      values.push(employeeData.last_name);
-    }
-
-    if (employeeData.email !== undefined) {
-      fields.push("email = ?");
-      values.push(employeeData.email);
-    }
-
-    if (employeeData.tel !== undefined) {
-      fields.push("tel = ?");
-      values.push(employeeData.tel);
-    }
-
-    if (employeeData.address !== undefined) {
-      fields.push("address = ?");
-      values.push(employeeData.address);
-    }
-
-    if (employeeData.gender !== undefined) {
-      fields.push("gender = ?");
-      values.push(employeeData.gender);
-    }
-
-    if (employeeData.cv !== undefined) {
-      fields.push("cv = ?");
-      values.push(employeeData.cv);
-    }
-
-    if (employeeData.avatar !== undefined) {
-      fields.push("avatar = ?");
-      values.push(employeeData.avatar);
-    }
-
-    if (employeeData.cat_id !== undefined) {
-      fields.push("cat_id = ?");
-      values.push(employeeData.cat_id);
-    }
-
-    if (employeeData.price !== undefined) {
-      fields.push("price = ?");
-      values.push(employeeData.price);
-    }
-
-    if (employeeData.status !== undefined) {
-      fields.push("status = ?");
-      values.push(employeeData.status);
-    }
-
-    // Always update updated_at
-    fields.push("updated_at = NOW()");
-
-    if (fields.length === 1) {
-      throw new Error("No valid fields provided for update");
-    }
-
-    // SQL query to update the employee data
-    const query = `
-      UPDATE employees 
-      SET ${fields.join(", ")} 
-      WHERE id = ?
-    `;
-    values.push(id);
-
-    const [result] = await db.execute(query, values);
-    return result;
-  } catch (error) {
-    console.error("Error updating employee:", error);
-    throw new Error("Failed to update employee");
   }
-}
 
-// Fetch employee by ID and return phone number
-static async get_employee_phone_number(employeeId: number): Promise<string | null> {
-  try {
-    const query = 'SELECT tel FROM employees WHERE id = ?';
-    const [rows]: any[] = await db.execute(query, [employeeId]);
 
-    if (rows.length === 0) {
-      console.log('Employee not found with ID:', employeeId);
+  // Fetch employee by ID and return phone number
+  static async get_employee_phone_number(employeeId: number): Promise<string | null> {
+    try {
+      const query = 'SELECT tel FROM employees WHERE id = ?';
+      const [rows]: any[] = await db.execute(query, [employeeId]);
+
+      if (rows.length === 0) {
+        console.log('Employee not found with ID:', employeeId);
+        return null;
+      }
+
+      return rows[0].tel; // Return phone number
+    } catch (error) {
+      console.error('Error fetching employee phone number:', error);
       return null;
     }
-
-    return rows[0].tel; // Return phone number
-  } catch (error) {
-    console.error('Error fetching employee phone number:', error);
-    return null;
   }
-}
 
   // Soft delete employee (set status to Inactive)
   static async delete_employees(id: number) {
@@ -377,16 +312,16 @@ static async get_employee_phone_number(employeeId: number): Promise<string | nul
       // Check if employee exists before deleting
       const checkQuery = "SELECT id FROM employees WHERE id = ?";
       const [rows]: any[] = await db.execute(checkQuery, [id]);
-  
+
       if (rows.length === 0) {
         console.log("Employee not found with ID:", id);
         return { success: false, message: "Employee not found" };
       }
-  
+
       // Permanently delete employee
       const deleteQuery = `DELETE FROM employees WHERE id = ?`;
       const [result]: any[] = await db.execute(deleteQuery, [id]);
-  
+
       return { success: true, message: "Employee deleted successfully", result };
     } catch (error) {
       console.error("Error deleting employee:", error);
