@@ -5,7 +5,6 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { employees_model } from "../model/employees.model";
 import bcrypt from "bcrypt";
-import { sendSMS } from '../middleware/sms.utils'; // Import the sendSMS function
 
 /**
  * Create a new employee
@@ -206,7 +205,7 @@ export const show_more_employee_by_id = async (req: Request, res: Response) => {
 export const show_image_employee_by_id = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    console.log("Received employeeId:", id);
+    console.log("Received employeeId:", id);  
 
     const employeeImage = await employees_model.show_image_employee_by_id(Number(id));
     console.log("Employee Image:", employeeImage);
@@ -234,29 +233,7 @@ export const show_image_employee_by_id = async (req: Request, res: Response): Pr
   }
 };
 
-// send SMS to employees
-export const get_employee_phonenumber = async (req: Request, res: Response): Promise<void> => {
-  const id = parseInt(req.params.id);
 
-  if (isNaN(id)) {
-    res.status(400).json({ message: "Invalid employee ID" });
-    return;
-  }
-
-  try {
-    const phoneNumber = await employees_model.get_employee_phone_number(id);
-
-    if (!phoneNumber) {
-      res.status(404).json({ message: "Employee not found or no phone number available" });
-      return;
-    }
-
-    res.status(200).json({ tel: phoneNumber });
-  } catch (error) {
-    console.error("Controller error:", error);
-    res.status(500).json({ message: "Failed to get employee phone number" });
-  }
-};
 
 /**
  * Update an employee

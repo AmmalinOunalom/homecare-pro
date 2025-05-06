@@ -1,75 +1,15 @@
 import { Request, Response } from "express";
 import { service_order_model } from "../model/service_order.model";
-import { employees_model } from "../model/employees.model";
-import { user_model } from "../model/user.model";
-import { address_users_details_model } from "../model/address_users_details.model"
-import twilio from "twilio";
-
-const twilio_account = process.env.TWILIO_ACCOUNT_SID
-const twilio_auth = process.env.TWILIO_AUTH_TOKEN
-const twilio_phone = process.env.TWILIO_PHONE_NUMBER
-
-const client = twilio(twilio_account, twilio_auth);
 
 /**
  * Create a new service order
  */
-export const create_service_order = async (req: Request, res: Response): Promise<void> => {
+export const create_service_order = async (req: Request, res: Response) => {
   try {
     const orderData = req.body;
-
     await service_order_model.create_service_order(orderData);
-
-    const emp_number = await employees_model.get_employee_phone_number(orderData.employees_id);
-    if (!emp_number) {
-      res.status(404).send("Employee phone number not found");
-      return;
-    }
-
-    const user_info = await user_model.get_user_by_id(orderData.user_id);
-    if (!user_info) {
-      res.status(404).send("User not found");
-      return;
-    }
-
-    const user_number = user_info.tel;
-    if (!user_number) {
-      res.status(404).send("User phone number not found");
-      return;
-    }
-
-    // ✅ Get full address info
-    const address = await address_users_details_model.get_address_by_user_id(orderData.user_id);
-    if (!address) {
-      res.status(404).send("Address not found");
-      return;
-    }
-
-    const { address_description, village, address_name, google_link_map } = address;
-
-    const formattedNumber = emp_number.startsWith("+")
-      ? emp_number
-      : "+856" + emp_number.slice(1);
-
-    try {
-      await client.messages.create({
-        body:
-          `New service order from: ${user_number}\n` +
-          `House: ${address_name}\n` +
-          `Village: ${village}\n` +
-          `Description: ${address_description}\n` +
-          `Google Maps: ${google_link_map}`,
-        from: 'whatsapp:' + twilio_phone,
-        to: 'whatsapp:' + formattedNumber,
-      });
-
-      res.status(201).send("Service order and SMS sent successfully");
-    } catch (smsError) {
-      console.error("Error sending SMS:", smsError);
-      res.status(500).send("Service order created, but failed to send SMS");
-    }
+    res.status(201).send("Service order created successfully");
   } catch (error) {
-    console.error("Service order creation error:", error);
     res.status(500).send("Failed to create service order");
   }
 };

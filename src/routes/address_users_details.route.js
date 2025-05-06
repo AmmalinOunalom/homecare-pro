@@ -132,41 +132,6 @@ router.post('/upload_house_image', images_config_1.default.single('house_image')
  *         description: Internal server error.
  */
 router.get("/:id", address_users_details_controller_1.show_address_by_user_id);
-//NOTE - Get Google Map Link By Address ID
-/**
- * @swagger
- * /address_users_details/google-map-link/{id}:
- *   get:
- *     summary: Get address user details (Google Map link) by user ID
- *     tags:
- *       - Address Users
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: User ID
- *     responses:
- *       200:
- *         description: Successfully retrieved address user details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                 username:
- *                   type: string
- *                 address_users_detail_id:
- *                   type: string
- *       404:
- *         description: Address user details not found
- *       500:
- *         description: Internal server error
- */
-router.get("/google-map-link/:id", address_users_details_controller_1.get_address_by_user_id);
 // NOTE - Show All Address Users
 /**
  * @swagger

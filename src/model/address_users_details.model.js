@@ -22,6 +22,47 @@ var Gender;
     Gender["Other"] = "Other";
 })(Gender || (Gender = {}));
 class address_users_details_model {
+    // static async create_address_user_details(
+    //     addressUser: Omit<AddressUserDetails, "id" | "created_at" | "updated_at">
+    // ) {
+    //     try {
+    //         // Ensure that undefined values are converted to null
+    //         const values = [
+    //             addressUser.users_id || null,
+    //             addressUser.gender_owner || null,
+    //             addressUser.address_name || null,
+    //             addressUser.village || null,
+    //             addressUser.house_image || null,
+    //             addressUser.google_link_map || null,
+    //             addressUser.address_description || null,
+    //             addressUser.city || null,
+    //             addressUser.tel || null
+    //         ];
+    //         const query = `
+    //             INSERT INTO address_users_detail 
+    //             (users_id, gender_owner, address_name, village, house_image, google_link_map, address_description, city, tel)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    //         `;
+    //         // Insert into address_users_detail table
+    //         const [result]: any = await db.execute(query, values);
+    //         if (!result.insertId) {
+    //             throw new Error("Failed to retrieve insertId after inserting address");
+    //         }
+    //         const addressUsersDetailId = result.insertId;
+    //         console.log("New Address ID:", addressUsersDetailId);
+    //         // Update users table with the new address ID
+    //         const updateQuery = `UPDATE users SET address_users_detail_id = ? WHERE id = ?`;
+    //         const [updateResult]: any = await db.execute(updateQuery, [addressUsersDetailId, addressUser.users_id]);
+    //         console.log("Update Query Result:", updateResult);
+    //         if (updateResult.affectedRows === 0) {
+    //             throw new Error(`User ID ${addressUser.users_id} not found or update failed.`);
+    //         }
+    //         return { insertId: addressUsersDetailId };
+    //     } catch (error: unknown) {
+    //         console.error("Error inserting address_users_detail:", error);
+    //         throw new Error("Failed to create address_users_detail and update users table");
+    //     }
+    // }
     static create_address_user_details(addressUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -124,26 +165,6 @@ class address_users_details_model {
             catch (error) {
                 console.error("Error fetching address_users_details:", error);
                 throw new Error("Failed to fetch address_users_details");
-            }
-        });
-    }
-    //Show Address Users Details by ID
-    static get_address_by_user_id(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const query = `
-            SELECT address_name, village, address_description, google_link_map
-            FROM address_users_detail
-            WHERE users_id = ?
-            ORDER BY id DESC
-            LIMIT 1
-          `;
-                const [rows] = yield base_database_1.default.execute(query, [userId]);
-                return rows[0];
-            }
-            catch (error) {
-                console.error("Error fetching address by user ID:", error);
-                return null;
             }
         });
     }

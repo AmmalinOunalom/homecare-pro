@@ -236,18 +236,18 @@ router.get("/get_user_profile", auth_middleware_1.authenticateToken, user_contro
  *         description: Internal server error
  */
 router.put("/rename_user/:id", user_controller_1.rename_user);
-//Get User Name BY ID
+// Add Get User Name route
 /**
  * @swagger
- * /users/get_user_name/{id}:
+ * /users/get_user_name:
  *   get:
  *     summary: Retrieve user name by user ID
  *     description: Fetch the name of a user by their ID.
  *     tags:
  *       - Users
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: query
+ *         name: userId
  *         required: true
  *         schema:
  *           type: integer
@@ -264,13 +264,37 @@ router.put("/rename_user/:id", user_controller_1.rename_user);
  *                   type: string
  *                   description: The name of the user.
  *       400:
- *         description: Bad request, invalid ID.
+ *         description: Bad request, missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating what was wrong.
  *       404:
  *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating user not found.
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message indicating internal error.
  */
-router.get("/get_user_name/:id", user_controller_1.get_user_name);
+router.get("/get_user_name", user_controller_1.get_user_name);
 /**
  * @swagger
  * /users/forgot_password:

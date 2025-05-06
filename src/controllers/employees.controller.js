@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_employees = exports.update_employees = exports.get_employee_phonenumber = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
+exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
@@ -226,27 +226,6 @@ const show_image_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.show_image_employee_by_id = show_image_employee_by_id;
-// send SMS to employees
-const get_employee_phonenumber = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        res.status(400).json({ message: "Invalid employee ID" });
-        return;
-    }
-    try {
-        const phoneNumber = yield employees_model_1.employees_model.get_employee_phone_number(id);
-        if (!phoneNumber) {
-            res.status(404).json({ message: "Employee not found or no phone number available" });
-            return;
-        }
-        res.status(200).json({ tel: phoneNumber });
-    }
-    catch (error) {
-        console.error("Controller error:", error);
-        res.status(500).json({ message: "Failed to get employee phone number" });
-    }
-});
-exports.get_employee_phonenumber = get_employee_phonenumber;
 /**
  * Update an employee
  */

@@ -82,7 +82,7 @@ export class user_model {
   // get ussr name by id
  static async get_user_name(userId: number): Promise<{ name: string } | null> {
   try {
-    const query = 'SELECT username FROM users WHERE id = ?';
+    const query = 'SELECT name FROM users WHERE id = ?';
     const [rows]: any[] = await db.execute(query, [userId]);
 
     if (rows.length === 0) {

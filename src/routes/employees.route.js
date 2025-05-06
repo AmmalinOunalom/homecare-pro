@@ -403,38 +403,4 @@ router.put('/update_employees/:id', images_config_1.default.single('avatar'), em
  *         description: Internal server error.
  */
 router.delete("/delete_employees/:id", employees_controller_1.delete_employees);
-/**
- * @swagger
- * /employees/employee_phone/{id}:
- *   get:
- *     summary: Get employee phone number by ID
- *     description: Retrieve the phone number of a specific employee using their ID.
- *     tags:
- *       - Employees
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID of the employee
- *     responses:
- *       200:
- *         description: Phone number retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 tel:
- *                   type: string
- *                   example: "02012345678"
- *       400:
- *         description: Invalid employee ID
- *       404:
- *         description: Employee not found or no phone number available
- *       500:
- *         description: Failed to get employee phone number
- */
-router.get("/employee_phone/:id", employees_controller_1.get_employee_phonenumber);
 exports.default = router;
