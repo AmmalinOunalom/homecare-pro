@@ -238,18 +238,18 @@ router.get("/get_user_profile", authenticateToken, get_user_profile);
  */
 router.put("/rename_user/:id", rename_user);
 
-// Add Get User Name route
+//Get User Name BY ID
 /**
  * @swagger
- * /users/get_user_name:
+ * /users/get_user_name/{id}:
  *   get:
  *     summary: Retrieve user name by user ID
  *     description: Fetch the name of a user by their ID.
  *     tags:
  *       - Users
  *     parameters:
- *       - in: query
- *         name: userId
+ *       - in: path
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -266,7 +266,7 @@ router.put("/rename_user/:id", rename_user);
  *                   type: string
  *                   description: The name of the user.
  *       400:
- *         description: Bad request, missing required fields.
+ *         description: Bad request, invalid ID.
  *         content:
  *           application/json:
  *             schema:
@@ -296,7 +296,7 @@ router.put("/rename_user/:id", rename_user);
  *                   type: string
  *                   description: Error message indicating internal error.
  */
-router.get("/get_user_name", get_user_name);
+router.get("/get_user_name/:id", get_user_name);
 
 /**
  * @swagger

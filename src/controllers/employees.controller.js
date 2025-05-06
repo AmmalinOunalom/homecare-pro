@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_employees = exports.update_employees = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
+exports.delete_employees = exports.update_employees = exports.get_employee_phonenumber = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
@@ -226,88 +226,30 @@ const show_image_employee_by_id = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.show_image_employee_by_id = show_image_employee_by_id;
+// send SMS to employees
+const get_employee_phonenumber = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        res.status(400).json({ message: "Invalid employee ID" });
+        return;
+    }
+    try {
+        const phoneNumber = yield employees_model_1.employees_model.get_employee_phone_number(id);
+        if (!phoneNumber) {
+            res.status(404).json({ message: "Employee not found or no phone number available" });
+            return;
+        }
+        res.status(200).json({ tel: phoneNumber });
+    }
+    catch (error) {
+        console.error("Controller error:", error);
+        res.status(500).json({ message: "Failed to get employee phone number" });
+    }
+});
+exports.get_employee_phonenumber = get_employee_phonenumber;
 /**
  * Update an employee
  */
-// export const update_employees = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const { id } = req.params;
-//     const employeeId = Number(id);
-//     if (isNaN(employeeId)) {
-//       res.status(400).json({ success: false, message: "Invalid employee ID" });
-//       return;
-//     }
-//     const employeeData = req.body;
-//     let avatarUrl: string | null = null;
-//     // Handle avatar image upload if a file exists
-//     if (req.file && req.file.path) {
-//       const result = await cloudinary.uploader.upload(req.file.path, {
-//         folder: "avatars", // Optionally, specify a folder in Cloudinary
-//       });
-//       if (!result.secure_url) {
-//         throw new Error("Cloudinary upload failed");
-//       }
-//       avatarUrl = result.secure_url;
-//       // Clean up the uploaded file locally after Cloudinary upload
-//       if (fs.existsSync(req.file.path)) {
-//         fs.unlinkSync(req.file.path); // Delete local file
-//       }
-//     }
-//     // Build update data only from allowed fields
-//     const updateData: any = {};
-//     if (employeeData.first_name) {
-//       updateData.first_name = employeeData.first_name;
-//     }
-//     if (employeeData.last_name) {
-//       updateData.last_name = employeeData.last_name;
-//     }
-//     if (employeeData.email) {
-//       updateData.email = employeeData.email;
-//     }
-//     if (employeeData.tel) {
-//       updateData.tel = employeeData.tel;
-//     }
-//     if (employeeData.address) {
-//       updateData.address = employeeData.address;
-//     }
-//     if (employeeData.gender) {
-//       updateData.gender = employeeData.gender;
-//     }
-//     if (employeeData.cv) {
-//       updateData.cv = employeeData.cv;
-//     }
-//     if (avatarUrl) {
-//       updateData.avatar = avatarUrl;
-//     }
-//     if (employeeData.cat_id) {
-//       updateData.cat_id = employeeData.cat_id;
-//     }
-//     if (employeeData.price) {
-//       updateData.price = employeeData.price;
-//     }
-//     if (employeeData.status) {
-//       updateData.status = employeeData.status;
-//     }
-//     // Ensure there is something to update
-//     if (Object.keys(updateData).length === 0) {
-//       res.status(400).json({ message: "No valid fields to update" });
-//       return;
-//     }
-//     // Proceed with the update using the model
-//     await employees_model.update_employees(employeeId, updateData);
-//     res.status(200).json({
-//       message: "Employee updated successfully",
-//       employee_id: employeeId,
-//       updated_fields: updateData,
-//     });
-//   } catch (error) {
-//     console.error("Error updating employee:", error);
-//     res.status(500).json({
-//       message: "Failed to update employee",
-//       error: error instanceof Error ? error.message : error,
-//     });
-//   }
-// };
 const update_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;

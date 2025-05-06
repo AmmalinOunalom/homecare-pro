@@ -321,6 +321,24 @@ WHERE e.id =?`;
             }
         });
     }
+    // Fetch employee by ID and return phone number
+    static get_employee_phone_number(employeeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = 'SELECT tel FROM employees WHERE id = ?';
+                const [rows] = yield base_database_1.default.execute(query, [employeeId]);
+                if (rows.length === 0) {
+                    console.log('Employee not found with ID:', employeeId);
+                    return null;
+                }
+                return rows[0].tel; // Return phone number
+            }
+            catch (error) {
+                console.error('Error fetching employee phone number:', error);
+                return null;
+            }
+        });
+    }
     // Soft delete employee (set status to Inactive)
     static delete_employees(id) {
         return __awaiter(this, void 0, void 0, function* () {

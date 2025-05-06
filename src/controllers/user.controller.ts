@@ -79,34 +79,26 @@ export const show_all_users = async (req: Request, res: Response) => {
 //get user name by ID
 export const get_user_name = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { userId } = req.query;
+    const userId = parseInt(req.params.id);
 
     // Ensure userId is a string and can be parsed to a number
-    if (typeof userId !== 'string') {
-      res.status(400).json({ message: 'User ID is required and must be a string.' });
-      return;
+    if (isNaN(userId)) {
+      res.status(400).json({ message: "Invalid user ID" });
     }
 
-    const id = parseInt(userId, 10);
-
-    if (isNaN(id)) {
-      res.status(400).json({ message: 'User ID must be a valid number.' });
-      return;
-    }
-
-    const user = await user_model.get_user_name(id);
+    const user = await user_model.get_user_by_id(userId);
 
     if (!user) {
-      res.status(404).json({ message: 'User not found.' });
-      return;
+      res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json(user); // Return the user name
   } catch (error) {
-    console.error('Error fetching user name:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching user name:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 export const get_user_profile = async (req: Request, res: Response): Promise<void> => {
   try {

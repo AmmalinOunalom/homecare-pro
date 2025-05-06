@@ -129,26 +129,27 @@ export const upload_house_image = async (req: Request, res: Response): Promise<v
   }
 };
 
-  //SELECT USER BY ID
+//SELECT address_user_details BY ID
 
-export const show_address_by_user_id = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    console.log("Received userId:", id);  // Log to ensure the request is reaching the controller
-
-    const addressUserDetails = await address_users_details_model.show_address_by_user_id(Number(id));
-    console.log("Address User Details:", addressUserDetails);  // Log the result returned by the model
-
-    if (addressUserDetails) {
-      res.status(200).send(addressUserDetails);
-    } else {
-      res.status(404).send("Address user details not found for this user");
+  export const get_address_by_user_id = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      console.log("Received address ID:", id);  // Confirm the ID received
+  
+      const googleMapLink = await address_users_details_model.get_address_by_user_id(Number(id));
+      console.log("Google Map Link:", googleMapLink);  // Log result from DB
+  
+      if (googleMapLink) {
+        res.status(200).json({ google_link_map: googleMapLink });
+      } else {
+        res.status(404).send("Google Map link not found for this address IDs");
+      }
+    } catch (error) {
+      console.error("Error fetching Google Map link by address ID:", error);
+      res.status(500).send("Failed to fetch Google Map link");
     }
-  } catch (error) {
-    console.error("Error fetching address user details by userId:", error);
-    res.status(500).send("Failed to fetch address user details");
-  }
-};
+  };
+
 
 
 /**

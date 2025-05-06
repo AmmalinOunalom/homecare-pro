@@ -168,6 +168,26 @@ class address_users_details_model {
             }
         });
     }
+    //Show Address Users Details by ID
+    static get_address_by_user_id(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `
+            SELECT address_name, village, address_description, google_link_map
+            FROM address_users_detail
+            WHERE users_id = ?
+            ORDER BY id DESC
+            LIMIT 1
+          `;
+                const [rows] = yield base_database_1.default.execute(query, [userId]);
+                return rows[0];
+            }
+            catch (error) {
+                console.error("Error fetching address by user ID:", error);
+                return null;
+            }
+        });
+    }
     // Update Address User Details
     static update_address_user_details(id, addressUser) {
         return __awaiter(this, void 0, void 0, function* () {

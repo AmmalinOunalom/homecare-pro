@@ -353,6 +353,23 @@ static async update_employees(
   }
 }
 
+// Fetch employee by ID and return phone number
+static async get_employee_phone_number(employeeId: number): Promise<string | null> {
+  try {
+    const query = 'SELECT tel FROM employees WHERE id = ?';
+    const [rows]: any[] = await db.execute(query, [employeeId]);
+
+    if (rows.length === 0) {
+      console.log('Employee not found with ID:', employeeId);
+      return null;
+    }
+
+    return rows[0].tel; // Return phone number
+  } catch (error) {
+    console.error('Error fetching employee phone number:', error);
+    return null;
+  }
+}
 
   // Soft delete employee (set status to Inactive)
   static async delete_employees(id: number) {

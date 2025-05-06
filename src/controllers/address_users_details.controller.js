@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.show_address_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
+exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.get_address_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
 const fs_1 = __importDefault(require("fs"));
@@ -114,26 +114,26 @@ const upload_house_image = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.upload_house_image = upload_house_image;
-//SELECT USER BY ID
-const show_address_by_user_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+//SELECT address_user_details BY ID
+const get_address_by_user_id = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        console.log("Received userId:", id); // Log to ensure the request is reaching the controller
-        const addressUserDetails = yield address_users_details_model_1.address_users_details_model.show_address_by_user_id(Number(id));
-        console.log("Address User Details:", addressUserDetails); // Log the result returned by the model
-        if (addressUserDetails) {
-            res.status(200).send(addressUserDetails);
+        console.log("Received address ID:", id); // Confirm the ID received
+        const googleMapLink = yield address_users_details_model_1.address_users_details_model.get_address_by_user_id(Number(id));
+        console.log("Google Map Link:", googleMapLink); // Log result from DB
+        if (googleMapLink) {
+            res.status(200).json({ google_link_map: googleMapLink });
         }
         else {
-            res.status(404).send("Address user details not found for this user");
+            res.status(404).send("Google Map link not found for this address IDs");
         }
     }
     catch (error) {
-        console.error("Error fetching address user details by userId:", error);
-        res.status(500).send("Failed to fetch address user details");
+        console.error("Error fetching Google Map link by address ID:", error);
+        res.status(500).send("Failed to fetch Google Map link");
     }
 });
-exports.show_address_by_user_id = show_address_by_user_id;
+exports.get_address_by_user_id = get_address_by_user_id;
 /**
  * Retrieve all address user details
  */
