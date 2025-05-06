@@ -79,7 +79,7 @@ class user_model {
     static get_user_name(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'SELECT name FROM users WHERE id = ?';
+                const query = 'SELECT username FROM users WHERE id = ?';
                 const [rows] = yield base_database_1.default.execute(query, [userId]);
                 if (rows.length === 0) {
                     console.log('User not found with ID:', userId);

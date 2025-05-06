@@ -1,6 +1,6 @@
 import express from "express";
 import upload from '../config/images.config'; // Import multer configuration
-import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_more_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee } from "../controllers/employees.controller";
+import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_more_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee, get_employee_phonenumber } from "../controllers/employees.controller";
 
 const router = express.Router();
 
@@ -409,5 +409,40 @@ router.put('/update_employees/:id', upload.single('avatar'), update_employees);
  *         description: Internal server error.
  */
 router.delete("/delete_employees/:id", delete_employees);
+
+/**
+ * @swagger
+ * /employees/employee_phone/{id}:
+ *   get:
+ *     summary: Get employee phone number by ID
+ *     description: Retrieve the phone number of a specific employee using their ID.
+ *     tags:
+ *       - Employees
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the employee
+ *     responses:
+ *       200:
+ *         description: Phone number retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tel:
+ *                   type: string
+ *                   example: "02012345678"
+ *       400:
+ *         description: Invalid employee ID
+ *       404:
+ *         description: Employee not found or no phone number available
+ *       500:
+ *         description: Failed to get employee phone number
+ */
+router.get("/employee_phone/:id", get_employee_phonenumber);
 
 export default router;

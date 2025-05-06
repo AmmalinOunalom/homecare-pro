@@ -5,7 +5,8 @@ import {
     show_all_address_users_details, 
     update_address_user_details, 
     delete_address_user_details, 
-    upload_house_image 
+    upload_house_image ,
+    get_address_by_user_id
 } from "../controllers/address_users_details.controller";
 import upload from "../config/images.config";
 
@@ -139,6 +140,44 @@ router.post('/upload_house_image', upload.single('house_image'), upload_house_im
  *         description: Internal server error.
  */
 router.get("/:id", show_address_by_user_id);
+
+//NOTE - Get Google Map Link By Address ID
+
+/**
+ * @swagger
+ * /address_users_details/google-map-link/{id}:
+ *   get:
+ *     summary: Get address user details (Google Map link) by user ID
+ *     tags:
+ *       - Address Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved address user details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 username:
+ *                   type: string
+ *                 address_users_detail_id:
+ *                   type: string
+ *       404:
+ *         description: Address user details not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/google-map-link/:id", get_address_by_user_id);
+
 
 // NOTE - Show All Address Users
 /**
