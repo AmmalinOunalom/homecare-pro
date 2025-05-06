@@ -121,9 +121,53 @@ class emp_car_model {
     //     throw new Error("Failed to update emp_car");
     //   }
     // }
+    // static async update_emp_car(empId: number, empCar: Partial<Pick<EmpCar, "car_brand" | "model" | "license_plate">> & { car_image?: string }) {
+    //   try {
+    //     // Build the dynamic SET clause
+    //     const fields: string[] = [];
+    //     const values: any[] = [];
+    //     if (empCar.car_brand !== undefined) {
+    //       fields.push("car_brand = ?");
+    //       values.push(empCar.car_brand);
+    //     }
+    //     if (empCar.model !== undefined) {
+    //       fields.push("model = ?");
+    //       values.push(empCar.model);
+    //     }
+    //     if (empCar.license_plate !== undefined) {
+    //       fields.push("license_plate = ?");
+    //       values.push(empCar.license_plate);
+    //     }
+    //     if (empCar.car_image !== undefined) {
+    //       fields.push("car_image = ?");
+    //       values.push(empCar.car_image);
+    //     }
+    //     // Always update updated_at
+    //     fields.push("updated_at = NOW()");
+    //     if (fields.length === 1) {
+    //       throw new Error("No valid fields provided for update");
+    //     }
+    //     const query = `
+    //       UPDATE emp_cars 
+    //       SET ${fields.join(", ")} 
+    //       WHERE emp_id = ?
+    //     `;
+    //     values.push(empId);
+    //     const [result] = await db.execute(query, values);
+    //     return result;
+    //   } catch (error) {
+    //     console.error("Error updating emp_car:", error);
+    //     throw new Error("Failed to update emp_car");
+    //   }
+    // }
     static update_emp_car(empId, empCar) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                // First, check if emp_cars record exists for this emp_id
+                const [rows] = yield base_database_1.default.execute("SELECT id FROM emp_cars WHERE emp_id = ?", [empId]);
+                if (!rows || rows.length === 0) {
+                    throw new Error(`emp_car with emp_id ${empId} does not exist`);
+                }
                 // Build the dynamic SET clause
                 const fields = [];
                 const values = [];
@@ -159,7 +203,7 @@ class emp_car_model {
             }
             catch (error) {
                 console.error("Error updating emp_car:", error);
-                throw new Error("Failed to update emp_car");
+                throw error; // Let controller handle message and status
             }
         });
     }
