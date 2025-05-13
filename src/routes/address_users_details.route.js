@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const address_users_details_controller_1 = require("../controllers/address_users_details.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
 const images_config_1 = __importDefault(require("../config/images.config"));
 const router = express_1.default.Router();
 // NOTE - Create Address User
@@ -69,6 +70,40 @@ const router = express_1.default.Router();
  *         description: Internal server error.
  */
 router.post("/create", images_config_1.default.single("house_image"), address_users_details_controller_1.create_address_user_details);
+/**
+ * @swagger
+ * /address_users_details/my_address:
+ *   get:
+ *     summary: Get the address of the authenticated user
+ *     description: This endpoint retrieves the address associated with the authenticated user.
+ *     tags:
+ *       - Address Users
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user's address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 address_name:
+ *                   type: string
+ *                 village:
+ *                   type: string
+ *                 city:
+ *                   type: string
+ *                 address_description:
+ *                   type: string
+ *                 google_link_map:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized, user not logged in
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/my_address", auth_middleware_1.authenticateToken, address_users_details_controller_1.get_my_address);
 // NOTE - Upload House Image
 /**
  * @swagger

@@ -5,7 +5,11 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { address_users_details_model } from "../model/address_users_details.model";
 import db from "../config/base.database";
+import jwt from 'jsonwebtoken';
 import { log } from "console";
+
+const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
+const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 
 /**
  * Create a new address user detail
@@ -161,6 +165,28 @@ export const show_all_address_users_details = async (req: Request, res: Response
     res.status(200).send(addressUsers);
   } catch (error) {
     res.status(500).send("Internal Server Error");
+  }
+};
+
+/**
+ *  Show address user with token
+ */
+
+export const get_my_address = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;  // Use req.user.id instead of user_id
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    // Call the model function to get address details by user ID
+    const address = await address_users_details_model.show_address_users_by_id(userId);
+    res.json(address);
+  } catch (error) {
+    console.error("Error fetching user address:", error);
+    res.status(500).json({ message: "Failed to fetch address" });
   }
 };
 

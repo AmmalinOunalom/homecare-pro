@@ -12,12 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_address_user_details = exports.update_address_user_details = exports.show_all_address_users_details = exports.get_address_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
+exports.delete_address_user_details = exports.update_address_user_details = exports.get_my_address = exports.show_all_address_users_details = exports.get_address_by_user_id = exports.upload_house_image = exports.create_address_user_details = void 0;
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
 const fs_1 = __importDefault(require("fs"));
 const address_users_details_model_1 = require("../model/address_users_details.model");
 const base_database_1 = __importDefault(require("../config/base.database"));
+const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
+const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 /**
  * Create a new address user detail
  */
@@ -147,6 +149,27 @@ const show_all_address_users_details = (req, res) => __awaiter(void 0, void 0, v
     }
 });
 exports.show_all_address_users_details = show_all_address_users_details;
+/**
+ *  Show address user with token
+ */
+const get_my_address = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Use req.user.id instead of user_id
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        // Call the model function to get address details by user ID
+        const address = yield address_users_details_model_1.address_users_details_model.show_address_users_by_id(userId);
+        res.json(address);
+    }
+    catch (error) {
+        console.error("Error fetching user address:", error);
+        res.status(500).json({ message: "Failed to fetch address" });
+    }
+});
+exports.get_my_address = get_my_address;
 /**
  * Update an address user detail
  */

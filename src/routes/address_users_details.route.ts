@@ -1,13 +1,6 @@
 import express from "express";
-import { 
-    create_address_user_details, 
-    show_all_address_users_details, 
-    update_address_user_details, 
-    delete_address_user_details, 
-    upload_house_image,
-    get_address_by_user_id,
-    
-} from "../controllers/address_users_details.controller";
+import { create_address_user_details, show_all_address_users_details, update_address_user_details, delete_address_user_details, upload_house_image, get_address_by_user_id, get_my_address } from "../controllers/address_users_details.controller";
+import { authenticateToken } from "../middleware/auth.middleware";
 import upload from "../config/images.config";
 
 const router = express.Router();
@@ -75,6 +68,40 @@ const router = express.Router();
  */
 
 router.post("/create", upload.single("house_image"), create_address_user_details);
+/**
+ * @swagger
+ * /address_users_details/my_address:
+ *   get:
+ *     summary: Get the address of the authenticated user
+ *     description: This endpoint retrieves the address associated with the authenticated user.
+ *     tags:
+ *       - Address Users
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user's address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 address_name:
+ *                   type: string
+ *                 village:
+ *                   type: string
+ *                 city:
+ *                   type: string
+ *                 address_description:
+ *                   type: string
+ *                 google_link_map:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized, user not logged in
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/my_address", authenticateToken, get_my_address);
 
 // NOTE - Upload House Image
 /**
