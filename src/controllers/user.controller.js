@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgot_password = exports.rename_user = exports.get_user_profile = exports.get_user_name = exports.show_all_users = exports.sign_in_user = exports.create_users = void 0;
+exports.forgot_password = exports.rename_user = exports.get_user_profile = exports.get_user_name = exports.show_all_users = exports.refresh_token = exports.sign_in_user = exports.create_users = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
+const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
+let refreshTokens = [];
 // create user
 const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -33,31 +35,50 @@ const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.create_users = create_users;
 // Sign in user
+// export const sign_in_user = async (req: Request, res: Response) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await user_model.sign_in(email, password);
+//     if (user) {
+//       const token = jwt.sign(
+//         { id: user.id, username: user.username, email: user.email }, 
+//         JWT_SECRET,  
+//         { expiresIn: '1h' }  
+//       );
+//       res.status(200).send({
+//         message: "Sign-in successful",
+//         token,
+//         user: {
+//           id: user.id,
+//           username: user.username,
+//           email: user.email
+//         },
+//       });
+//     } else {
+//       res.status(401).send("Invalid email or password");
+//     }
+//   } catch (error) {
+//     console.error("Error during sign in:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
 const sign_in_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        // เรียกใช้ฟังก์ชัน sign_in ของ model เพื่อยืนยันข้อมูลผู้ใช้
         const user = yield user_model_1.user_model.sign_in(email, password);
         if (user) {
-            // ถ้าผู้ใช้พบและรหัสผ่านถูกต้อง
-            // สร้าง JWT token
-            const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, email: user.email }, // Payload
-            JWT_SECRET, // Secret key
-            { expiresIn: '1h' } // ระยะเวลาหมดอายุของ token
-            );
-            // ส่งข้อมูลกลับไปยัง client
+            const payload = { id: user.id, username: user.username, email: user.email };
+            const accessToken = jsonwebtoken_1.default.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+            const refreshToken = jsonwebtoken_1.default.sign(payload, JWT_REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+            refreshTokens.push(refreshToken); // Save refresh token
             res.status(200).send({
                 message: "Sign-in successful",
-                token, // ส่ง token ที่ถูกสร้าง
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    email: user.email
-                },
+                accessToken,
+                refreshToken,
+                user
             });
         }
         else {
-            // หากข้อมูลไม่ถูกต้อง
             res.status(401).send("Invalid email or password");
         }
     }
@@ -67,6 +88,33 @@ const sign_in_user = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.sign_in_user = sign_in_user;
+// Refresh_Token
+const refresh_token = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.body;
+    if (!token) {
+        res.sendStatus(401);
+        return;
+    }
+    if (!refreshTokens.includes(token)) {
+        res.sendStatus(403);
+        return;
+    }
+    try {
+        const user = yield new Promise((resolve, reject) => {
+            jsonwebtoken_1.default.verify(token, JWT_REFRESH_TOKEN_SECRET, (err, decoded) => {
+                if (err)
+                    return reject(err);
+                resolve(decoded);
+            });
+        });
+        const newAccessToken = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+        res.json({ accessToken: newAccessToken });
+    }
+    catch (err) {
+        res.sendStatus(403);
+    }
+});
+exports.refresh_token = refresh_token;
 // show all users
 const show_all_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

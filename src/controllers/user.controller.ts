@@ -4,7 +4,9 @@ import { user_model } from '../model/user.model';
 import bcrypt from 'bcrypt';
 
 const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
+const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 
+let refreshTokens: string[] = [];
 // create user
 export const create_users = async (req: Request, res: Response) => {
   try {
@@ -28,34 +30,59 @@ export const create_users = async (req: Request, res: Response) => {
 
 // Sign in user
 
+// export const sign_in_user = async (req: Request, res: Response) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     const user = await user_model.sign_in(email, password);
+
+//     if (user) {
+
+//       const token = jwt.sign(
+//         { id: user.id, username: user.username, email: user.email }, 
+//         JWT_SECRET,  
+//         { expiresIn: '1h' }  
+//       );
+
+//       res.status(200).send({
+//         message: "Sign-in successful",
+//         token,
+//         user: {
+//           id: user.id,
+//           username: user.username,
+//           email: user.email
+//         },
+//       });
+//     } else {
+      
+//       res.status(401).send("Invalid email or password");
+//     }
+//   } catch (error) {
+//     console.error("Error during sign in:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
 export const sign_in_user = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-
-    // เรียกใช้ฟังก์ชัน sign_in ของ model เพื่อยืนยันข้อมูลผู้ใช้
     const user = await user_model.sign_in(email, password);
 
     if (user) {
-      // ถ้าผู้ใช้พบและรหัสผ่านถูกต้อง
-      // สร้าง JWT token
-      const token = jwt.sign(
-        { id: user.id, username: user.username, email: user.email },  // Payload
-        JWT_SECRET,  // Secret key
-        { expiresIn: '1h' }  // ระยะเวลาหมดอายุของ token
-      );
+      const payload = { id: user.id, username: user.username, email: user.email };
 
-      // ส่งข้อมูลกลับไปยัง client
+      const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+      const refreshToken = jwt.sign(payload, JWT_REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+
+      refreshTokens.push(refreshToken); // Save refresh token
+
       res.status(200).send({
         message: "Sign-in successful",
-        token,  // ส่ง token ที่ถูกสร้าง
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email
-        },
+        accessToken,
+        refreshToken,
+        user
       });
     } else {
-      // หากข้อมูลไม่ถูกต้อง
       res.status(401).send("Invalid email or password");
     }
   } catch (error) {
@@ -64,6 +91,40 @@ export const sign_in_user = async (req: Request, res: Response) => {
   }
 };
 
+// Refresh_Token
+
+export const refresh_token = async (req: Request, res: Response): Promise<void> => {
+  const { token } = req.body;
+
+  if (!token) {
+    res.sendStatus(401);
+    return;
+  }
+
+  if (!refreshTokens.includes(token)) {
+    res.sendStatus(403);
+    return;
+  }
+
+  try {
+    const user: any = await new Promise((resolve, reject) => {
+      jwt.verify(token, JWT_REFRESH_TOKEN_SECRET, (err: any, decoded: unknown) => {
+        if (err) return reject(err);
+        resolve(decoded);
+      });
+    });
+
+    const newAccessToken = jwt.sign(
+      { id: user.id, username: user.username, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    res.sendStatus(403);
+  }
+};
 
 // show all users
 export const show_all_users = async (req: Request, res: Response) => {

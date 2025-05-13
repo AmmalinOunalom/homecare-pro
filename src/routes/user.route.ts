@@ -1,6 +1,6 @@
 import express from "express";
-import { authenticateToken } from "../middleware/auth.middleware"; // เชื่อมต่อกับ middleware
-import { create_users, show_all_users, get_user_profile, forgot_password, rename_user, sign_in_user, get_user_name } from "../controllers/user.controller";
+import { authenticateToken } from "../middleware/auth.middleware"; 
+import { create_users, show_all_users, get_user_profile, forgot_password, rename_user, sign_in_user, get_user_name, refresh_token  } from "../controllers/user.controller";
 
 const router = express.Router();
 
@@ -188,6 +188,42 @@ router.post("/sign_in", sign_in_user);
  *         description: Internal server error
  */
 router.get("/get_user_profile", authenticateToken, get_user_profile);
+
+/**
+ * @swagger
+ * /users/refresh-token:
+ *   post:
+ *     summary: Generate a new access token using a valid refresh token
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Refresh token used to obtain a new access token
+ *                 example: your_refresh_token_here
+ *     responses:
+ *       200:
+ *         description: Successfully generated a new access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: your_new_access_token_here
+ *       401:
+ *         description: Refresh token not provided
+ *       403:
+ *         description: Invalid or expired refresh token
+ */
+router.post('/refresh-token', refresh_token);
 
 // Add Rename User route
 /**

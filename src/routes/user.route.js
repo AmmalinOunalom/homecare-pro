@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const auth_middleware_1 = require("../middleware/auth.middleware"); // เชื่อมต่อกับ middleware
+const auth_middleware_1 = require("../middleware/auth.middleware");
 const user_controller_1 = require("../controllers/user.controller");
 const router = express_1.default.Router();
 // NOTE - Read All users
@@ -188,6 +188,41 @@ router.post("/sign_in", user_controller_1.sign_in_user);
  *         description: Internal server error
  */
 router.get("/get_user_profile", auth_middleware_1.authenticateToken, user_controller_1.get_user_profile);
+/**
+ * @swagger
+ * /users/refresh-token:
+ *   post:
+ *     summary: Generate a new access token using a valid refresh token
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Refresh token used to obtain a new access token
+ *                 example: your_refresh_token_here
+ *     responses:
+ *       200:
+ *         description: Successfully generated a new access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: your_new_access_token_here
+ *       401:
+ *         description: Refresh token not provided
+ *       403:
+ *         description: Invalid or expired refresh token
+ */
+router.post('/refresh-token', user_controller_1.refresh_token);
 // Add Rename User route
 /**
  * @swagger
