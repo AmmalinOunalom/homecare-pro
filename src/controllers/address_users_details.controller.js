@@ -18,8 +18,6 @@ const cloudinary_1 = require("cloudinary");
 const fs_1 = __importDefault(require("fs"));
 const address_users_details_model_1 = require("../model/address_users_details.model");
 const base_database_1 = __importDefault(require("../config/base.database"));
-const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
-const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 /**
  * Create a new address user detail
  */

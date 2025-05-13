@@ -81,6 +81,21 @@ export class service_order_model {
             throw new Error("Failed to fetch service order");
         }
     }
+    // Show service order by ID
+    static async show_service_order_by_user_id(id: number) {
+        try {
+            const query = 'SELECT * FROM service_order WHERE user_id = ?';
+            const [rows]: any = await db.execute(query, [id]);
+            if (rows.length > 0) {
+                return rows[0];
+            } else {    
+                throw new Error("Service order not found");
+            }
+        } catch (error) {
+            console.error("Error fetching service order:", error);
+            throw new Error("Failed to fetch service order");
+        }
+    }
 
     // Update service order
     static async update_service_order(

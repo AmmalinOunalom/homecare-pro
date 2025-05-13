@@ -1,5 +1,6 @@
 import express from "express";
-import { create_service_order, show_all_service_orders, show_service_order_by_id, update_service_order, delete_service_order } from "../controllers/service_order.controller";
+import { create_service_order, show_all_service_orders, show_service_order_by_id, get_my_service_order, update_service_order, delete_service_order } from "../controllers/service_order.controller";
+import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -83,7 +84,53 @@ router.post("/create", create_service_order);
  *         description: Internal server error.
  */
 router.get("/", show_all_service_orders);
-
+/**
+ * @swagger
+ * /service_order/my_service_order:
+ *   get:
+ *     summary: Get the service order of the authenticated user
+ *     description: This endpoint retrieves the service order associated with the authenticated user.
+ *     tags:
+ *       - Service Orders
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user's service order
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 user_id:
+ *                   type: integer
+ *                 service_id:
+ *                   type: integer
+ *                 address_users_details_id:
+ *                   type: integer
+ *                 order_date:
+ *                   type: string
+ *                   format: date-time
+ *                 status:
+ *                   type: string
+ *                 total_price:
+ *                   type: number
+ *                 payment_method:
+ *                   type: string
+ *                 created_at:
+ *                   type: string
+ *                   format: date-time
+ *                 updated_at:
+ *                   type: string
+ *                   format: date-time
+ *       401:
+ *         description: Unauthorized, user not logged in
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/my_service_order", authenticateToken, get_my_service_order);
 // NOTE - Show Service Order by ID
 /**
  * @swagger

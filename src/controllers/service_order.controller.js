@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_service_order = exports.update_service_order = exports.show_service_order_by_id = exports.show_all_service_orders = exports.create_service_order = void 0;
+exports.delete_service_order = exports.update_service_order = exports.show_service_order_by_id = exports.get_my_service_order = exports.show_all_service_orders = exports.create_service_order = void 0;
 const service_order_model_1 = require("../model/service_order.model");
 const employees_model_1 = require("../model/employees.model");
 const user_model_1 = require("../model/user.model");
@@ -91,6 +91,27 @@ const show_all_service_orders = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.show_all_service_orders = show_all_service_orders;
+/*
+* Show service Order with token
+*/
+const get_my_service_order = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Use req.user.id instead of user_id
+        if (!userId) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        // Call the model function to get address details by user ID
+        const address = yield service_order_model_1.service_order_model.show_service_order_by_user_id(userId);
+        res.json(address);
+    }
+    catch (error) {
+        console.error("Error fetching user address:", error);
+        res.status(500).json({ message: "Failed to fetch address" });
+    }
+});
+exports.get_my_service_order = get_my_service_order;
 /**
  * Retrieve a service order by ID
  */

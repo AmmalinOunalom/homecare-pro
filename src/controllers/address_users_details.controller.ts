@@ -5,11 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { address_users_details_model } from "../model/address_users_details.model";
 import db from "../config/base.database";
-import jwt from 'jsonwebtoken';
 import { log } from "console";
-
-const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
-const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 
 /**
  * Create a new address user detail

@@ -87,6 +87,25 @@ class service_order_model {
             }
         });
     }
+    // Show service order by ID
+    static show_service_order_by_user_id(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = 'SELECT * FROM service_order WHERE user_id = ?';
+                const [rows] = yield base_database_1.default.execute(query, [id]);
+                if (rows.length > 0) {
+                    return rows[0];
+                }
+                else {
+                    throw new Error("Service order not found");
+                }
+            }
+            catch (error) {
+                console.error("Error fetching service order:", error);
+                throw new Error("Failed to fetch service order");
+            }
+        });
+    }
     // Update service order
     static update_service_order(id, order // รับแค่ service_status อย่างเดียว
     ) {
