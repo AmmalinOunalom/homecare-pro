@@ -179,4 +179,25 @@ export const get_total_payments = async (req: Request, res: Response): Promise<v
   }
 };
 
+//NOTE - READ EMPLOYEE ID=5
+
+export const show_employee_five_report = async (req: Request, res: Response) => {
+  try {
+    const { empId } = req.params;
+    console.log("Received userId:", empId); // Log to ensure the request is reaching the controller
+
+    const employeeDetails = await reports_model.show_employee_5_reports(Number(empId));
+    console.log("Employee Details:", employeeDetails); // Log the result returned by the model
+
+    if (employeeDetails) {
+      res.status(200).send(employeeDetails);
+    } else {
+      res.status(404).send("Employee details not found for this employee");
+    }
+  } catch (error) {
+    console.error("Error fetching employee details by userId:", error);
+    res.status(500).send("Failed to fetch employee details");
+  }
+};
+
 

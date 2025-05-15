@@ -1,5 +1,5 @@
 import express from "express";
-import { show_all_service_orders_report, show_all_comments_report, show_all_employees_report, show_all_history_of_emp_cars_report, show_all_payments_report, get_total_payments } from "../controllers/reports.controller";
+import { show_all_service_orders_report, show_all_comments_report, show_all_employees_report, show_all_history_of_emp_cars_report, show_all_payments_report, get_total_payments, show_employee_five_report } from "../controllers/reports.controller";
 
 const router = express.Router();
 
@@ -275,6 +275,57 @@ router.get("/payments", show_all_payments_report);
  *                   example: Failed to calculate total payments
  */
 router.get("/total_payments", get_total_payments);
+
+// NOTE - Get Employee by ID=5 && cat_name = Moving
+/**
+ * @swagger
+ * /reports/read_emp_car_employees/5:
+ *   get:
+ *     summary: Get Employee Details for empId = 5 and cat_name = 'Moving'
+ *     description: Fetches employee details where empId is 5 and category name is 'Moving'.
+ *     tags:
+ *       - Reports
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved employee details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 empId:
+ *                   type: integer
+ *                   example: 5
+ *                 first_name:
+ *                   type: string
+ *                   example: "John"
+ *                 last_name:
+ *                   type: string
+ *                   example: "Doe"
+ *                 car_brand:
+ *                   type: string
+ *                   example: "Toyota"
+ *                 model:
+ *                   type: string
+ *                   example: "Corolla"
+ *                 license_plate:
+ *                   type: string
+ *                   example: "XYZ-1234"
+ *                 car_image:
+ *                   type: string
+ *                   example: "http://example.com/car_image.jpg"
+ *                 cat_id:
+ *                   type: integer
+ *                   example: 5
+ *                 cat_name:
+ *                   type: string
+ *                   example: "Moving"
+ *       404:
+ *         description: Employee details not found
+ *       500:
+ *         description: Server error
+ */
+router.get("/read_emp_car_employees/5", show_employee_five_report);
 
 
 

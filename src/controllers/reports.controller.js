@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get_total_payments = exports.show_all_payments_report = exports.show_all_history_of_emp_cars_report = exports.show_all_emp_cars_report = exports.show_all_comments_report = exports.show_all_employees_report = exports.show_all_service_orders_report = void 0;
+exports.show_employee_five_report = exports.get_total_payments = exports.show_all_payments_report = exports.show_all_history_of_emp_cars_report = exports.show_all_emp_cars_report = exports.show_all_comments_report = exports.show_all_employees_report = exports.show_all_service_orders_report = void 0;
 const reports_model_1 = require("../model/reports.model");
 /**
  * Get all service orders reports optionally filtered by date
@@ -166,3 +166,23 @@ const get_total_payments = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.get_total_payments = get_total_payments;
+//NOTE - READ EMPLOYEE ID=5
+const show_employee_five_report = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { empId } = req.params;
+        console.log("Received userId:", empId); // Log to ensure the request is reaching the controller
+        const employeeDetails = yield reports_model_1.reports_model.show_employee_5_reports(Number(empId));
+        console.log("Employee Details:", employeeDetails); // Log the result returned by the model
+        if (employeeDetails) {
+            res.status(200).send(employeeDetails);
+        }
+        else {
+            res.status(404).send("Employee details not found for this employee");
+        }
+    }
+    catch (error) {
+        console.error("Error fetching employee details by userId:", error);
+        res.status(500).send("Failed to fetch employee details");
+    }
+});
+exports.show_employee_five_report = show_employee_five_report;
