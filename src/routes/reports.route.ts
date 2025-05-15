@@ -282,9 +282,24 @@ router.get("/total_payments", get_total_payments);
  * /reports/read_emp_car_employees/5:
  *   get:
  *     summary: Get Employee Details for empId = 5 and cat_name = 'Moving'
- *     description: Fetches employee details where empId is 5 and category name is 'Moving'.
+ *     description: Fetches employee details where empId is 5 and category name is 'Moving'. Supports optional filtering by date range.
  *     tags:
  *       - Reports
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: false
+ *         description: Start date for filtering (e.g., 2024-01-01)
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: false
+ *         description: End date for filtering (e.g., 2024-12-31)
  *     responses:
  *       200:
  *         description: Successfully retrieved employee details

@@ -19,37 +19,49 @@ class reports_model {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { startDate, endDate, page, limit } = filters;
-                let query = "SELECT * FROM service_order";
                 const queryParams = [];
-                // Add date filters if available
+                let query = `
+      SELECT 
+        employees.id AS employee_id,
+        employees.first_name,
+        employees.last_name,
+        service_order.user_id,
+        service_order.cat_id,
+        service_order.address_users_detail_id,
+        service_order.payment_status,
+        service_order.created_at AS order_date,
+        service_order.updated_at
+      FROM employees
+      LEFT JOIN service_order ON service_order.employees_id = employees.id
+    `;
+                // Date filters
                 if (startDate && endDate) {
-                    query += " WHERE created_at BETWEEN ? AND ?";
+                    query += " WHERE service_order.created_at BETWEEN ? AND ?";
                     queryParams.push(`${startDate} 00:00:00`, `${endDate} 23:59:59`);
                 }
                 else if (startDate) {
-                    query += " WHERE created_at >= ?";
+                    query += " WHERE service_order.created_at >= ?";
                     queryParams.push(`${startDate} 00:00:00`);
                 }
                 else if (endDate) {
-                    query += " WHERE created_at <= ?";
+                    query += " WHERE service_order.created_at <= ?";
                     queryParams.push(`${endDate} 23:59:59`);
                 }
-                // Validate and set the limit and offset
-                const validLimit = limit && !isNaN(Number(limit)) ? Number(limit) : 10; // Default limit to 10
-                const validPage = page && !isNaN(Number(page)) ? Number(page) : 1; // Default page to 1
-                const offset = (validPage - 1) * validLimit; // Calculate the offset
-                // Add ordering and pagination to the query
-                query += ` ORDER BY created_at DESC LIMIT ${validLimit} OFFSET ${offset}`;
-                // Log the query and query params to check them
+                // Pagination
+                const validLimit = limit && !isNaN(Number(limit)) ? Number(limit) : 10;
+                const validPage = page && !isNaN(Number(page)) ? Number(page) : 1;
+                const offset = (validPage - 1) * validLimit;
+                query += ` ORDER BY service_order.created_at DESC LIMIT ${validLimit} OFFSET ${offset}`;
+                // Debug logs
                 console.log("Query:", query);
                 console.log("Query Params:", queryParams);
-                // Execute the query with the parameters
+                // Execute query
                 const [rows] = yield base_database_1.default.execute(query, queryParams);
                 return rows;
             }
             catch (error) {
-                console.error("Error fetching reports:", error); // More detailed error message
-                throw new Error(`Failed to fetch reports`);
+                console.error("Error fetching service order reports:", error);
+                throw new Error("Failed to fetch service order reports");
             }
         });
     }
@@ -251,28 +263,35 @@ class reports_model {
         });
     }
     //NOTE - SHOW EMPLOYEES WHO IS CAT_ID 5
-    static show_employee_5_reports(id) {
+    static show_employee_5_reports(id, filters) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = `
-          SELECT e.id, e.first_name, car_brand, model, license_plate, car_image, 
-                 c.id AS cat_id, c.cat_name, ec.emp_id
-          FROM employees e
-          JOIN categories c ON e.cat_id = c.id  
-          LEFT JOIN emp_cars ec ON e.id = ec.emp_id
-          WHERE c.id = 5 AND c.cat_name = 'Moving';
-        `;
-                const [rows] = yield base_database_1.default.execute(query);
-                if (rows.length > 0) {
-                    return rows; // ✅ Return all employees, not just the first one
+                let query = `
+      SELECT 
+        e.id, e.first_name, car_brand, model, license_plate, car_image, 
+        c.id AS cat_id, c.cat_name, ec.emp_id, ec.created_at
+      FROM employees e
+      JOIN categories c ON e.cat_id = c.id  
+      LEFT JOIN emp_cars ec ON e.id = ec.emp_id
+      WHERE c.id = 5 AND c.cat_name = 'Moving'
+    `;
+                const params = [];
+                // Apply filters if available
+                if (filters.startDate) {
+                    query += ` AND ec.created_at >= ?`;
+                    params.push(filters.startDate);
                 }
-                else {
-                    return null;
+                if (filters.endDate) {
+                    query += ` AND ec.created_at <= ?`;
+                    params.push(filters.endDate);
                 }
+                query += ` ORDER BY ec.created_at DESC`; // Optional ordering
+                const [rows] = yield base_database_1.default.execute(query, params);
+                return rows.length > 0 ? rows : null;
             }
             catch (error) {
                 console.error("Error fetching employee details:", error);
-                throw new Error("Failed to fe tch employee details.");
+                throw new Error("Failed to fetch employee details.");
             }
         });
     }
