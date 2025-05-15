@@ -97,18 +97,17 @@ exports.show_all_service_orders = show_all_service_orders;
 const get_my_service_order = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Use req.user.id instead of user_id
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
-        // Call the model function to get address details by user ID
-        const address = yield service_order_model_1.service_order_model.show_service_order_by_user_id(userId);
-        res.json(address);
+        const orders = yield service_order_model_1.service_order_model.show_service_order_by_user_id(userId);
+        res.status(200).json({ data: orders }); // ✅ Wrap in `data` to return an array
     }
     catch (error) {
-        console.error("Error fetching user address:", error);
-        res.status(500).json({ message: "Failed to fetch address" });
+        console.error("Error fetching user service orders:", error);
+        res.status(500).json({ message: "Failed to fetch service orders" });
     }
 });
 exports.get_my_service_order = get_my_service_order;

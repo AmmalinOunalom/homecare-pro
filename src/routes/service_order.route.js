@@ -90,47 +90,52 @@ router.get("/", service_order_controller_1.show_all_service_orders);
  * @swagger
  * /service_order/my_service_order:
  *   get:
- *     summary: Get the service order of the authenticated user
- *     description: This endpoint retrieves the service order associated with the authenticated user.
+ *     summary: Get service orders of the authenticated user
+ *     description: Retrieves all service orders made by the logged-in user.
  *     tags:
  *       - Service Orders
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Successfully retrieved the user's service order
+ *         description: Successfully retrieved the user's service orders
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: integer
- *                 user_id:
- *                   type: integer
- *                 service_id:
- *                   type: integer
- *                 address_users_details_id:
- *                   type: integer
- *                 order_date:
- *                   type: string
- *                   format: date-time
- *                 status:
- *                   type: string
- *                 total_price:
- *                   type: number
- *                 payment_method:
- *                   type: string
- *                 created_at:
- *                   type: string
- *                   format: date-time
- *                 updated_at:
- *                   type: string
- *                   format: date-time
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       user_id:
+ *                         type: integer
+ *                       service_id:
+ *                         type: integer
+ *                       address_users_details_id:
+ *                         type: integer
+ *                       order_date:
+ *                         type: string
+ *                         format: date-time
+ *                       status:
+ *                         type: string
+ *                       total_price:
+ *                         type: number
+ *                       payment_method:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
  *       401:
- *         description: Unauthorized, user not logged in
+ *         description: Unauthorized
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 router.get("/my_service_order", auth_middleware_1.authenticateToken, service_order_controller_1.get_my_service_order);
 // NOTE - Show Service Order by ID

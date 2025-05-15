@@ -92,19 +92,19 @@ export const show_all_service_orders = async (req: Request, res: Response) => {
 */
 export const get_my_service_order = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user?.id;  // Use req.user.id instead of user_id
+    const userId = req.user?.id;
 
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    // Call the model function to get address details by user ID
-    const address = await service_order_model.show_service_order_by_user_id(userId);
-    res.json(address);
+    const orders = await service_order_model.show_service_order_by_user_id(userId);
+
+    res.status(200).json({ data: orders }); // ✅ Wrap in `data` to return an array
   } catch (error) {
-    console.error("Error fetching user address:", error);
-    res.status(500).json({ message: "Failed to fetch address" });
+    console.error("Error fetching user service orders:", error);
+    res.status(500).json({ message: "Failed to fetch service orders" });
   }
 };
 

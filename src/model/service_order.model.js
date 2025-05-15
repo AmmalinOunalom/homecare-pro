@@ -93,12 +93,7 @@ class service_order_model {
             try {
                 const query = 'SELECT * FROM service_order WHERE user_id = ?';
                 const [rows] = yield base_database_1.default.execute(query, [id]);
-                if (rows.length > 0) {
-                    return rows[0];
-                }
-                else {
-                    throw new Error("Service order not found");
-                }
+                return rows; // ✅ Return all matching rows (array of service orders)
             }
             catch (error) {
                 console.error("Error fetching service order:", error);
