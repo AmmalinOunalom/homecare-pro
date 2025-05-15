@@ -1,43 +1,23 @@
 import express from "express";
+import upload from '../config/images.config';
 import { authenticateToken } from "../middleware/auth.middleware"; 
 import { create_users, show_all_users, get_user_profile, forgot_password, rename_user, sign_in_user, get_user_name, refresh_token  } from "../controllers/user.controller";
 
 const router = express.Router();
-
-// NOTE - Read All users
-/**
- * @swagger
- * /users/read_user:
- *   get:
- *     summary: Get all users
- *     description: Retrieve a list of all users
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: [] 
- *     responses:
- *       200:
- *         description: Successfully retrieved users
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal server error
- */
-router.get("/read_user",authenticateToken, show_all_users);
 
 // NOTE - SIGN_UP USER
 /**
  * @swagger
  * /users/sign_up_user:
  *   post:
- *     summary: Create a new user
- *     description: Registers a new user in the system
+ *     summary: Create a new user with avatar upload
+ *     description: Registers a new user and uploads an avatar image
  *     tags:
  *       - Users
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -49,6 +29,7 @@ router.get("/read_user",authenticateToken, show_all_users);
  *               - password
  *               - gender
  *               - status
+ *               - avatar
  *             properties:
  *               username:
  *                 type: string
@@ -78,15 +59,20 @@ router.get("/read_user",authenticateToken, show_all_users);
  *                 type: string
  *                 enum: [ACTIVE, INACTIVE]
  *                 example: ACTIVE
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: The avatar image file to upload
  *     responses:
  *       201:
  *         description: User created successfully
  *       400:
- *         description: Bad request, missing required fields
+ *         description: Bad request, missing required fields or invalid data
  *       500:
  *         description: Internal server error
  */
-router.post("/sign_up_user", create_users);
+router.post("/sign_up_user", upload.single("avatar"), create_users);
+
 
 // Add Sign-In route
 /**
@@ -225,13 +211,12 @@ router.get("/get_user_profile", authenticateToken, get_user_profile);
  */
 router.post('/refresh-token', refresh_token);
 
-// Add Rename User route
 /**
  * @swagger
  * /users/rename_user/{id}:
  *   put:
  *     summary: Rename a user
- *     description: Allows an admin to rename a user by updating their first and last name.
+ *     description: Allows an admin to rename a user by updating their username, first name, last name, and avatar.
  *     tags:
  *       - Users
  *     parameters:
@@ -245,13 +230,9 @@ router.post('/refresh-token', refresh_token);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - newUsername
- *               - newFirstname
- *               - newLastname
  *             properties:
  *               newUsername:
  *                 type: string
@@ -262,6 +243,10 @@ router.post('/refresh-token', refresh_token);
  *               newLastname:
  *                 type: string
  *                 example: Doe
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Avatar image file
  *     responses:
  *       200:
  *         description: User renamed successfully
@@ -272,7 +257,7 @@ router.post('/refresh-token', refresh_token);
  *       500:
  *         description: Internal server error
  */
-router.put("/rename_user/:id", rename_user);
+router.put("/rename_user/:id", upload.single("file"),rename_user);
 
 //Get User Name BY ID
 /**

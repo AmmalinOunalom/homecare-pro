@@ -4,42 +4,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const images_config_1 = __importDefault(require("../config/images.config"));
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const user_controller_1 = require("../controllers/user.controller");
 const router = express_1.default.Router();
-// NOTE - Read All users
-/**
- * @swagger
- * /users/read_user:
- *   get:
- *     summary: Get all users
- *     description: Retrieve a list of all users
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successfully retrieved users
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal server error
- */
-router.get("/read_user", auth_middleware_1.authenticateToken, user_controller_1.show_all_users);
 // NOTE - SIGN_UP USER
 /**
  * @swagger
  * /users/sign_up_user:
  *   post:
- *     summary: Create a new user
- *     description: Registers a new user in the system
+ *     summary: Create a new user with avatar upload
+ *     description: Registers a new user and uploads an avatar image
  *     tags:
  *       - Users
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -51,6 +32,7 @@ router.get("/read_user", auth_middleware_1.authenticateToken, user_controller_1.
  *               - password
  *               - gender
  *               - status
+ *               - avatar
  *             properties:
  *               username:
  *                 type: string
@@ -80,15 +62,19 @@ router.get("/read_user", auth_middleware_1.authenticateToken, user_controller_1.
  *                 type: string
  *                 enum: [ACTIVE, INACTIVE]
  *                 example: ACTIVE
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: The avatar image file to upload
  *     responses:
  *       201:
  *         description: User created successfully
  *       400:
- *         description: Bad request, missing required fields
+ *         description: Bad request, missing required fields or invalid data
  *       500:
  *         description: Internal server error
  */
-router.post("/sign_up_user", user_controller_1.create_users);
+router.post("/sign_up_user", images_config_1.default.single("avatar"), user_controller_1.create_users);
 // Add Sign-In route
 /**
  * @swagger
@@ -223,13 +209,12 @@ router.get("/get_user_profile", auth_middleware_1.authenticateToken, user_contro
  *         description: Invalid or expired refresh token
  */
 router.post('/refresh-token', user_controller_1.refresh_token);
-// Add Rename User route
 /**
  * @swagger
  * /users/rename_user/{id}:
  *   put:
  *     summary: Rename a user
- *     description: Allows an admin to rename a user by updating their first and last name.
+ *     description: Allows an admin to rename a user by updating their username, first name, last name, and avatar.
  *     tags:
  *       - Users
  *     parameters:
@@ -243,13 +228,9 @@ router.post('/refresh-token', user_controller_1.refresh_token);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - newUsername
- *               - newFirstname
- *               - newLastname
  *             properties:
  *               newUsername:
  *                 type: string
@@ -260,6 +241,10 @@ router.post('/refresh-token', user_controller_1.refresh_token);
  *               newLastname:
  *                 type: string
  *                 example: Doe
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Avatar image file
  *     responses:
  *       200:
  *         description: User renamed successfully
@@ -270,7 +255,7 @@ router.post('/refresh-token', user_controller_1.refresh_token);
  *       500:
  *         description: Internal server error
  */
-router.put("/rename_user/:id", user_controller_1.rename_user);
+router.put("/rename_user/:id", images_config_1.default.single("file"), user_controller_1.rename_user);
 //Get User Name BY ID
 /**
  * @swagger

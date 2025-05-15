@@ -2,66 +2,51 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { user_model } from '../model/user.model';
 import bcrypt from 'bcrypt';
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
 const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c';  // Replace with a real secret key
 const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 
 let refreshTokens: string[] = [];
 // create user
+
 export const create_users = async (req: Request, res: Response) => {
   try {
     const { password } = req.body;
 
-
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-
     const user = { ...req.body, password: hashedPassword };
 
+    // Cloudinary avatar upload logic (just like in create_employees)
+    if (req.file && req.file.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars",
+      });
+
+      if (!result.secure_url) {
+        throw new Error("Cloudinary upload failed");
+      }
+
+      user.avatar = result.secure_url;
+
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
 
     const createdUser = await user_model.create(user);
 
     res.status(201).send("User created successfully");
   } catch (error) {
+    console.error("Error creating user:", error);
     res.status(400).send("User with the same email, username, or last_name already exists");
   }
 };
 
 // Sign in user
-
-// export const sign_in_user = async (req: Request, res: Response) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     const user = await user_model.sign_in(email, password);
-
-//     if (user) {
-
-//       const token = jwt.sign(
-//         { id: user.id, username: user.username, email: user.email }, 
-//         JWT_SECRET,  
-//         { expiresIn: '1h' }  
-//       );
-
-//       res.status(200).send({
-//         message: "Sign-in successful",
-//         token,
-//         user: {
-//           id: user.id,
-//           username: user.username,
-//           email: user.email
-//         },
-//       });
-//     } else {
-      
-//       res.status(401).send("Invalid email or password");
-//     }
-//   } catch (error) {
-//     console.error("Error during sign in:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
 
 export const sign_in_user = async (req: Request, res: Response) => {
   try {
@@ -197,27 +182,81 @@ export const get_user_profile = async (req: Request, res: Response): Promise<voi
   }
 };
 
-export const rename_user = async (req: Request, res: Response) => {
+// export const rename_user = async (req: Request, res: Response) => {
+//   try {
+//     // Extract the user ID from the URL parameters and the new user details from the body
+//     const { id } = req.params; // ID from the URL path
+//     const { newUsername, newFirstname, newLastname, newAvatar } = req.body;
+
+//     // Call the model function with the necessary arguments
+//     const result = await user_model.rename_users(Number(id), newUsername, newFirstname, newLastname, newAvatar);
+
+//     // Check if result is returned
+//     if (result) {
+//       res.status(200).send("User updated successfully");
+//     } else {
+//       res.status(404).send("User not found or no changes made");
+//     }
+//   } catch (error) {
+//     // Log and send internal server error
+//     console.error("Error updating user:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
+export const rename_user = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Extract the user ID from the URL parameters and the new user details from the body
-    const { id } = req.params; // ID from the URL path
+    const { id } = req.params;
     const { newUsername, newFirstname, newLastname } = req.body;
 
-    // Call the model function with the necessary arguments
-    const result = await user_model.rename_users(Number(id), newUsername, newFirstname, newLastname);
+    if (!id || isNaN(Number(id))) {
+      res.status(400).send("Invalid user ID");
+      return;
+    }
 
-    // Check if result is returned
+    let avatarUrl: string | undefined;
+
+    if (req.file && req.file.path) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars_users",
+      });
+
+      if (!result.secure_url) {
+        throw new Error("Cloudinary upload failed");
+      }
+
+      avatarUrl = result.secure_url;
+
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+
+    const updates: any = {};
+
+    if (newUsername) updates.newUsername = newUsername;
+    if (newFirstname) updates.newFirstname = newFirstname;
+    if (newLastname) updates.newLastname = newLastname;
+    if (avatarUrl) updates.newAvatar = avatarUrl;
+
+    if (Object.keys(updates).length === 0) {
+      res.status(400).send("No fields provided for update");
+      return;
+    }
+
+    const result = await user_model.rename_users(Number(id), updates);
+
     if (result) {
       res.status(200).send("User updated successfully");
     } else {
       res.status(404).send("User not found or no changes made");
     }
   } catch (error) {
-    // Log and send internal server error
     console.error("Error updating user:", error);
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 //NOTE - forgotpassword
 

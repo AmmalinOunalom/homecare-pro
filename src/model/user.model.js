@@ -31,42 +31,46 @@ class user_model {
     // Create User
     static create(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             try {
-                // First, check if email, username, or last_name already exist
                 const checkQuery = `
-        SELECT * FROM users 
-        WHERE email = ? OR username = ? OR last_name = ?;
-      `;
+      SELECT * FROM users 
+      WHERE email = ? OR username = ? OR last_name = ?;
+    `;
                 const [existingUsers] = yield base_database_1.default.execute(checkQuery, [
                     user.email,
                     user.username,
-                    user.last_name
+                    user.last_name,
                 ]);
-                // If any record is found, throw a custom error
                 if (existingUsers.length > 0) {
                     throw new Error("User with the same email, username, or last_name already exists");
                 }
-                // If no duplicates, insert the new user
+                const now = new Date();
                 const query = `
-        INSERT INTO users (email, username, last_name, first_name, tel, password, gender, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+      INSERT INTO users 
+      (email, username, last_name, first_name, tel, password, gender, status, avatar, created_at, updated_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
                 const values = [
                     user.email,
                     user.username,
                     user.last_name,
                     user.first_name,
                     user.tel,
-                    user.password, // Assuming password is already hashed
+                    user.password, // hashed
                     user.gender,
-                    user.status
+                    user.status,
+                    user.avatar, // should be URL or filename
+                    (_a = user.created_at) !== null && _a !== void 0 ? _a : now,
+                    (_b = user.updated_at) !== null && _b !== void 0 ? _b : now,
                 ];
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result;
             }
-            catch (error) { // Specify the type as 'unknown'
-                if (error instanceof Error && error.message === "User with the same email, username, or last_name already exists") {
-                    throw error; // Custom error will be handled in the controller
+            catch (error) {
+                if (error instanceof Error &&
+                    error.message === "User with the same email, username, or last_name already exists") {
+                    throw error;
                 }
                 else {
                     console.error("Error inserting user:", error);
@@ -146,19 +150,35 @@ class user_model {
             return rows.length > 0 ? rows[0] : null;
         });
     }
-    static rename_users(id, // ID as a number
-    newUsername, newFirstname, newLastname) {
+    static rename_users(id, updates) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Update query to change the user's username, first name, and last name based on the ID
-                const updateQuery = `
-        UPDATE users 
-        SET username = ?, first_name = ?, last_name = ? 
-        WHERE id = ?`;
-                const values = [newUsername, newFirstname, newLastname, id];
-                // Execute the query using db.execute, result is returned as an array
-                const [result] = yield base_database_1.default.execute(updateQuery, values); // Notice the [result] destructuring
-                // Check if the update was successful by checking the affectedRows
+                const fields = [];
+                const values = [];
+                if (updates.newUsername) {
+                    fields.push("username = ?");
+                    values.push(updates.newUsername);
+                }
+                if (updates.newFirstname) {
+                    fields.push("first_name = ?");
+                    values.push(updates.newFirstname);
+                }
+                if (updates.newLastname) {
+                    fields.push("last_name = ?");
+                    values.push(updates.newLastname);
+                }
+                if (updates.newAvatar) {
+                    fields.push("avatar = ?");
+                    values.push(updates.newAvatar);
+                }
+                if (fields.length === 0) {
+                    return null; // Nothing to update
+                }
+                // Add updated_at timestamp update
+                fields.push("updated_at = NOW()");
+                const updateQuery = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
+                values.push(id);
+                const [result] = yield base_database_1.default.execute(updateQuery, values);
                 return result.affectedRows > 0 ? result : null;
             }
             catch (error) {

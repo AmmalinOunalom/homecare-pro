@@ -14,6 +14,7 @@ const comments_route_1 = __importDefault(require("./src/routes/comments.route"))
 const address_users_details_route_1 = __importDefault(require("./src/routes/address_users_details.route"));
 const service_order_route_1 = __importDefault(require("./src/routes/service_order.route"));
 const reports_route_1 = __importDefault(require("./src/routes/reports.route"));
+const admin_route_1 = __importDefault(require("./src/routes/admin.route"));
 const swagger_1 = require("./src/config/swagger"); // Swagger setup
 dotenv_1.default.config(); // Load environment variables
 const app = (0, express_1.default)();
@@ -31,6 +32,7 @@ app.use("/comments", comments_route_1.default);
 app.use("/address_users_details", address_users_details_route_1.default);
 app.use("/service_order", service_order_route_1.default);
 app.use("/reports", reports_route_1.default);
+app.use("/admins", admin_route_1.default);
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server running at ${process.env.URL || "http://localhost"}:${port}`);

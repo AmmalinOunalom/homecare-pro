@@ -16,6 +16,8 @@ exports.forgot_password = exports.rename_user = exports.get_user_profile = expor
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_1 = require("../model/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const cloudinary_1 = require("cloudinary");
+const fs_1 = __importDefault(require("fs"));
 const JWT_SECRET = 'ZfEYwl7yGor1DAlReLlQVIdRTojJzv4mdwwU6byTYfvc3yhWShT0WioWzgjy3c6Wc3xkoKh4gxrM5PGOS6VTIMuy6c'; // Replace with a real secret key
 const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlUQWtOri0jKc0Zg7yLLC';
 let refreshTokens = [];
@@ -26,42 +28,29 @@ const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const saltRounds = 10;
         const hashedPassword = yield bcrypt_1.default.hash(password, saltRounds);
         const user = Object.assign(Object.assign({}, req.body), { password: hashedPassword });
+        // Cloudinary avatar upload logic (just like in create_employees)
+        if (req.file && req.file.path) {
+            const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+                folder: "avatars",
+            });
+            if (!result.secure_url) {
+                throw new Error("Cloudinary upload failed");
+            }
+            user.avatar = result.secure_url;
+            if (fs_1.default.existsSync(req.file.path)) {
+                fs_1.default.unlinkSync(req.file.path);
+            }
+        }
         const createdUser = yield user_model_1.user_model.create(user);
         res.status(201).send("User created successfully");
     }
     catch (error) {
+        console.error("Error creating user:", error);
         res.status(400).send("User with the same email, username, or last_name already exists");
     }
 });
 exports.create_users = create_users;
 // Sign in user
-// export const sign_in_user = async (req: Request, res: Response) => {
-//   try {
-//     const { email, password } = req.body;
-//     const user = await user_model.sign_in(email, password);
-//     if (user) {
-//       const token = jwt.sign(
-//         { id: user.id, username: user.username, email: user.email }, 
-//         JWT_SECRET,  
-//         { expiresIn: '1h' }  
-//       );
-//       res.status(200).send({
-//         message: "Sign-in successful",
-//         token,
-//         user: {
-//           id: user.id,
-//           username: user.username,
-//           email: user.email
-//         },
-//       });
-//     } else {
-//       res.status(401).send("Invalid email or password");
-//     }
-//   } catch (error) {
-//     console.error("Error during sign in:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
 const sign_in_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
@@ -179,14 +168,60 @@ const get_user_profile = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.get_user_profile = get_user_profile;
+// export const rename_user = async (req: Request, res: Response) => {
+//   try {
+//     // Extract the user ID from the URL parameters and the new user details from the body
+//     const { id } = req.params; // ID from the URL path
+//     const { newUsername, newFirstname, newLastname, newAvatar } = req.body;
+//     // Call the model function with the necessary arguments
+//     const result = await user_model.rename_users(Number(id), newUsername, newFirstname, newLastname, newAvatar);
+//     // Check if result is returned
+//     if (result) {
+//       res.status(200).send("User updated successfully");
+//     } else {
+//       res.status(404).send("User not found or no changes made");
+//     }
+//   } catch (error) {
+//     // Log and send internal server error
+//     console.error("Error updating user:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
 const rename_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Extract the user ID from the URL parameters and the new user details from the body
-        const { id } = req.params; // ID from the URL path
+        const { id } = req.params;
         const { newUsername, newFirstname, newLastname } = req.body;
-        // Call the model function with the necessary arguments
-        const result = yield user_model_1.user_model.rename_users(Number(id), newUsername, newFirstname, newLastname);
-        // Check if result is returned
+        if (!id || isNaN(Number(id))) {
+            res.status(400).send("Invalid user ID");
+            return;
+        }
+        let avatarUrl;
+        if (req.file && req.file.path) {
+            const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
+                folder: "avatars_users",
+            });
+            if (!result.secure_url) {
+                throw new Error("Cloudinary upload failed");
+            }
+            avatarUrl = result.secure_url;
+            if (fs_1.default.existsSync(req.file.path)) {
+                fs_1.default.unlinkSync(req.file.path);
+            }
+        }
+        const updates = {};
+        if (newUsername)
+            updates.newUsername = newUsername;
+        if (newFirstname)
+            updates.newFirstname = newFirstname;
+        if (newLastname)
+            updates.newLastname = newLastname;
+        if (avatarUrl)
+            updates.newAvatar = avatarUrl;
+        if (Object.keys(updates).length === 0) {
+            res.status(400).send("No fields provided for update");
+            return;
+        }
+        const result = yield user_model_1.user_model.rename_users(Number(id), updates);
         if (result) {
             res.status(200).send("User updated successfully");
         }
@@ -195,7 +230,6 @@ const rename_user = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        // Log and send internal server error
         console.error("Error updating user:", error);
         res.status(500).send("Internal Server Error");
     }
