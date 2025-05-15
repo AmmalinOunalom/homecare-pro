@@ -9,6 +9,7 @@ import emp_car_router from "./src/routes/emp_car.route";
 import comments_router from "./src/routes/comments.route";
 import address_users_details_router from "./src/routes/address_users_details.route";
 import service_order_router from "./src/routes/service_order.route";
+import reports_router from "./src/routes/reports.route";
 
 import { setupSwagger } from "./src/config/swagger"; // Swagger setup
 
@@ -35,6 +36,7 @@ app.use("/emp_car", emp_car_router);
 app.use("/comments", comments_router);
 app.use("/address_users_details", address_users_details_router);
 app.use("/service_order", service_order_router);
+app.use("/reports", reports_router);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
