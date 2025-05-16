@@ -27,6 +27,7 @@ class reports_model {
         employees.last_name,
         service_order.user_id,
         service_order.cat_id,
+				service_order.amount,
         service_order.address_users_detail_id,
         service_order.payment_status,
         service_order.created_at AS order_date,
