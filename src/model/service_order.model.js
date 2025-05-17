@@ -58,7 +58,24 @@ class service_order_model {
     static show_all_service_orders() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'SELECT * FROM service_order';
+                const query = `SELECT 
+    so.id AS service_order_id,
+    so.user_id,
+    so.employees_id,
+    so.cat_id,
+    so.address_users_detail_id,
+    so.amount,
+    so.payment_status,
+    so.service_status,
+    ec.car_brand,
+    ec.model,
+    ec.license_plate,
+    c.rating
+FROM 
+    service_order so
+LEFT JOIN employees e ON e.id = so.employees_id
+LEFT JOIN emp_cars ec ON ec.emp_id = e.id
+LEFT JOIN comments c ON c.users_id = so.user_id AND c.employees_id = so.employees_id;`;
                 const [rows] = yield base_database_1.default.execute(query);
                 return rows;
             }

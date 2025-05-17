@@ -242,7 +242,8 @@ router.get("/", address_users_details_controller_1.show_all_address_users_detail
  *               - google_link_map
  *             properties:
  *               users_id:
- *                 example: "FEMALE"
+ *                 type: integer
+ *                 example: 1
  *               address_name:
  *                 type: string
  *                 example: "456 Elm Street"
@@ -252,6 +253,25 @@ router.get("/", address_users_details_controller_1.show_all_address_users_detail
  *               google_link_map:
  *                 type: string
  *                 example: "https://maps.google.com/new-location"
+ *               address_description:
+ *                 type: string
+ *                 example: "Updated description of the address"
+ *               city:
+ *                 type: string
+ *                 enum:
+ *                   - CHANTHABULY
+ *                   - SIKHOTTABONG
+ *                   - XAYSETHA
+ *                   - SISATTANAK
+ *                   - NAXAITHONG
+ *                   - XAYTANY
+ *                   - HADXAIFONG
+ *               village:
+ *                 type: string
+ *                 example: "Ban Nongbone"
+ *               tel:
+ *                 type: string
+ *                 example: "020-12345678"
  *     responses:
  *       200:
  *         description: Address user updated successfully.
