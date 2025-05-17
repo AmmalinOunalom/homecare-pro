@@ -71,7 +71,7 @@ class reports_model {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { startDate, endDate, page, limit } = filters;
-                let query = `SELECT e.id, e.first_name, e.last_name, e.email,  c.cat_name, e.price, e.status, 
+                let query = `SELECT e.id, e.first_name, e.last_name, e.email, e.tel, c.cat_name, e.price, e.status, 
       e.city, e.created_at, e.updated_at 
       FROM employees e JOIN categories c ON e.cat_id = c.id `;
                 const queryParams = [];
