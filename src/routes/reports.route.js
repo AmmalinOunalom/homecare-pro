@@ -25,7 +25,7 @@ const router = express_1.default.Router();
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 10
+ *           default: 0
  *         description: Number of records per page.
  *       - in: query
  *         name: startDate
@@ -65,7 +65,7 @@ router.get("/service_orders", reports_controller_1.show_all_service_orders_repor
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 10
+ *           default: 0
  *         description: Number of records per page.
  *       - in: query
  *         name: startDate
@@ -105,7 +105,7 @@ router.get("/comments", reports_controller_1.show_all_comments_report);
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 10
+ *           default: 0
  *         description: Number of records per page.
  *       - in: query
  *         name: startDate
@@ -213,7 +213,7 @@ router.get("/emp_cars_history", reports_controller_1.show_all_history_of_emp_car
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 10
+ *           default: 0
  *         description: Number of records per page.
  *       - in: query
  *         name: startDate
