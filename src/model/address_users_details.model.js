@@ -14,20 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.address_users_details_model = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
-// Enum for Gender
-var Gender;
-(function (Gender) {
-    Gender["Male"] = "Male";
-    Gender["Female"] = "Female";
-    Gender["Other"] = "Other";
-})(Gender || (Gender = {}));
 class address_users_details_model {
     static create_address_user_details(addressUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const values = [
                     addressUser.users_id || null,
-                    addressUser.gender_owner || null,
                     addressUser.address_name || null,
                     addressUser.village || null,
                     addressUser.google_link_map || null,
@@ -37,8 +29,8 @@ class address_users_details_model {
                 ];
                 const query = `
             INSERT INTO address_users_detail 
-            (users_id, gender_owner, address_name, village, google_link_map, address_description, city, tel)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (users_id, address_name, village, google_link_map, address_description, city, tel)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
           `;
                 const [result] = yield base_database_1.default.execute(query, values);
                 if (!result.insertId) {
@@ -172,7 +164,6 @@ class address_users_details_model {
                 UPDATE address_users_detail 
                 SET 
                     users_id = ?, 
-                    gender_owner = ?, 
                     address_name = ?, 
                     house_image = ?, 
                     google_link_map = ?, 
@@ -184,7 +175,6 @@ class address_users_details_model {
             `;
                 const values = [
                     addressUser.users_id,
-                    addressUser.gender_owner,
                     addressUser.address_name,
                     addressUser.house_image,
                     addressUser.google_link_map,

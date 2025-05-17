@@ -22,7 +22,6 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - users_id
- *               - gender_owner
  *               - address_name
  *               - village
  *               - google_link_map
@@ -32,9 +31,6 @@ const router = express.Router();
  *             properties:
  *               users_id:
  *                 type: integer
- *               gender_owner:
- *                 type: string
- *                 enum: [MALE, FEMALE, OTHER]
  *               address_name:
  *                 type: string
  *               village:
@@ -246,17 +242,12 @@ router.get("/", show_all_address_users_details);
  *             type: object
  *             required:
  *               - users_id
- *               - gender_owner
  *               - address_name
  *               - google_link_map
  *             properties:
  *               users_id:
  *                 type: integer
  *                 example: 1
- *               gender_owner:
- *                 type: string
- *                 enum: [MALE, FEMALE, OTHER]
- *                 example: "FEMALE"
  *               address_name:
  *                 type: string
  *                 example: "456 Elm Street"
@@ -266,6 +257,25 @@ router.get("/", show_all_address_users_details);
  *               google_link_map:
  *                 type: string
  *                 example: "https://maps.google.com/new-location"
+ *               address_description:
+ *                 type: string
+ *                 example: "Updated description of the address"
+ *               city:
+ *                 type: string
+ *                 enum:
+ *                   - CHANTHABULY
+ *                   - SIKHOTTABONG
+ *                   - XAYSETHA
+ *                   - SISATTANAK
+ *                   - NAXAITHONG
+ *                   - XAYTANY
+ *                   - HADXAIFONG
+ *               village:
+ *                 type: string
+ *                 example: "Ban Nongbone"
+ *               tel:
+ *                 type: string
+ *                 example: "020-12345678"
  *     responses:
  *       200:
  *         description: Address user updated successfully.

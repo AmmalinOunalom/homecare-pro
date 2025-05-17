@@ -25,7 +25,6 @@ const router = express_1.default.Router();
  *             type: object
  *             required:
  *               - users_id
- *               - gender_owner
  *               - address_name
  *               - village
  *               - google_link_map
@@ -35,9 +34,6 @@ const router = express_1.default.Router();
  *             properties:
  *               users_id:
  *                 type: integer
- *               gender_owner:
- *                 type: string
- *                 enum: [MALE, FEMALE, OTHER]
  *               address_name:
  *                 type: string
  *               village:
@@ -242,16 +238,10 @@ router.get("/", address_users_details_controller_1.show_all_address_users_detail
  *             type: object
  *             required:
  *               - users_id
- *               - gender_owner
  *               - address_name
  *               - google_link_map
  *             properties:
  *               users_id:
- *                 type: integer
- *                 example: 1
- *               gender_owner:
- *                 type: string
- *                 enum: [MALE, FEMALE, OTHER]
  *                 example: "FEMALE"
  *               address_name:
  *                 type: string

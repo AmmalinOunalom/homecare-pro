@@ -1,18 +1,11 @@
 import { log } from "util";
 import db from "../config/base.database";
 
-// Enum for Gender
-enum Gender {
-    Male = "Male",
-    Female = "Female",
-    Other = "Other"
-}
 
 // AddressUserDetails Interface
 export interface AddressUserDetails {
     id: number;               // Auto-increment ID
     users_id: number;         // Foreign key to users table
-    gender_owner: Gender;     // Gender of the owner
     address_name: string;     // User's address
     address_description: string;
     city: "ເມືອງຈັນທະບູລີ" | "SIKHOTTABONG" | "XAYSETHA" | "SISATTANAK" | "NAXAITHONG" | "XAYTANY" | "HADXAIFONG"; // ENUM
@@ -33,7 +26,6 @@ export class address_users_details_model {
         try {
             const values = [
                 addressUser.users_id || null,
-                addressUser.gender_owner || null,
                 addressUser.address_name || null,
                 addressUser.village || null,
                 addressUser.google_link_map || null,
@@ -44,8 +36,8 @@ export class address_users_details_model {
 
             const query = `
             INSERT INTO address_users_detail 
-            (users_id, gender_owner, address_name, village, google_link_map, address_description, city, tel)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (users_id, address_name, village, google_link_map, address_description, city, tel)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
           `;
 
             const [result]: any = await db.execute(query, values);
@@ -186,7 +178,6 @@ static async show_address_users_by_id(userId: number): Promise<any[] | null> {
                 UPDATE address_users_detail 
                 SET 
                     users_id = ?, 
-                    gender_owner = ?, 
                     address_name = ?, 
                     house_image = ?, 
                     google_link_map = ?, 
@@ -199,7 +190,6 @@ static async show_address_users_by_id(userId: number): Promise<any[] | null> {
 
             const values = [
                 addressUser.users_id,
-                addressUser.gender_owner,
                 addressUser.address_name,
                 addressUser.house_image,
                 addressUser.google_link_map,
