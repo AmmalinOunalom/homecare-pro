@@ -96,7 +96,7 @@ static async show_service_order_by_user_id(id: number) {
     ec.car_brand,
     ec.model,
     ec.license_plate,
-    c.ratings
+    c.rating
 FROM 
     service_order so
 LEFT JOIN employees e ON e.id = so.employees_id
