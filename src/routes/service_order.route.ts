@@ -86,7 +86,7 @@ router.post("/create", create_service_order);
 router.get("/", show_all_service_orders);
 /**
  * @swagger
- * /service_order/my_service_order:
+ * /service_order/get_my_service_order:
  *   get:
  *     summary: Get service orders of the authenticated user
  *     description: Retrieves all service orders made by the logged-in user.
@@ -135,7 +135,7 @@ router.get("/", show_all_service_orders);
  *       500:
  *         description: Internal Server Error
  */
-router.get("/my_service_order", authenticateToken, get_my_service_order);
+router.get("/get_my_service_order", authenticateToken, get_my_service_order);
 // NOTE - Show Service Order by ID
 /**
  * @swagger

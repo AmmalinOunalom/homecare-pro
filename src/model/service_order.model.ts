@@ -96,12 +96,13 @@ static async show_service_order_by_user_id(id: number) {
     ec.car_brand,
     ec.model,
     ec.license_plate,
-    c.rating
+    c.ratings
 FROM 
     service_order so
 LEFT JOIN employees e ON e.id = so.employees_id
 LEFT JOIN emp_cars ec ON ec.emp_id = e.id
-LEFT JOIN comments c ON c.users_id = so.user_id AND c.employees_id = so.employees_id;`;
+LEFT JOIN comments c ON c.users_id = so.user_id AND c.employees_id = so.employees_id
+WHERE so.user_id = ?`;
         const [rows]: any = await db.execute(query, [id]);
 
         return rows; // ✅ Return all matching rows (array of service orders)
