@@ -8,11 +8,18 @@ const sms_controller_1 = require("../controllers/sms.controller"); // adjust pat
 const router = express_1.default.Router();
 /**
  * @swagger
- * /sms/whatsapp:
+ * /sms/Whatsapp/{id}:
  *   post:
- *     summary: Send WhatsApp message to employee with user service info
+ *     summary: Send WhatsApp message to employee
  *     tags:
  *       - SMS
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The address_users_detail ID
  *     requestBody:
  *       required: true
  *       content:
@@ -20,20 +27,15 @@ const router = express_1.default.Router();
  *           schema:
  *             type: object
  *             required:
- *               - from
  *               - to
  *             properties:
- *               from:
- *                 type: string
- *                 description: User's phone number (customer)
- *                 example: "+8562098765432"
  *               to:
  *                 type: string
- *                 description: Employee's phone number (recipient)
+ *                 description: Employee phone number
  *                 example: "+8562056570603"
  *     responses:
  *       200:
- *         description: WhatsApp message sent successfully
+ *         description: Message sent successfully
  *         content:
  *           application/json:
  *             schema:
@@ -41,37 +43,14 @@ const router = express_1.default.Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: WhatsApp message sent successfully
+ *                 sid:
+ *                   type: string
  *       400:
- *         description: Invalid or missing phone number
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Invalid or missing employee phone number
+ *         description: Bad request
  *       404:
- *         description: No service details found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: No service details found
+ *         description: Not found
  *       500:
- *         description: Failed to send WhatsApp message
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Failed to send WhatsApp message
+ *         description: Server error
  */
-router.post('/Whatsapp', sms_controller_1.sendSmsToEmployee);
+router.post('/Whatsapp/:id', sms_controller_1.sendSmsToEmployee);
 exports.default = router;

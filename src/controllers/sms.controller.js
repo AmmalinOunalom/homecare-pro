@@ -14,28 +14,23 @@ const sms_utils_1 = require("../middleware/sms.utils");
 const employees_model_1 = require("../model/employees.model");
 const address_users_details_model_1 = require("../model/address_users_details.model");
 const sendSmsToEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { from: userPhone, to: employeePhone } = req.body;
-    if (!employeePhone || typeof employeePhone !== 'string') {
-        res.status(400).json({ error: 'Invalid or missing employee phone number (to)' });
+    let { to: employeePhone } = req.body;
+    const address_id = req.params.id;
+    const parsedAddressId = Number(address_id);
+    if (!address_id || isNaN(parsedAddressId) || parsedAddressId <= 0) {
+        res.status(400).json({ error: 'Invalid or missing address_id' });
         return;
     }
-    if (!userPhone || typeof userPhone !== 'string') {
-        res.status(400).json({ error: 'Invalid or missing user phone number (from)' });
+    if (!employeePhone || typeof employeePhone !== 'string') {
+        res.status(400).json({ error: 'Invalid or missing employee phone number (to)' });
         return;
     }
     if (!employeePhone.startsWith('+856')) {
         employeePhone = '+856' + employeePhone;
     }
-    if (!userPhone.startsWith('+856')) {
-        userPhone = '+856' + userPhone;
-    }
     const phoneRegex = /^\+85620\d{7,8}$/;
     if (!phoneRegex.test(employeePhone)) {
         res.status(400).json({ error: 'Invalid employee phone number format' });
-        return;
-    }
-    if (!phoneRegex.test(userPhone)) {
-        res.status(400).json({ error: 'Invalid user phone number format' });
         return;
     }
     try {
@@ -44,16 +39,14 @@ const sendSmsToEmployee = (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(404).json({ error: 'Employee phone number not found' });
             return;
         }
-        // <-- Replace this line -->
-        // const serviceDetails = await user_model.get_user_by_phone(userPhone);
-        const serviceDetails = yield address_users_details_model_1.address_users_details_model.get_address_users_by_phone(userPhone);
+        const serviceDetails = yield address_users_details_model_1.address_users_details_model.get_address_users_by_id(parsedAddressId);
         if (!serviceDetails) {
-            res.status(404).json({ error: 'No address details found for this user phone' });
+            res.status(404).json({ error: 'No address details found for this address_id' });
             return;
         }
-        const { locationName, villageName, details, mapLink } = serviceDetails;
+        const { contact, locationName, villageName, details, mapLink } = serviceDetails;
         const message = `ສະບາຍດີ, ນີ້ແມ່ນການເອີ້ນໃຊ້ບໍລິການຈາກ Homecare ໂດຍມີຂໍ້ມູນດັ່ງນີ້:
-ເບີໂທຜູ້ໃຊ້ບໍລິການ: ${userPhone}
+ເບີໂທຜູ້ໃຊ້ບໍລິການ: ${contact}
 ຊື່ສະຖານທີ່: ${locationName}
 ບ້ານ: ${villageName}
 ລາຍລະອຽດ: ${details}
