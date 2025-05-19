@@ -22,13 +22,57 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 /**
  * Create a new employee
  */
+// export const create_employees = async (req: Request, res: Response) => {
+//   try {
+//     const employeeData = req.body;
+//     // Hash the password
+//     const saltRounds = 10;
+//     employeeData.password = await bcrypt.hash(employeeData.password, saltRounds);
+//     // Upload avatar first if available
+//     if (req.file && req.file.path) {
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "avatars",
+//       });
+//       if (!result.secure_url) {
+//         throw new Error("Cloudinary upload failed");
+//       }
+//       // Add avatar URL to employee data
+//       employeeData.avatar = result.secure_url;
+//       // Delete local file
+//       if (fs.existsSync(req.file.path)) {
+//         fs.unlinkSync(req.file.path);
+//       }
+//     }
+//     // Insert employee with avatar URL (if uploaded)
+//     const employee = await employees_model.create_employees(employeeData);
+//     res.status(201).json({
+//       message: "Employee created successfully",
+//       employee_id: employee.insertId,
+//       avatar: employeeData.avatar || null,
+//     });
+//   } catch (error) {
+//     console.error("Error creating employee:", error);
+//     res.status(500).json({
+//       message: "Failed to create employee",
+//       error,
+//     });
+//   }
+// };
 const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const employeeData = req.body;
+        // Validate phone number format
+        const telPattern = /^\+85620\d{8}$/;
+        if (!telPattern.test(employeeData.tel)) {
+            res.status(400).json({
+                message: "Invalid phone number format. Expected format: +85620xxxxxxxx",
+            });
+            return;
+        }
         // Hash the password
         const saltRounds = 10;
         employeeData.password = yield bcrypt_1.default.hash(employeeData.password, saltRounds);
-        // Upload avatar first if available
+        // Upload avatar if available
         if (req.file && req.file.path) {
             const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
                 folder: "avatars",
@@ -36,14 +80,11 @@ const create_employees = (req, res) => __awaiter(void 0, void 0, void 0, functio
             if (!result.secure_url) {
                 throw new Error("Cloudinary upload failed");
             }
-            // Add avatar URL to employee data
             employeeData.avatar = result.secure_url;
-            // Delete local file
             if (fs_1.default.existsSync(req.file.path)) {
                 fs_1.default.unlinkSync(req.file.path);
             }
         }
-        // Insert employee with avatar URL (if uploaded)
         const employee = yield employees_model_1.employees_model.create_employees(employeeData);
         res.status(201).json({
             message: "Employee created successfully",

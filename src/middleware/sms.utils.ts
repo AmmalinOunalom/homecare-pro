@@ -1,20 +1,84 @@
-import twilio from 'twilio';
-import dotenv from 'dotenv';
+// // import twilio from 'twilio';
+// // import dotenv from 'dotenv';
 
-dotenv.config(); // Load environment variables
+import { client } from "../config/twilio.config";
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+// // dotenv.config(); // Load environment variables
 
-export const sendSMS = async (to: string, message: string) => {
+// // const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// // export const sendSMS = async (to: string, message: string) => {
+// //   try {
+// //     const sentMessage = await client.messages.create({
+// //       body: message,
+// //       from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+// //       to: to, // Recipient's phone number
+// //     });
+
+// //     console.log('Message sent successfully:', sentMessage.sid);
+// //   } catch (error) {
+// //     console.error('Error sending SMS:', error);
+// //   }
+// // };
+
+
+// import twilio from 'twilio';
+// import dotenv from 'dotenv';
+
+// dotenv.config();
+
+// if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+//   throw new Error('Twilio environment variables are not set properly.');
+// }
+
+// const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// export const sendSMS = async (to: string, message: string): Promise<void> => {
+//   if (!to || !message) {
+//     throw new Error('Phone number and message are required.');
+//   }
+
+//   try {
+//     const sentMessage = await client.messages.create({
+//       body: message,
+//       from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+//       to: 'whatsapp:' + to,
+//     });
+
+//     console.log('WhatsApp message sent successfully:', sentMessage.sid);
+//   } catch (error: unknown) {
+//     if (error instanceof Error) {
+//       console.error('Error sending WhatsApp message:', error.message);
+//       throw error;
+//     } else {
+//       console.error('Unknown error sending WhatsApp message:', error);
+//       throw new Error('Unknown error occurred while sending WhatsApp message.');
+//     }
+//   }
+// };
+
+
+export const sendSMS = async (to: string, message: string): Promise<string> => {
+  if (!to || !message) {
+    throw new Error('Phone number and message are required.');
+  }
+
   try {
     const sentMessage = await client.messages.create({
       body: message,
-      from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
-      to: to, // Recipient's phone number
+      from: 'whatsapp:' + process.env.TWILIO_PHONE_NUMBER,
+      to: 'whatsapp:' + to,
     });
 
-    console.log('Message sent successfully:', sentMessage.sid);
-  } catch (error) {
-    console.error('Error sending SMS:', error);
+    console.log('WhatsApp message sent successfully:', sentMessage.sid);
+    return sentMessage.sid;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error sending WhatsApp message:', error.message);
+      throw error;
+    } else {
+      console.error('Unknown error sending WhatsApp message:', error);
+      throw new Error('Unknown error occurred while sending WhatsApp message.');
+    }
   }
 };

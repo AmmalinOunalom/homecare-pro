@@ -243,7 +243,7 @@ router.post('/refresh-token', refresh_token);
  *               newLastname:
  *                 type: string
  *                 example: Doe
- *               file:
+ *               Avatar:
  *                 type: string
  *                 format: binary
  *                 description: Avatar image file

@@ -1,7 +1,7 @@
 import twilio from 'twilio';
 
 // Twilio credentials from your environment variables
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+export const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 export const sendSMS = async (to: string, body: string) => {
   try {

@@ -241,7 +241,7 @@ router.post('/refresh-token', user_controller_1.refresh_token);
  *               newLastname:
  *                 type: string
  *                 example: Doe
- *               file:
+ *               Avatar:
  *                 type: string
  *                 format: binary
  *                 description: Avatar image file

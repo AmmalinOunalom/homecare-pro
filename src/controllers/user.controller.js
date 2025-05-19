@@ -168,25 +168,6 @@ const get_user_profile = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.get_user_profile = get_user_profile;
-// export const rename_user = async (req: Request, res: Response) => {
-//   try {
-//     // Extract the user ID from the URL parameters and the new user details from the body
-//     const { id } = req.params; // ID from the URL path
-//     const { newUsername, newFirstname, newLastname, newAvatar } = req.body;
-//     // Call the model function with the necessary arguments
-//     const result = await user_model.rename_users(Number(id), newUsername, newFirstname, newLastname, newAvatar);
-//     // Check if result is returned
-//     if (result) {
-//       res.status(200).send("User updated successfully");
-//     } else {
-//       res.status(404).send("User not found or no changes made");
-//     }
-//   } catch (error) {
-//     // Log and send internal server error
-//     console.error("Error updating user:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
 const rename_user = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;

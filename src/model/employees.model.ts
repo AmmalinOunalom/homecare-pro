@@ -306,6 +306,24 @@ WHERE e.id =?`;
     }
   }
 
+  static async get_employee_by_phone(employeePhone: string): Promise<any | null> {
+  try {
+    const query = 'SELECT * FROM employees WHERE tel = ?';
+    const [rows]: any[] = await db.execute(query, [employeePhone]);
+
+    if (rows.length === 0) {
+      console.log('Employee not found with phone:', employeePhone);
+      return null;
+    }
+
+    return rows[0]; // Return employee record (or just return true if exists)
+  } catch (error) {
+    console.error('Error fetching employee by phone:', error);
+    return null;
+  }
+}
+
+
   // Soft delete employee (set status to Inactive)
   static async delete_employees(id: number) {
     try {

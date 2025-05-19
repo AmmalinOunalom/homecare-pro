@@ -102,7 +102,7 @@ router.get("/read_emp_car_employees/5", show_more_employee_by_id);
  * /employees/create_employees:
  *   post:
  *     summary: Create a new employee
- *     description: Registers a new employee and uploads avatar image to Cloudinary.
+ *     description: Registers a new employee and uploads an avatar image to Cloudinary.
  *     tags:
  *       - Employees
  *     requestBody:
@@ -135,14 +135,14 @@ router.get("/read_emp_car_employees/5", show_more_employee_by_id);
  *                 example: johndoe@example.com
  *               tel:
  *                 type: string
- *                 example: "1234567890"
+ *                 example: "+8562012345678"
  *               password:
  *                 type: string
  *                 format: password
  *                 example: "securePass123"
  *               address:
  *                 type: string
- *                 example: "123 Main St, City, Country"
+ *                 example: "123 Main St, City, Laos"
  *               gender:
  *                 type: string
  *                 enum: [male, female, other]
@@ -168,13 +168,12 @@ router.get("/read_emp_car_employees/5", show_more_employee_by_id);
  *               status:
  *                 type: string
  *                 enum: [active, inactive]
- *                 description: The status of the employee.
  *                 example: active
  *     responses:
  *       201:
  *         description: Employee created successfully.
  *       400:
- *         description: Bad request, missing required fields.
+ *         description: Bad request, such as invalid phone number.
  *       500:
  *         description: Internal server error.
  */

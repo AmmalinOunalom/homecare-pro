@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSMS = void 0;
+exports.sendSMS = exports.client = void 0;
 const twilio_1 = __importDefault(require("twilio"));
 // Twilio credentials from your environment variables
-const client = (0, twilio_1.default)(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+exports.client = (0, twilio_1.default)(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const sendSMS = (to, body) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const message = yield client.messages.create({
+        const message = yield exports.client.messages.create({
             body,
             from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
             to,

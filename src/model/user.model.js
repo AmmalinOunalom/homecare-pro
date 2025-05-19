@@ -199,5 +199,23 @@ class user_model {
             }
         });
     }
+    static get_user_by_phone(employeePhone) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = `
+SELECT 
+  u.tel,
+  a.address_name AS locationName,
+  a.village AS villageName,
+  a.address_description AS details,
+  a.google_link_map AS mapLink
+  FROM users u
+  LEFT JOIN address_users_detail a ON u.address_users_detail_id = a.id
+  WHERE u.TEL = ?
+  LIMIT 1
+    `;
+            const [rows] = yield base_database_1.default.execute(query, [employeePhone]);
+            return rows.length > 0 ? rows[0] : null;
+        });
+    }
 }
 exports.user_model = user_model;

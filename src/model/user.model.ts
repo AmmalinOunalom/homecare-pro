@@ -67,8 +67,8 @@ export class user_model {
         user.gender,
         user.status,
         user.avatar, // should be URL or filename
-          user.created_at ?? now,
-          user.updated_at ?? now,
+        user.created_at ?? now,
+        user.updated_at ?? now,
       ];
 
       const [result] = await db.execute(query, values);
@@ -157,50 +157,50 @@ export class user_model {
 
 
   static async rename_users(
-  id: number,
-  updates: Partial<{ newUsername: string; newFirstname: string; newLastname: string; newAvatar: string }>
-) {
-  try {
-    const fields: string[] = [];
-    const values: any[] = [];
+    id: number,
+    updates: Partial<{ newUsername: string; newFirstname: string; newLastname: string; newAvatar: string }>
+  ) {
+    try {
+      const fields: string[] = [];
+      const values: any[] = [];
 
-    if (updates.newUsername) {
-      fields.push("username = ?");
-      values.push(updates.newUsername);
+      if (updates.newUsername) {
+        fields.push("username = ?");
+        values.push(updates.newUsername);
+      }
+
+      if (updates.newFirstname) {
+        fields.push("first_name = ?");
+        values.push(updates.newFirstname);
+      }
+
+      if (updates.newLastname) {
+        fields.push("last_name = ?");
+        values.push(updates.newLastname);
+      }
+
+      if (updates.newAvatar) {
+        fields.push("avatar = ?");
+        values.push(updates.newAvatar);
+      }
+
+      if (fields.length === 0) {
+        return null; // Nothing to update
+      }
+
+      // Add updated_at timestamp update
+      fields.push("updated_at = NOW()");
+
+      const updateQuery = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
+      values.push(id);
+
+      const [result]: any[] = await db.execute(updateQuery, values);
+      return result.affectedRows > 0 ? result : null;
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw new Error("Update failed");
     }
-
-    if (updates.newFirstname) {
-      fields.push("first_name = ?");
-      values.push(updates.newFirstname);
-    }
-
-    if (updates.newLastname) {
-      fields.push("last_name = ?");
-      values.push(updates.newLastname);
-    }
-
-    if (updates.newAvatar) {
-      fields.push("avatar = ?");
-      values.push(updates.newAvatar);
-    }
-
-    if (fields.length === 0) {
-      return null; // Nothing to update
-    }
-
-    // Add updated_at timestamp update
-    fields.push("updated_at = NOW()");
-
-    const updateQuery = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
-    values.push(id);
-
-    const [result]: any[] = await db.execute(updateQuery, values);
-    return result.affectedRows > 0 ? result : null;
-  } catch (error) {
-    console.error("Error updating user:", error);
-    throw new Error("Update failed");
   }
-}
 
   static async forgot_password_users(email: string, newPassword: string) {
     try {
@@ -214,5 +214,23 @@ export class user_model {
       console.error("Error updating password:", error);
       throw new Error("Update failed");
     }
+  }
+
+  static async get_user_by_phone(employeePhone: string) {
+    const query = `
+SELECT 
+  u.tel,
+  a.address_name AS locationName,
+  a.village AS villageName,
+  a.address_description AS details,
+  a.google_link_map AS mapLink
+  FROM users u
+  LEFT JOIN address_users_detail a ON u.address_users_detail_id = a.id
+  WHERE u.TEL = ?
+  LIMIT 1
+    `;
+
+    const [rows]: any = await db.execute(query, [employeePhone]);
+    return rows.length > 0 ? rows[0] : null;
   }
 }
