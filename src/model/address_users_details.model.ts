@@ -66,22 +66,22 @@ export class address_users_details_model {
         }
     }
 
-static async show_address_users_by_id(userId: number): Promise<any[] | null> {
-  try {
-    const query = 'SELECT * FROM address_users_detail WHERE users_id = ?';
-    const [rows]: any[] = await db.execute(query, [userId]);
+    static async show_address_users_by_id(userId: number): Promise<any[] | null> {
+        try {
+            const query = 'SELECT * FROM address_users_detail WHERE users_id = ?';
+            const [rows]: any[] = await db.execute(query, [userId]);
 
-    if (rows.length === 0) {
-      console.log('No address found for user ID:', userId);
-      return null;
+            if (rows.length === 0) {
+                console.log('No address found for user ID:', userId);
+                return null;
+            }
+
+            return rows; // Return all matching address records
+        } catch (error) {
+            console.error('Error fetching address details:', error);
+            return null;
+        }
     }
-
-    return rows; // Return all matching address records
-  } catch (error) {
-    console.error('Error fetching address details:', error);
-    return null;
-  }
-}
     //UPLOAD HOUSE IMAGE
 
     static async update_house_image(addressId: number, cloudinaryUrl: string) {
@@ -147,27 +147,44 @@ static async show_address_users_by_id(userId: number): Promise<any[] | null> {
             throw new Error("Failed to fetch address_users_details");
         }
     }
-    
+
 
     //Show Address Users Details by ID
 
     static async get_address_by_user_id(userId: number): Promise<any | null> {
         try {
-          const query = `
+            const query = `
             SELECT address_name, village, address_description, google_link_map
             FROM address_users_detail
             WHERE users_id = ?
             ORDER BY id DESC
             LIMIT 1
           `;
-          const [rows]: any[] = await db.execute(query, [userId]);
-          return  rows[0];
+            const [rows]: any[] = await db.execute(query, [userId]);
+            return rows[0];
         } catch (error) {
-          console.error("Error fetching address by user ID:", error);
-          return null;
+            console.error("Error fetching address by user ID:", error);
+            return null;
         }
-      }
+    }
 
+static async get_address_users_by_phone(tel: string) {
+  const query = `
+    SELECT 
+      id AS address_users_detail_id,
+      address_name AS locationName,
+      village AS villageName,
+      address_description AS details,
+      google_link_map AS mapLink
+    FROM address_users_detail
+    WHERE tel = ?
+    ORDER BY id DESC
+    LIMIT 1;
+  `;
+
+  const [rows]: any[] = await db.execute(query, [tel]);
+  return rows.length > 0 ? rows[0] : null;
+}
     // Update Address User Details
     static async update_address_user_details(
         id: number,

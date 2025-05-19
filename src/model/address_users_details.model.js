@@ -156,6 +156,24 @@ class address_users_details_model {
             }
         });
     }
+    static get_address_users_by_phone(tel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = `
+    SELECT 
+      id AS address_users_detail_id,
+      address_name AS locationName,
+      village AS villageName,
+      address_description AS details,
+      google_link_map AS mapLink
+    FROM address_users_detail
+    WHERE tel = ?
+    ORDER BY id DESC
+    LIMIT 1;
+  `;
+            const [rows] = yield base_database_1.default.execute(query, [tel]);
+            return rows.length > 0 ? rows[0] : null;
+        });
+    }
     // Update Address User Details
     static update_address_user_details(id, addressUser) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -1,8 +1,4 @@
 "use strict";
-// import { Request, Response } from 'express';
-// import { sendSMS } from '../middleware/sms.utils';
-// import { user_model } from '../model/user.model';
-// import { employees_model } from '../model/employees.model';  // import employee model
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,8 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendSmsToEmployee = void 0;
 const sms_utils_1 = require("../middleware/sms.utils");
-const user_model_1 = require("../model/user.model");
 const employees_model_1 = require("../model/employees.model");
+const address_users_details_model_1 = require("../model/address_users_details.model");
 const sendSmsToEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { from: userPhone, to: employeePhone } = req.body;
     if (!employeePhone || typeof employeePhone !== 'string') {
@@ -27,7 +23,6 @@ const sendSmsToEmployee = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(400).json({ error: 'Invalid or missing user phone number (from)' });
         return;
     }
-    // Normalize phone numbers to start with +856 if not already
     if (!employeePhone.startsWith('+856')) {
         employeePhone = '+856' + employeePhone;
     }
@@ -44,16 +39,16 @@ const sendSmsToEmployee = (req, res) => __awaiter(void 0, void 0, void 0, functi
         return;
     }
     try {
-        // Verify employee phone exists in employee table using phone number
         const employee = yield employees_model_1.employees_model.get_employee_by_phone(employeePhone);
         if (!employee) {
             res.status(404).json({ error: 'Employee phone number not found' });
             return;
         }
-        // Fetch user service details by user phone
-        const serviceDetails = yield user_model_1.user_model.get_user_by_phone(userPhone);
+        // <-- Replace this line -->
+        // const serviceDetails = await user_model.get_user_by_phone(userPhone);
+        const serviceDetails = yield address_users_details_model_1.address_users_details_model.get_address_users_by_phone(userPhone);
         if (!serviceDetails) {
-            res.status(404).json({ error: 'No service details found for this user phone' });
+            res.status(404).json({ error: 'No address details found for this user phone' });
             return;
         }
         const { locationName, villageName, details, mapLink } = serviceDetails;
@@ -63,7 +58,6 @@ const sendSmsToEmployee = (req, res) => __awaiter(void 0, void 0, void 0, functi
 ບ້ານ: ${villageName}
 ລາຍລະອຽດ: ${details}
 ແຜນທີ່: ${mapLink}`;
-        // Send WhatsApp message using Twilio
         const sid = yield (0, sms_utils_1.sendSMS)(employeePhone, message);
         res.status(200).json({
             message: 'WhatsApp message sent successfully',
