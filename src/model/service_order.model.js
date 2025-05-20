@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.service_order_model = void 0;
+exports.service_order_model = exports.PaymentStatus = exports.ServiceStatus = void 0;
 const base_database_1 = __importDefault(require("../config/base.database"));
 var ServiceStatus;
 (function (ServiceStatus) {
@@ -20,22 +20,22 @@ var ServiceStatus;
     ServiceStatus["Arrived"] = "Arrived";
     ServiceStatus["InProgress"] = "In Progress";
     ServiceStatus["Finished"] = "Finished";
-})(ServiceStatus || (ServiceStatus = {}));
+})(ServiceStatus || (exports.ServiceStatus = ServiceStatus = {}));
 var PaymentStatus;
 (function (PaymentStatus) {
     PaymentStatus["NotPaid"] = "Not paid";
     PaymentStatus["Paid"] = "Paid";
-})(PaymentStatus || (PaymentStatus = {}));
+})(PaymentStatus || (exports.PaymentStatus = PaymentStatus = {}));
 class service_order_model {
     // Create a new service order
     static create_service_order(order) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const query = `
-                INSERT INTO service_order 
-                (user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `;
+      INSERT INTO service_order 
+      (user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
                 const values = [
                     order.user_id,
                     order.employees_id,
@@ -45,6 +45,7 @@ class service_order_model {
                     order.service_status,
                     order.payment_status
                 ];
+                console.log("Values to insert in create_service_order:", values);
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result;
             }

@@ -7,6 +7,51 @@ const express_1 = __importDefault(require("express"));
 const service_order_controller_1 = require("../controllers/service_order.controller");
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const router = express_1.default.Router();
+/**
+ * @swagger
+ * /service_order/whatsapp/{id}:
+ *   post:
+ *     summary: Send WhatsApp message to an employee and create a service order
+ *     tags:
+ *       - Service Orders
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user's address (address_users_details_id)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - employee_phone
+ *               - service_status
+ *               - payment_status
+ *             properties:
+ *               employee_phone:
+ *                 type: string
+ *                 example: "+8562058992395"
+ *               service_status:
+ *                 type: string
+ *                 example: "Not Start"
+ *               payment_status:
+ *                 type: string
+ *                 example: "paid"
+ *     responses:
+ *       201:
+ *         description: Service order created and WhatsApp message sent successfully
+ *       400:
+ *         description: Bad request – Missing or invalid input
+ *       404:
+ *         description: Not found – Employee or address data not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/whatsapp/:id', service_order_controller_1.send_sms_to_employee);
 // NOTE - Create Service Order
 /**
  * @swagger
@@ -33,32 +78,25 @@ const router = express_1.default.Router();
  *             properties:
  *               user_id:
  *                 type: integer
- *                 description: ID of the user placing the order.
  *                 example: 5
  *               employees_id:
  *                 type: integer
- *                 description: ID of the employee assigned to the service.
  *                 example: 10
  *               cat_id:
  *                 type: integer
- *                 description: Category ID of the service.
  *                 example: 3
  *               address_users_detail_id:
  *                 type: integer
- *                 description: ID referencing user's address detail.
  *                 example: 7
  *               amount:
  *                 type: integer
- *                 description: Cost of the service.
  *                 example: 150
  *               payment_status:
  *                 type: string
- *                 description: Status of the payment.
- *                 enum: [not paid, paid]
- *                 example: "not paid"
+ *                 enum: [Not paid, Paid]
+ *                 example: "Not paid"
  *               service_status:
  *                 type: string
- *                 description: Current status of the service.
  *                 enum: [Not Start, Arrived, In Progress]
  *                 example: "Not Start"
  *     responses:

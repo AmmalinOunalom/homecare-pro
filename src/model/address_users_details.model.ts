@@ -168,21 +168,22 @@ export class address_users_details_model {
         }
     }
 
-static async get_address_users_by_id(id: number) {
-  const query = `
-    SELECT 
-      id AS address_users_detail_id,
-      tel AS contact,
-      address_name AS locationName,
-      village AS villageName,
-      address_description AS details,
-      google_link_map AS mapLink
-    FROM address_users_detail
-    WHERE id = ?;
+    static async get_address_users_by_id(id: number) {
+        const query = `
+        SELECT 
+        id AS address_users_detail_id,
+        users_id AS user_id, 
+        tel AS contact,
+        address_name AS locationName,
+        village AS villageName,
+        address_description AS details,
+        google_link_map AS mapLink
+        FROM address_users_detail
+        WHERE id = ?;
   `;
-  const [rows]: any[] = await db.execute(query, [id]);
-  return rows.length > 0 ? rows[0] : null;
-}
+        const [rows]: any[] = await db.execute(query, [id]);
+        return rows.length > 0 ? rows[0] : null;
+    }
 
 
     // Update Address User Details

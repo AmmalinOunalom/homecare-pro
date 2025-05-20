@@ -44,6 +44,25 @@ class categories_model {
             }
         });
     }
+    static get_category_by_employee_id(employeeId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `
+                SELECT cat_id, price, cat_name
+            FROM categories sc
+            JOIN employees e ON e.cat_id = sc.id
+            WHERE e.id = ?
+            `;
+                const [rows] = yield base_database_1.default.execute(query, [employeeId]);
+                const categories = rows;
+                return categories.length > 0 ? categories[0] : null;
+            }
+            catch (error) {
+                console.error("Error fetching category by employee id:", error);
+                throw new Error("Failed to fetch category by employee id");
+            }
+        });
+    }
     // Update Category
     static update_category(id, category) {
         return __awaiter(this, void 0, void 0, function* () {

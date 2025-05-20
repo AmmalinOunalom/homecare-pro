@@ -297,13 +297,13 @@ WHERE e.id =?`;
     static get_employee_by_phone(employeePhone) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'SELECT * FROM employees WHERE tel = ?';
+                const query = 'SELECT id, cat_id, price, tel FROM employees WHERE tel = ?';
                 const [rows] = yield base_database_1.default.execute(query, [employeePhone]);
                 if (rows.length === 0) {
                     console.log('Employee not found with phone:', employeePhone);
                     return null;
                 }
-                return rows[0]; // Return employee record (or just return true if exists)
+                return rows[0];
             }
             catch (error) {
                 console.error('Error fetching employee by phone:', error);

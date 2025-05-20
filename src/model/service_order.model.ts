@@ -1,13 +1,13 @@
 import db from "../config/base.database";
 
-enum ServiceStatus {
+export enum ServiceStatus {
     NotStart = "Not Start",
     Arrived = "Arrived",
     InProgress = "In Progress",
     Finished = "Finished"
 }
 
-enum PaymentStatus {
+export enum PaymentStatus {
     NotPaid = "Not paid",
     Paid = "Paid"
 }
@@ -29,30 +29,32 @@ export interface ServiceOrder {
 export class service_order_model {
     // Create a new service order
     static async create_service_order(order: Omit<ServiceOrder, "id" | "created_at" | "updated_at">) {
-        try {
-            const query = `
-                INSERT INTO service_order 
-                (user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `;
+  try {
+    const query = `
+      INSERT INTO service_order 
+      (user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
 
-            const values = [
-                order.user_id,
-                order.employees_id,
-                order.cat_id,
-                order.address_users_detail_id,
-                order.amount,
-                order.service_status,
-                order.payment_status
-            ];
+    const values = [
+      order.user_id,
+      order.employees_id,
+      order.cat_id,
+      order.address_users_detail_id,
+      order.amount,
+      order.service_status,
+      order.payment_status
+    ];
 
-            const [result] = await db.execute(query, values);
-            return result;
-        } catch (error) {
-            console.error("Error creating service order:", error);
-            throw new Error("Failed to create service order");
-        }
-    }
+    console.log("Values to insert in create_service_order:", values);
+
+    const [result] = await db.execute(query, values);
+    return result;
+  } catch (error) {
+    console.error("Error creating service order:", error);
+    throw new Error("Failed to create service order");
+  }
+}
 
     // Show all service orders
     static async show_all_service_orders() {

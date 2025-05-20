@@ -1,81 +1,148 @@
 import { Request, Response } from "express";
-import { service_order_model } from "../model/service_order.model";
+import { service_order_model, ServiceOrder, PaymentStatus, ServiceStatus  } from "../model/service_order.model";
 import { employees_model } from "../model/employees.model";
 import { user_model } from "../model/user.model";
-import { address_users_details_model } from "../model/address_users_details.model"
+import { sendSMS } from '../middleware/sms.utils';
+import { address_users_details_model } from "../model/address_users_details.model";
 import twilio from "twilio";
+import { categories_model } from "../model/categories.model";
 
-const twilio_account = process.env.TWILIO_ACCOUNT_SID
-const twilio_auth = process.env.TWILIO_AUTH_TOKEN
-const twilio_phone = process.env.TWILIO_PHONE_NUMBER
+
+const twilio_account = process.env.TWILIO_ACCOUNT_SID!;
+const twilio_auth = process.env.TWILIO_AUTH_TOKEN!;
+const twilio_phone = process.env.TWILIO_PHONE_NUMBER!;
 
 const client = twilio(twilio_account, twilio_auth);
+
 
 /**
  * Create a new service order
  */
 export const create_service_order = async (req: Request, res: Response): Promise<void> => {
   try {
-    const orderData = req.body;
+    const {
+      user_id,
+      employees_id,
+      cat_id,
+      address_users_detail_id,
+      amount,
+      service_status,
+      payment_status
+    } = req.body;
 
-    await service_order_model.create_service_order(orderData);
-
-    const emp_number = await employees_model.get_employee_phone_number(orderData.employees_id);
-    if (!emp_number) {
-      res.status(404).send("Employee phone number not found");
+    // Basic validation
+    if (
+      user_id === undefined ||
+      employees_id === undefined ||
+      cat_id === undefined ||
+      address_users_detail_id === undefined ||
+      amount === undefined ||
+      !service_status ||
+      !payment_status
+    ) {
+      res.status(400).json({ message: "Missing required fields" });
       return;
     }
 
-    const user_info = await user_model.get_user_by_id(orderData.user_id);
-    if (!user_info) {
-      res.status(404).send("User not found");
-      return;
-    }
+    const order: Omit<ServiceOrder, "id" | "created_at" | "updated_at"> = {
+      user_id,
+      employees_id,
+      cat_id,
+      address_users_detail_id,
+      amount,
+      service_status,
+      payment_status
+    };
 
-    const user_number = user_info.tel;
-    if (!user_number) {
-      res.status(404).send("User phone number not found");
-      return;
-    }
-
-    // ✅ Get full address info
-    const address = await address_users_details_model.get_address_by_user_id(orderData.user_id);
-    if (!address) {
-      res.status(404).send("Address not found");
-      return;
-    }
-
-    const { address_description, village, address_name, google_link_map } = address;
-
-    const formattedNumber = emp_number.startsWith("+")
-      ? emp_number
-      : "+856" + emp_number.slice(1);
-
-    try {
-      await client.messages.create({
-        body:
-          `ສະບາຍດີ, ນີ້ແມ່ນການເອີ້ນໃຊ້ບໍລິການຈາກ Homecare ໂດຍມີຂໍ້ມູນດັ່ງນີ້:\n` +
-          ` ເບີໂທຜູ້ໃຊ້ບໍລິການ: ${user_number}\n` +
-          `ຊື່ສະຖານທີ່: ${address_name}\n` +
-          `ບ້ານ: ${village}\n` +
-          `ລາຍລະອຽດ: ${address_description}\n` +
-          `ແຜນທີ່: ${google_link_map}`,
-        from: 'whatsapp:' + twilio_phone,
-        to: 'whatsapp:' + formattedNumber,
-      });
-
-      res.status(201).send("Service order and SMS sent successfully");
-    } catch (smsError) {
-      console.error("Error sending SMS:", smsError);
-      res.status(500).send("Service order created, but failed to send SMS");
-    }
+    const result = await service_order_model.create_service_order(order);
+    res.status(201).json({ message: "Service order created successfully", result });
   } catch (error) {
-    console.error("Service order creation error:", error);
-    res.status(500).send("Failed to create service order");
+    console.error("Error creating service order:", error);
+    res.status(500).json({ message: "Failed to create service order" });
   }
 };
 
-/**
+
+export const send_sms_to_employee = async (req: Request, res: Response): Promise<void> => {
+  let { to: employeePhone } = req.body;
+  const address_id = req.params.id;
+
+  const parsedAddressId = Number(address_id);
+  if (!address_id || isNaN(parsedAddressId) || parsedAddressId <= 0) {
+    res.status(400).json({ error: 'Invalid or missing address_id' });
+    return;
+  }
+
+  if (!employeePhone || typeof employeePhone !== 'string') {
+    res.status(400).json({ error: 'Invalid or missing employee phone number (to)' });
+    return;
+  }
+
+  if (!employeePhone.startsWith('+856')) {
+    employeePhone = '+856' + employeePhone;
+  }
+
+  const phoneRegex = /^\+85620\d{7,8}$/;
+  if (!phoneRegex.test(employeePhone)) {
+    res.status(400).json({ error: 'Invalid employee phone number format' });
+    return;
+  }
+
+  try {
+    const employee = await employees_model.get_employee_by_phone(employeePhone);
+    if (!employee) {
+      res.status(404).json({ error: 'Employee phone number not found' });
+      return;
+    }
+
+    const serviceDetails = await address_users_details_model.get_address_users_by_id(parsedAddressId);
+    if (!serviceDetails) {
+      res.status(404).json({ error: 'No address details found for this address_id' });
+      return;
+    }
+
+    const { contact, locationName, villageName, details, mapLink, user_id } = serviceDetails;
+
+    const message = `ສະບາຍດີ, ນີ້ແມ່ນການເອີ້ນໃຊ້ບໍລິການຈາກ Homecare ໂດຍມີຂໍ້ມູນດັ່ງນີ້:
+ເບີໂທຜູ້ໃຊ້ບໍລິການ: ${contact}
+ຊື່ສະຖານທີ່: ${locationName}
+ບ້ານ: ${villageName}
+ລາຍລະອຽດ: ${details}
+ແຜນທີ່: ${mapLink}`;
+
+    // Send WhatsApp message
+    const sid = await sendSMS(employeePhone, message);
+
+    // Use employee's category and price for order
+    const cat_id = employee.cat_id ?? null;
+    const amount = employee.price ?? 0;
+
+    const orderData = {
+      user_id,
+      employees_id: employee.id,
+      cat_id,
+      address_users_detail_id: parsedAddressId,
+      amount,
+      service_status: ServiceStatus.NotStart,
+      payment_status: PaymentStatus.Paid,
+    };
+
+    const createdOrder = await service_order_model.create_service_order(orderData);
+
+    res.status(200).json({
+      message: 'WhatsApp message sent and service order created successfully',
+      sid,
+      service_order: createdOrder,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      error: error.message || 'Failed to send WhatsApp message or create service order',
+    });
+  }
+};
+
+
+/** 
  * Retrieve all service orders
  */
 export const show_all_service_orders = async (req: Request, res: Response) => {

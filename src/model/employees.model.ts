@@ -306,9 +306,9 @@ WHERE e.id =?`;
     }
   }
 
-  static async get_employee_by_phone(employeePhone: string): Promise<any | null> {
+static async get_employee_by_phone(employeePhone: string): Promise<any | null> {
   try {
-    const query = 'SELECT * FROM employees WHERE tel = ?';
+    const query = 'SELECT id, cat_id, price, tel FROM employees WHERE tel = ?';
     const [rows]: any[] = await db.execute(query, [employeePhone]);
 
     if (rows.length === 0) {
@@ -316,7 +316,7 @@ WHERE e.id =?`;
       return null;
     }
 
-    return rows[0]; // Return employee record (or just return true if exists)
+    return rows[0];
   } catch (error) {
     console.error('Error fetching employee by phone:', error);
     return null;

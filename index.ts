@@ -11,7 +11,7 @@ import address_users_details_router from "./src/routes/address_users_details.rou
 import service_order_router from "./src/routes/service_order.route";
 import reports_router from "./src/routes/reports.route";
 import admins_router from "./src/routes/admin.route";
-import sms_router from "./src/routes/sms.route";
+// import sms_router from "./src/routes/sms.route";
 
 import { setupSwagger } from "./src/config/swagger"; // Swagger setup
 
@@ -40,7 +40,7 @@ app.use("/address_users_details", address_users_details_router);
 app.use("/service_order", service_order_router);
 app.use("/reports", reports_router);
 app.use("/admins", admins_router);
-app.use("/sms", sms_router);
+// app.use("/sms", sms_router);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

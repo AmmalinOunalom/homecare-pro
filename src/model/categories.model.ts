@@ -2,6 +2,7 @@ import db from "../config/base.database";
 
 // Categories Interface
 export interface Categories {
+    price: number;
     id: number;
     cat_name: string;
     status: string;
@@ -32,6 +33,23 @@ export class categories_model {
         } catch (error) {
             console.error("Error fetching categories:", error);
             throw new Error("Failed to fetch categories");
+        }
+    }
+
+    static async get_category_by_employee_id(employeeId: number): Promise<Categories | null> {
+        try {
+            const query = `
+                SELECT cat_id, price, cat_name
+            FROM categories sc
+            JOIN employees e ON e.cat_id = sc.id
+            WHERE e.id = ?
+            `;
+            const [rows] = await db.execute(query, [employeeId]);
+            const categories = rows as Categories[];
+            return categories.length > 0 ? categories[0] : null;
+        } catch (error) {
+            console.error("Error fetching category by employee id:", error);
+            throw new Error("Failed to fetch category by employee id");
         }
     }
 

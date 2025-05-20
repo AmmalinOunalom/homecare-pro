@@ -1,8 +1,55 @@
 import express from "express";
-import { create_service_order, show_all_service_orders, show_service_order_by_id, get_my_service_order, update_service_order, delete_service_order } from "../controllers/service_order.controller";
+import { create_service_order, show_all_service_orders, show_service_order_by_id, get_my_service_order, update_service_order, delete_service_order, send_sms_to_employee } from "../controllers/service_order.controller";
 import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * /service_order/whatsapp/{id}:
+ *   post:
+ *     summary: Send WhatsApp message to an employee and create a service order
+ *     tags:
+ *       - Service Orders
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user's address (address_users_details_id)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - employee_phone
+ *               - service_status
+ *               - payment_status
+ *             properties:
+ *               employee_phone:
+ *                 type: string
+ *                 example: "+8562058992395"
+ *               service_status:
+ *                 type: string
+ *                 example: "Not Start"
+ *               payment_status:
+ *                 type: string
+ *                 example: "paid"
+ *     responses:
+ *       201:
+ *         description: Service order created and WhatsApp message sent successfully
+ *       400:
+ *         description: Bad request – Missing or invalid input
+ *       404:
+ *         description: Not found – Employee or address data not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/whatsapp/:id', send_sms_to_employee);
+
 
 // NOTE - Create Service Order
 /**
@@ -30,32 +77,25 @@ const router = express.Router();
  *             properties:
  *               user_id:
  *                 type: integer
- *                 description: ID of the user placing the order.
  *                 example: 5
  *               employees_id:
  *                 type: integer
- *                 description: ID of the employee assigned to the service.
  *                 example: 10
  *               cat_id:
  *                 type: integer
- *                 description: Category ID of the service.
  *                 example: 3
  *               address_users_detail_id:
  *                 type: integer
- *                 description: ID referencing user's address detail.
  *                 example: 7
  *               amount:
  *                 type: integer
- *                 description: Cost of the service.
  *                 example: 150
  *               payment_status:
  *                 type: string
- *                 description: Status of the payment.
- *                 enum: [not paid, paid]
- *                 example: "not paid"
+ *                 enum: [Not paid, Paid]
+ *                 example: "Not paid"
  *               service_status:
  *                 type: string
- *                 description: Current status of the service.
  *                 enum: [Not Start, Arrived, In Progress]
  *                 example: "Not Start"
  *     responses:

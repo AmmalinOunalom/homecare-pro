@@ -159,15 +159,16 @@ class address_users_details_model {
     static get_address_users_by_id(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = `
-    SELECT 
-      id AS address_users_detail_id,
-      tel AS contact,
-      address_name AS locationName,
-      village AS villageName,
-      address_description AS details,
-      google_link_map AS mapLink
-    FROM address_users_detail
-    WHERE id = ?;
+        SELECT 
+        id AS address_users_detail_id,
+        users_id AS user_id, 
+        tel AS contact,
+        address_name AS locationName,
+        village AS villageName,
+        address_description AS details,
+        google_link_map AS mapLink
+        FROM address_users_detail
+        WHERE id = ?;
   `;
             const [rows] = yield base_database_1.default.execute(query, [id]);
             return rows.length > 0 ? rows[0] : null;
