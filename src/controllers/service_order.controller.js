@@ -136,11 +136,12 @@ const send_sms_to_employee = (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(404).json({ error: 'No address details found for this address_id' });
             return;
         }
-        const { contact, locationName, villageName, details, mapLink, user_id } = serviceDetails;
+        const { contact, locationName, villageName, details, city, mapLink, user_id } = serviceDetails;
         const message = `ສະບາຍດີ, ນີ້ແມ່ນການເອີ້ນໃຊ້ບໍລິການຈາກ Homecare ໂດຍມີຂໍ້ມູນດັ່ງນີ້:
 ເບີໂທຜູ້ໃຊ້ບໍລິການ: ${contact}
 ຊື່ສະຖານທີ່: ${locationName}
 ບ້ານ: ${villageName}
+ເມືອງ : ${city}
 ລາຍລະອຽດ: ${details}
 ແຜນທີ່: ${mapLink}`;
         // Send WhatsApp message
