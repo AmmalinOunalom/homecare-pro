@@ -31,12 +31,12 @@ class user_model {
     // Create User
     static create(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c, _d;
             try {
                 const checkQuery = `
-      SELECT * FROM users 
-      WHERE email = ? OR username = ? OR last_name = ?;
-    `;
+        SELECT * FROM users 
+        WHERE email = ? OR username = ? OR last_name = ?;
+      `;
                 const [existingUsers] = yield base_database_1.default.execute(checkQuery, [
                     user.email,
                     user.username,
@@ -47,22 +47,22 @@ class user_model {
                 }
                 const now = new Date();
                 const query = `
-      INSERT INTO users 
-      (email, username, last_name, first_name, tel, password, gender, status, avatar, created_at, updated_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+        INSERT INTO users 
+        (email, username, last_name, first_name, tel, password, gender, status, avatar, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
                 const values = [
                     user.email,
                     user.username,
                     user.last_name,
                     user.first_name,
                     user.tel,
-                    user.password, // hashed
+                    user.password,
                     user.gender,
-                    user.status,
-                    user.avatar, // should be URL or filename
-                    (_a = user.created_at) !== null && _a !== void 0 ? _a : now,
-                    (_b = user.updated_at) !== null && _b !== void 0 ? _b : now,
+                    (_a = user.status) !== null && _a !== void 0 ? _a : "ACTIVE",
+                    (_b = user.avatar) !== null && _b !== void 0 ? _b : null,
+                    (_c = user.created_at) !== null && _c !== void 0 ? _c : now,
+                    (_d = user.updated_at) !== null && _d !== void 0 ? _d : now,
                 ];
                 const [result] = yield base_database_1.default.execute(query, values);
                 return result;

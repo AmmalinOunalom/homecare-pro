@@ -23,12 +23,13 @@ const JWT_REFRESH_TOKEN_SECRET = 'FHP9iDp5rk8x5GKZQwrSSsOw04cOPSty8sRv3R2eAIQSlU
 let refreshTokens = [];
 // create user
 const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { password } = req.body;
         const saltRounds = 10;
         const hashedPassword = yield bcrypt_1.default.hash(password, saltRounds);
-        const user = Object.assign(Object.assign({}, req.body), { password: hashedPassword });
-        // Cloudinary avatar upload logic (just like in create_employees)
+        const user = Object.assign(Object.assign({}, req.body), { password: hashedPassword, status: (_a = req.body.status) !== null && _a !== void 0 ? _a : "ACTIVE", avatar: null });
+        // Handle avatar upload if file exists
         if (req.file && req.file.path) {
             const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
                 folder: "avatars",
@@ -38,15 +39,15 @@ const create_users = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             }
             user.avatar = result.secure_url;
             if (fs_1.default.existsSync(req.file.path)) {
-                fs_1.default.unlinkSync(req.file.path);
+                fs_1.default.unlinkSync(req.file.path); // Clean up local file
             }
         }
-        const createdUser = yield user_model_1.user_model.create(user);
+        yield user_model_1.user_model.create(user);
         res.status(201).send("User created successfully");
     }
     catch (error) {
         console.error("Error creating user:", error);
-        res.status(400).send("User with the same email, username, or last_name already exists");
+        res.status(400).send(error.message || "Failed to create user");
     }
 });
 exports.create_users = create_users;

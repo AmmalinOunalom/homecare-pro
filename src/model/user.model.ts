@@ -34,12 +34,13 @@ export interface User {
 export class user_model {
   // Create User
 
-  static async create(user: any) {
+static async create(user: any) {
     try {
       const checkQuery = `
-      SELECT * FROM users 
-      WHERE email = ? OR username = ? OR last_name = ?;
-    `;
+        SELECT * FROM users 
+        WHERE email = ? OR username = ? OR last_name = ?;
+      `;
+
       const [existingUsers]: any = await db.execute(checkQuery, [
         user.email,
         user.username,
@@ -53,27 +54,28 @@ export class user_model {
       const now = new Date();
 
       const query = `
-      INSERT INTO users 
-      (email, username, last_name, first_name, tel, password, gender, status, avatar, created_at, updated_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+        INSERT INTO users 
+        (email, username, last_name, first_name, tel, password, gender, status, avatar, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
       const values = [
         user.email,
         user.username,
         user.last_name,
         user.first_name,
         user.tel,
-        user.password, // hashed
+        user.password,
         user.gender,
-        user.status,
-        user.avatar, // should be URL or filename
+        user.status ?? "ACTIVE",
+        user.avatar ?? null,
         user.created_at ?? now,
         user.updated_at ?? now,
       ];
 
       const [result] = await db.execute(query, values);
       return result;
-    } catch (error: unknown) {
+    } catch (error: any) {
       if (
         error instanceof Error &&
         error.message === "User with the same email, username, or last_name already exists"
@@ -85,6 +87,7 @@ export class user_model {
       }
     }
   }
+
 
   // get ussr name by id
   static async get_user_name(userId: number): Promise<{ name: string } | null> {

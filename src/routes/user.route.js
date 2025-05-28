@@ -13,8 +13,8 @@ const router = express_1.default.Router();
  * @swagger
  * /users/sign_up_user:
  *   post:
- *     summary: Create a new user with avatar upload
- *     description: Registers a new user and uploads an avatar image
+ *     summary: Create a new user with optional avatar upload
+ *     description: Registers a new user and optionally uploads an avatar image
  *     tags:
  *       - Users
  *     requestBody:
@@ -31,8 +31,6 @@ const router = express_1.default.Router();
  *               - tel
  *               - password
  *               - gender
- *               - status
- *               - avatar
  *             properties:
  *               username:
  *                 type: string
@@ -65,12 +63,12 @@ const router = express_1.default.Router();
  *               avatar:
  *                 type: string
  *                 format: binary
- *                 description: The avatar image file to upload
+ *                 description: Optional avatar image
  *     responses:
  *       201:
  *         description: User created successfully
  *       400:
- *         description: Bad request, missing required fields or invalid data
+ *         description: Bad request, duplicate or invalid data
  *       500:
  *         description: Internal server error
  */

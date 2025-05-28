@@ -18,9 +18,14 @@ export const create_users = async (req: Request, res: Response) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const user = { ...req.body, password: hashedPassword };
+    const user = {
+      ...req.body,
+      password: hashedPassword,
+      status: req.body.status ?? "ACTIVE",
+      avatar: null,
+    };
 
-    // Cloudinary avatar upload logic (just like in create_employees)
+    // Handle avatar upload if file exists
     if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "avatars",
@@ -33,16 +38,15 @@ export const create_users = async (req: Request, res: Response) => {
       user.avatar = result.secure_url;
 
       if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
+        fs.unlinkSync(req.file.path); // Clean up local file
       }
     }
 
-    const createdUser = await user_model.create(user);
-
+    await user_model.create(user);
     res.status(201).send("User created successfully");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating user:", error);
-    res.status(400).send("User with the same email, username, or last_name already exists");
+    res.status(400).send(error.message || "Failed to create user");
   }
 };
 
