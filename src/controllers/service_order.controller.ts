@@ -5,6 +5,7 @@ import { user_model } from "../model/user.model";
 import { sendSMS } from '../middleware/sms.utils';
 import { address_users_details_model } from "../model/address_users_details.model";
 import twilio from "twilio";
+import db from "../config/base.database";
 import { categories_model } from "../model/categories.model";
 
 
@@ -18,12 +19,54 @@ const client = twilio(twilio_account, twilio_auth);
 /**
  * Create a new service order
  */
+// export const create_service_order = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const {
+//       user_id,
+//       employees_id,
+//       cat_id,
+//       address_users_detail_id,
+//       amount,
+//       service_status,
+//       payment_status
+//     } = req.body;
+
+//     // Basic validation
+//     if (
+//       user_id === undefined ||
+//       employees_id === undefined ||
+//       cat_id === undefined ||
+//       address_users_detail_id === undefined ||
+//       amount === undefined ||
+//       !service_status ||
+//       !payment_status
+//     ) {
+//       res.status(400).json({ message: "Missing required fields" });
+//       return;
+//     }
+
+//     const order: Omit<ServiceOrder, "id" | "created_at" | "updated_at"> = {
+//       user_id,
+//       employees_id,
+//       cat_id,
+//       address_users_detail_id,
+//       amount,
+//       service_status,
+//       payment_status
+//     };
+
+//     const result = await service_order_model.create_service_order(order);
+//     res.status(201).json({ message: "Service order created successfully", result });
+//   } catch (error) {
+//     console.error("Error creating service order:", error);
+//     res.status(500).json({ message: "Failed to create service order" });
+//   }
+// };
 export const create_service_order = async (req: Request, res: Response): Promise<void> => {
   try {
     const {
       user_id,
       employees_id,
-      cat_id,
       address_users_detail_id,
       amount,
       service_status,
@@ -34,7 +77,6 @@ export const create_service_order = async (req: Request, res: Response): Promise
     if (
       user_id === undefined ||
       employees_id === undefined ||
-      cat_id === undefined ||
       address_users_detail_id === undefined ||
       amount === undefined ||
       !service_status ||
@@ -43,6 +85,19 @@ export const create_service_order = async (req: Request, res: Response): Promise
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
+
+    // 🔍 Fetch cat_id for the employee
+    const [rows]: any = await db.execute(
+      `SELECT cat_id FROM employees WHERE id = ?`,
+      [employees_id]
+    );
+
+    if (rows.length === 0) {
+      res.status(404).json({ message: "Employee not found" });
+      return;
+    }
+
+    const cat_id = rows[0].cat_id;
 
     const order: Omit<ServiceOrder, "id" | "created_at" | "updated_at"> = {
       user_id,
@@ -61,7 +116,6 @@ export const create_service_order = async (req: Request, res: Response): Promise
     res.status(500).json({ message: "Failed to create service order" });
   }
 };
-
 
 export const send_sms_to_employee = async (req: Request, res: Response): Promise<void> => {
   let { to: employeePhone } = req.body;

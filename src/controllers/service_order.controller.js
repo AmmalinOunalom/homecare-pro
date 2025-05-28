@@ -18,6 +18,7 @@ const employees_model_1 = require("../model/employees.model");
 const sms_utils_1 = require("../middleware/sms.utils");
 const address_users_details_model_1 = require("../model/address_users_details.model");
 const twilio_1 = __importDefault(require("twilio"));
+const base_database_1 = __importDefault(require("../config/base.database"));
 const twilio_account = process.env.TWILIO_ACCOUNT_SID;
 const twilio_auth = process.env.TWILIO_AUTH_TOKEN;
 const twilio_phone = process.env.TWILIO_PHONE_NUMBER;
@@ -25,13 +26,52 @@ const client = (0, twilio_1.default)(twilio_account, twilio_auth);
 /**
  * Create a new service order
  */
+// export const create_service_order = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const {
+//       user_id,
+//       employees_id,
+//       cat_id,
+//       address_users_detail_id,
+//       amount,
+//       service_status,
+//       payment_status
+//     } = req.body;
+//     // Basic validation
+//     if (
+//       user_id === undefined ||
+//       employees_id === undefined ||
+//       cat_id === undefined ||
+//       address_users_detail_id === undefined ||
+//       amount === undefined ||
+//       !service_status ||
+//       !payment_status
+//     ) {
+//       res.status(400).json({ message: "Missing required fields" });
+//       return;
+//     }
+//     const order: Omit<ServiceOrder, "id" | "created_at" | "updated_at"> = {
+//       user_id,
+//       employees_id,
+//       cat_id,
+//       address_users_detail_id,
+//       amount,
+//       service_status,
+//       payment_status
+//     };
+//     const result = await service_order_model.create_service_order(order);
+//     res.status(201).json({ message: "Service order created successfully", result });
+//   } catch (error) {
+//     console.error("Error creating service order:", error);
+//     res.status(500).json({ message: "Failed to create service order" });
+//   }
+// };
 const create_service_order = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { user_id, employees_id, cat_id, address_users_detail_id, amount, service_status, payment_status } = req.body;
+        const { user_id, employees_id, address_users_detail_id, amount, service_status, payment_status } = req.body;
         // Basic validation
         if (user_id === undefined ||
             employees_id === undefined ||
-            cat_id === undefined ||
             address_users_detail_id === undefined ||
             amount === undefined ||
             !service_status ||
@@ -39,6 +79,13 @@ const create_service_order = (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(400).json({ message: "Missing required fields" });
             return;
         }
+        // 🔍 Fetch cat_id for the employee
+        const [rows] = yield base_database_1.default.execute(`SELECT cat_id FROM employees WHERE id = ?`, [employees_id]);
+        if (rows.length === 0) {
+            res.status(404).json({ message: "Employee not found" });
+            return;
+        }
+        const cat_id = rows[0].cat_id;
         const order = {
             user_id,
             employees_id,

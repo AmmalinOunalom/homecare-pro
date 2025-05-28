@@ -3,7 +3,7 @@ import db from "../config/base.database";
 enum Status {
     Active = "active",
     Inactive = "inactive"
-  }
+}
 
 // Comments Interface (Based on your table structure)
 export interface Comments {
@@ -22,10 +22,10 @@ export class comments_model {
     static async create_comment(comment: Omit<Comments, "id" | "created_at" | "updated_at">) {
         try {
             const query = `INSERT INTO comments (users_id, employees_id, message, rating, status) VALUES (?, ?, ?, ?, ?)`;
-            
+
             // Ensure status is always valid
             const statusValue = comment.status || Status.Active;
-    
+
             const values = [comment.user_id, comment.employees_id, comment.message, comment.rating, statusValue];
             const [result] = await db.execute(query, values);
             return result;
@@ -38,7 +38,19 @@ export class comments_model {
     // Show All Comments
     static async show_all_comments() {
         try {
-            const query = 'SELECT * FROM comments';
+            const query = `SELECT 
+        comments.id,
+        comments.users_id,
+        users.first_name,
+        users.last_name,
+        comments.employees_id,
+        comments.message,
+        comments.rating,
+        comments.status
+        FROM 
+        comments
+        JOIN 
+        users ON comments.users_id = users.id;`;
             const [rows] = await db.execute(query);
             return rows;  // Returning the fetched comments
         } catch (error) {

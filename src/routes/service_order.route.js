@@ -58,7 +58,7 @@ router.post('/whatsapp/:id', service_order_controller_1.send_sms_to_employee);
  * /service_order/create:
  *   post:
  *     summary: Create a new service order
- *     description: Adds a new service order including user, employee, category, address, amount, payment status, and service status.
+ *     description: Adds a new service order including user, employee, address, amount, payment status, and service status. The category ID is automatically derived from the employee.
  *     tags:
  *       - Service Orders
  *     requestBody:
@@ -70,7 +70,6 @@ router.post('/whatsapp/:id', service_order_controller_1.send_sms_to_employee);
  *             required:
  *               - user_id
  *               - employees_id
- *               - cat_id
  *               - address_users_detail_id
  *               - amount
  *               - payment_status
@@ -82,9 +81,6 @@ router.post('/whatsapp/:id', service_order_controller_1.send_sms_to_employee);
  *               employees_id:
  *                 type: integer
  *                 example: 10
- *               cat_id:
- *                 type: integer
- *                 example: 3
  *               address_users_detail_id:
  *                 type: integer
  *                 example: 7
@@ -103,7 +99,9 @@ router.post('/whatsapp/:id', service_order_controller_1.send_sms_to_employee);
  *       201:
  *         description: Service order created successfully.
  *       400:
- *         description: Invalid input data.
+ *         description: Missing or invalid input data.
+ *       404:
+ *         description: Employee not found.
  *       500:
  *         description: Internal server error.
  */

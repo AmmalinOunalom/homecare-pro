@@ -41,7 +41,19 @@ class comments_model {
     static show_all_comments() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const query = 'SELECT * FROM comments';
+                const query = `SELECT 
+        comments.id,
+        comments.users_id,
+        users.first_name,
+        users.last_name,
+        comments.employees_id,
+        comments.message,
+        comments.rating,
+        comments.status
+        FROM 
+        comments
+        JOIN 
+        users ON comments.users_id = users.id;`;
                 const [rows] = yield base_database_1.default.execute(query);
                 return rows; // Returning the fetched comments
             }
