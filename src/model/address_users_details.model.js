@@ -165,6 +165,7 @@ class address_users_details_model {
         tel AS contact,
         address_name AS locationName,
         village AS villageName,
+		city AS city,
         address_description AS details,
         google_link_map AS mapLink
         FROM address_users_detail
