@@ -39,18 +39,19 @@ export class comments_model {
     static async show_all_comments() {
         try {
             const query = `SELECT 
-        comments.id,
-        comments.users_id,
-        users.first_name,
-        users.last_name,
-        comments.employees_id,
-        comments.message,
-        comments.rating,
-        comments.status
-        FROM 
-        comments
-        JOIN 
-        users ON comments.users_id = users.id;`;
+            comments.id,
+            comments.users_id,
+            users.first_name,
+            users.last_name,
+            comments.employees_id,
+            comments.message,
+            comments.rating,
+            comments.status,
+                comments.created_at
+            FROM 
+            comments
+            JOIN 
+            users ON comments.users_id = users.id;`;
             const [rows] = await db.execute(query);
             return rows;  // Returning the fetched comments
         } catch (error) {
