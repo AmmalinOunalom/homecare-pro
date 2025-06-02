@@ -20,61 +20,14 @@ const emp_cars_model_1 = require("../model/emp_cars.model");
 /**
  * Create a new emp_car
  */
-// export const create_emp_car = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const empCarData = req.body;
-//     let carImageUrl: string | null = null;
-//     // Handle car image upload if file exists
-//     if (req.file && req.file.path) {
-//       const result = await cloudinary.uploader.upload(req.file.path, {
-//         folder: 'car_images', // Store the image in this folder on Cloudinary
-//       });
-//       if (!result.secure_url) {
-//         throw new Error('Cloudinary upload failed');
-//       }
-//       carImageUrl = result.secure_url;
-//       // Remove local file after upload
-//       if (fs.existsSync(req.file.path)) {
-//         fs.unlinkSync(req.file.path);
-//       }
-//     }
-//     // Create emp_car entry in database with the uploaded image URL
-//     const empCarId = await emp_car_model.create_emp_car({
-//       emp_id: empCarData.emp_id,
-//       car_brand: empCarData.car_brand,
-//       model: empCarData.model,
-//       license_plate: empCarData.license_plate,
-//       car_image: carImageUrl, // Store the Cloudinary URL of the uploaded image
-//     });
-//     res.status(201).json({
-//       message: 'Employee car created successfully',
-//       emp_car_id: empCarId,
-//       car_image: carImageUrl, // Return the uploaded image URL
-//     });
-//   } catch (error) {
-//     console.error('Error creating emp_car:', error);
-//     res.status(500).json({
-//       message: 'Failed to create empCar',
-//       error,
-//     });
-//   }
-// };
 const create_emp_car = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const empCarData = req.body;
         let carImageUrl = null;
-        // Check if emp_id already exists
-        const existingCar = yield emp_cars_model_1.emp_car_model.get_emp_car_by_emp_id(empCarData.emp_id);
-        if (existingCar) {
-            res.status(400).json({
-                message: `An entry for emp_id ${empCarData.emp_id} already exists.`,
-            });
-            return; // 💥 STOP execution here
-        }
         // Handle car image upload if file exists
         if (req.file && req.file.path) {
             const result = yield cloudinary_1.v2.uploader.upload(req.file.path, {
-                folder: 'car_images',
+                folder: 'car_images', // Store the image in this folder on Cloudinary
             });
             if (!result.secure_url) {
                 throw new Error('Cloudinary upload failed');
@@ -85,29 +38,76 @@ const create_emp_car = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 fs_1.default.unlinkSync(req.file.path);
             }
         }
-        // Create emp_car entry
+        // Create emp_car entry in database with the uploaded image URL
         const empCarId = yield emp_cars_model_1.emp_car_model.create_emp_car({
             emp_id: empCarData.emp_id,
             car_brand: empCarData.car_brand,
             model: empCarData.model,
             license_plate: empCarData.license_plate,
-            car_image: carImageUrl,
+            car_image: carImageUrl, // Store the Cloudinary URL of the uploaded image
         });
         res.status(201).json({
             message: 'Employee car created successfully',
             emp_car_id: empCarId,
-            car_image: carImageUrl,
+            car_image: carImageUrl, // Return the uploaded image URL
         });
     }
     catch (error) {
         console.error('Error creating emp_car:', error);
         res.status(500).json({
             message: 'Failed to create empCar',
-            error: error instanceof Error ? error.message : error,
+            error,
         });
     }
 });
 exports.create_emp_car = create_emp_car;
+// export const create_emp_car = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const empCarData = req.body;
+//     let carImageUrl: string | null = null;
+//     // Check if emp_id already exists
+//     const existingCar = await emp_car_model.get_emp_car_by_emp_id(empCarData.emp_id);
+//     if (existingCar) {
+//       res.status(400).json({
+//         message: `An entry for emp_id ${empCarData.emp_id} already exists.`,
+//       });
+//       return; // 💥 STOP execution here
+//     }
+//     // Handle car image upload if file exists
+//     if (req.file && req.file.path) {
+//       const result = await cloudinary.uploader.upload(req.file.path, {
+//         folder: 'car_images',
+//       });
+//       if (!result.secure_url) {
+//         throw new Error('Cloudinary upload failed');
+//       }
+//       carImageUrl = result.secure_url;
+//       // Remove local file after upload
+//       if (fs.existsSync(req.file.path)) {
+//         fs.unlinkSync(req.file.path);
+//       }
+//     }
+//     // Create emp_car entry
+//     const empCarId = await emp_car_model.create_emp_car({
+//       emp_id: empCarData.emp_id,
+//       car_brand: empCarData.car_brand,
+//       model: empCarData.model,
+//       license_plate: empCarData.license_plate,
+//       car_image: carImageUrl,
+//     });
+//     res.status(201).json({
+//       message: 'Employee car created successfully',
+//       emp_car_id: empCarId,
+//       car_image: carImageUrl,
+//     });
+//   } catch (error) {
+//     console.error('Error creating emp_car:', error);
+//     res.status(500).json({
+//       message: 'Failed to create empCar',
+//       error: error instanceof Error ? error.message : error,
+//     });
+//   }
+// };
 /**
  * Retrieve all emp_cars
  */
