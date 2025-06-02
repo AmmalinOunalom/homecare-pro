@@ -241,7 +241,7 @@ router.post('/refresh-token', refresh_token);
  *               newLastname:
  *                 type: string
  *                 example: Doe
- *               Avatar:
+ *               avatar:                   
  *                 type: string
  *                 format: binary
  *                 description: Avatar image file
@@ -255,7 +255,7 @@ router.post('/refresh-token', refresh_token);
  *       500:
  *         description: Internal server error
  */
-router.put("/rename_user/:id", upload.single("file"),rename_user);
+router.put('/rename_user/:id', upload.single('avatar'), rename_user);
 
 //Get User Name BY ID
 /**

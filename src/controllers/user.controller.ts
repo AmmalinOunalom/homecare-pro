@@ -189,14 +189,23 @@ export const get_user_profile = async (req: Request, res: Response): Promise<voi
 export const rename_user = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { newUsername, newFirstname, newLastname } = req.body;
+    const userId = Number(id);
 
-    if (!id || isNaN(Number(id))) {
-      res.status(400).send("Invalid user ID");
+    if (isNaN(userId)) {
+      res.status(400).json({ success: false, message: "Invalid user ID" });
       return;
     }
 
-    let avatarUrl: string | undefined;
+    // Optional: Check if user exists before update (if you have such a method)
+    // const userExists = await user_model.get_user_by_id(userId);
+    // if (!userExists) {
+    //   res.status(404).json({ success: false, message: `User with ID ${userId} not found` });
+    //   return;
+    // }
+
+    const { newUsername, newFirstname, newLastname } = req.body;
+
+    let avatarUrl: string | null = null;
 
     if (req.file && req.file.path) {
       const result = await cloudinary.uploader.upload(req.file.path, {
@@ -222,20 +231,29 @@ export const rename_user = async (req: Request, res: Response): Promise<void> =>
     if (avatarUrl) updates.newAvatar = avatarUrl;
 
     if (Object.keys(updates).length === 0) {
-      res.status(400).send("No fields provided for update");
+      res.status(400).json({ success: false, message: "No fields provided for update" });
       return;
     }
 
-    const result = await user_model.rename_users(Number(id), updates);
+    const result = await user_model.rename_users(userId, updates);
 
     if (result) {
-      res.status(200).send("User updated successfully");
+      res.status(200).json({
+        success: true,
+        message: "User updated successfully",
+        user_id: userId,
+        updated_fields: updates,
+      });
     } else {
-      res.status(404).send("User not found or no changes made");
+      res.status(404).json({ success: false, message: "User not found or no changes made" });
     }
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error instanceof Error ? error.message : error,
+    });
   }
 };
 
