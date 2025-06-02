@@ -78,6 +78,24 @@ export class emp_car_model {
     }
   }
 
+  //NOTE - get_emp_car_by_emp_id
+
+  static async get_emp_car_by_emp_id(emp_id: number): Promise<EmpCar | null> {
+    try {
+      const query = `SELECT * FROM emp_cars WHERE emp_id = ?`;
+      const [rows]: any[] = await db.execute(query, [emp_id]);
+
+      if (rows.length > 0) {
+        return rows[0] as EmpCar;
+      } else {
+        return null; // No car found for this emp_id
+      }
+    } catch (error) {
+      console.error("Error fetching emp_car by emp_id:", error);
+      throw new Error("Failed to fetch emp_car by emp_id");
+    }
+  }
+
   static async update_emp_car(
     empId: number,
     empCar: Partial<Pick<EmpCar, "car_brand" | "model" | "license_plate">> & { car_image?: string }
@@ -88,49 +106,49 @@ export class emp_car_model {
         "SELECT id FROM emp_cars WHERE emp_id = ?",
         [empId]
       );
-  
+
       if (!rows || rows.length === 0) {
         throw new Error(`emp_car with emp_id ${empId} does not exist`);
       }
-  
+
       // Build the dynamic SET clause
       const fields: string[] = [];
       const values: any[] = [];
-  
+
       if (empCar.car_brand !== undefined) {
         fields.push("car_brand = ?");
         values.push(empCar.car_brand);
       }
-  
+
       if (empCar.model !== undefined) {
         fields.push("model = ?");
         values.push(empCar.model);
       }
-  
+
       if (empCar.license_plate !== undefined) {
         fields.push("license_plate = ?");
         values.push(empCar.license_plate);
       }
-  
+
       if (empCar.car_image !== undefined) {
         fields.push("car_image = ?");
         values.push(empCar.car_image);
       }
-  
+
       // Always update updated_at
       fields.push("updated_at = NOW()");
-  
+
       if (fields.length === 1) {
         throw new Error("No valid fields provided for update");
       }
-  
+
       const query = `
         UPDATE emp_cars 
         SET ${fields.join(", ")} 
         WHERE emp_id = ?
       `;
       values.push(empId);
-  
+
       const [result] = await db.execute(query, values);
       return result;
     } catch (error) {

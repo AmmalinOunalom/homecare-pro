@@ -81,6 +81,25 @@ class emp_car_model {
             }
         });
     }
+    //NOTE - get_emp_car_by_emp_id
+    static get_emp_car_by_emp_id(emp_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = `SELECT * FROM emp_cars WHERE emp_id = ?`;
+                const [rows] = yield base_database_1.default.execute(query, [emp_id]);
+                if (rows.length > 0) {
+                    return rows[0];
+                }
+                else {
+                    return null; // No car found for this emp_id
+                }
+            }
+            catch (error) {
+                console.error("Error fetching emp_car by emp_id:", error);
+                throw new Error("Failed to fetch emp_car by emp_id");
+            }
+        });
+    }
     static update_emp_car(empId, empCar) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
