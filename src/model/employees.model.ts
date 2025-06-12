@@ -155,7 +155,9 @@ SELECT e.id, e.first_name, e.last_name, e.email, e.tel,
        e.address, e.gender, e.cv, e.avatar, 
        e.cat_id, c.cat_name, e.price, e.status, e.city, e.created_at, e.updated_at
 FROM employees e
-JOIN categories c ON e.cat_id = c.id WHERE e.status= 'active'
+JOIN categories c ON e.cat_id = c.id
+WHERE e.status = 'active'
+ORDER BY e.cat_id ASC;
       `;
       const [result] = await db.execute(query);
       return result;
