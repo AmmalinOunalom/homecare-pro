@@ -1,6 +1,6 @@
 import express from "express";
 import upload from '../config/images.config'; // Import multer configuration
-import { create_employees, uploadImage, show_employee_by_id, show_image_employee_by_id, show_more_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee, get_employee_phonenumber } from "../controllers/employees.controller";
+import { create_employees, uploadImage, show_status_employees, show_employee_by_id, show_image_employee_by_id, show_more_employee_by_id, show_all_employees, update_employees, delete_employees, sign_in_employee, get_employee_phonenumber } from "../controllers/employees.controller";
 const router = express.Router();
 
 // NOTE - Show All Employees
@@ -19,6 +19,44 @@ const router = express.Router();
  *         description: Internal server error.
  */
 router.get("/read_employees", show_all_employees);
+/**
+ * @swagger
+ * /employees/show_status_employees:
+ *   get:
+ *     summary: Get employees by status
+ *     tags: 
+ *       - Employees
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive]
+ *         required: true
+ *         description: Employee status to filter by (active or inactive)
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved employees by status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   full_name:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                     enum: [active, inactive]
+ *       400:
+ *         description: Invalid status parameter
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/show_status_employees", show_status_employees);
 
 // NOTE - Get Employee by ID
 /**

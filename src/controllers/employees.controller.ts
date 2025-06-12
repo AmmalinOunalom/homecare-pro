@@ -207,6 +207,36 @@ export const show_all_employees = async (req: Request, res: Response) => {
 };
 
 /**
+ * GET employee by status
+ */
+export const show_status_employees = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const status = req.query.status as string;
+
+    if (!status || (status !== 'active' && status !== 'inactive')) {
+      res.status(400).json({
+        message: "Invalid status. Status must be either 'active' or 'inactive'.",
+      });
+      return;
+    }
+
+    const employees = await employees_model.show_status_employee(status);
+
+    res.status(200).json({
+      message: `Employees with status: ${status}`,
+      data: employees,
+    });
+  } catch (error) {
+    console.error("Error in showStatusEmployee:", error);
+    res.status(500).json({
+      message: "Failed to fetch employees by status",
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+};
+  
+
+/**
  * Get employee by ID
  */
 

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.delete_employees = exports.update_employees = exports.get_employee_phonenumber = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
+exports.delete_employees = exports.update_employees = exports.get_employee_phonenumber = exports.show_image_employee_by_id = exports.show_more_employee_by_id = exports.show_employee_by_id = exports.show_status_employees = exports.show_all_employees = exports.uploadImage = exports.sign_in_employee = exports.create_employees = void 0;
 const path_1 = __importDefault(require("path")); // To handle file paths
 //import cloudinary from '../config/cloudinary.config';  // นำเข้า Cloudinary
 const cloudinary_1 = require("cloudinary");
@@ -191,6 +191,33 @@ const show_all_employees = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.show_all_employees = show_all_employees;
+/**
+ * GET employee by status
+ */
+const show_status_employees = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const status = req.query.status;
+        if (!status || (status !== 'active' && status !== 'inactive')) {
+            res.status(400).json({
+                message: "Invalid status. Status must be either 'active' or 'inactive'.",
+            });
+            return;
+        }
+        const employees = yield employees_model_1.employees_model.show_status_employee(status);
+        res.status(200).json({
+            message: `Employees with status: ${status}`,
+            data: employees,
+        });
+    }
+    catch (error) {
+        console.error("Error in showStatusEmployee:", error);
+        res.status(500).json({
+            message: "Failed to fetch employees by status",
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+});
+exports.show_status_employees = show_status_employees;
 /**
  * Get employee by ID
  */

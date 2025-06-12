@@ -165,6 +165,30 @@ JOIN categories c ON e.cat_id = c.id
     }
   }
 
+  //NOTE - Show status employees
+
+static async show_status_employee(status: string) {
+  try {
+    const query = `
+      SELECT 
+        e.id, e.first_name, e.last_name, e.email, 
+        e.tel, e.address, e.gender, e.cv, e.avatar, 
+        e.cat_id, c.cat_name, e.price, e.status, 
+        e.city, e.created_at, e.updated_at
+      FROM employees e
+      JOIN categories c ON e.cat_id = c.id
+      WHERE e.status = ?
+    `;
+    const [result] = await db.execute(query, [status]);
+    return result;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    throw new Error("Failed to retrieve employees");
+  }
+}
+
+
+
   // Show employee by ID
   static async show_employee_by_id(Id: number) {
     try {

@@ -104,7 +104,8 @@ class service_order_model {
     ec.car_brand,
     ec.model,
     ec.license_plate,
-    c.rating
+    c.rating,
+    so.created_at
 FROM 
     service_order so
 LEFT JOIN employees e ON e.id = so.employees_id
